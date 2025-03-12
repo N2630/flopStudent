@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salles Libres</title>
+</head>
+<body>
+    <h1>Salles Libres</h1>
+
+    <!-- Sélecteurs pour département, groupe et TP -->
+    <div id="choices">
+        <div id="depChoice">
+            <label for="department">Département :</label>
+            <select id="department">
+                <option value="INFO">INFO</option>
+                <option value="CS">CS</option>
+                <option value="GIM">GIM</option>
+                <option value="RT">RT</option>
+                <option value="LPMA">LPMA</option>
+            </select>
+        </div>
+        
+        <div id="train_progChoice">
+            <label for="trainProgSelect">Groupe :</label>
+            <select id="trainProgSelect">
+                <!-- Options dynamiques ajoutées par JS -->
+            </select>
+        </div>
+        
+        <div id="groupChoice">
+            <label for="groupSelect">Groupe de TP :</label>
+            <select id="groupSelect">
+                <!-- Options dynamiques ajoutées par JS -->
+            </select>
+        </div>
+    </div>
+
+    <button id="displayEDT">Afficher l'emploi du temps</button>
+
+    <!-- Conteneur pour afficher les salles libres -->
+    <div id="freeRooms"></div>
+
+    <!-- Script lié -->
+    <script src="index.js"></script>
+</body>
+</html>
