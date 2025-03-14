@@ -2,7 +2,7 @@
   <img alt="Vue logo" src="../assets/logo.png">
   
   <!-- Modifiez la cible du lien en /settings -->
-  <router-link to="/Settings">Paramètres</router-link>
+  <router-link to="/settings">Paramètres</router-link>
   
   <ScheduleList />
 
