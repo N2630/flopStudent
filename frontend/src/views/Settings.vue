@@ -1,7 +1,8 @@
 <template>
   <h1>Test</h1>
-  <SettingsParams />
   <router-link to="/">App</router-link>
+  <SettingsParams />
+  
 </template>
   
 <script>

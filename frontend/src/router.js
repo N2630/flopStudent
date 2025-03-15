@@ -1,18 +1,19 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import SettingsView from './views/Settings.vue';
-import App from './views/App.vue';
+import SettingsPage from './views/Settings.vue';
+import SchedulePage from './views/Schedule.vue';
+
 
 
 const routes = [
   {
-    path: '/',
-    name: 'App',
-    component: App
-  },
-  {
     path: '/settings',
     name: 'SettingsPage',
-    component: SettingsView
+    component: SettingsPage
+  },
+  {
+    path: '/',
+    name: 'Schedule',
+    component: SchedulePage
   }
 ];
 

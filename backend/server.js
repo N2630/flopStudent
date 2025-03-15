@@ -21,7 +21,7 @@ connectToDatabase();
 // Fonction pour récupérer et stocker les données
 async function fetchAndStoreSchedules() {
   try {
-    const response = await axios.get('https://flopedt.iut-blagnac.fr/fr/api/fetch/scheduledcourses/?week=11&year=2025&dept=INFO');
+    const response = await axios.get('https://flopedt.iut-blagnac.fr/fr/api/fetch/scheduledcourses/?week=12&year=2025&dept=INFO');
     const schedules = response.data;
 
     
@@ -72,6 +72,8 @@ async function storeInfo(schedulList, collectionName) {
 
       if(!existingSchedul){
         await dbClient.db("flopStudent").collection(collectionName).insertOne(formatedData)
+      } else {
+        await dbClient.db("flopStudent").collection(collectionName).updateOne({id: schedule.id}, {$set: formatedData})
       }
       
     }
