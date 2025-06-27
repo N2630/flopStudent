@@ -7,7 +7,7 @@ export const fetchSchedules = async () => {
   const train_prog = localStorage.getItem('train_prog');
   const groupe = localStorage.getItem('group');
 
-  const date = new Date();
+  const date = new Date("2025-06-18T00:00:00Z"); // Date de référence pour la récupération des horaires
   const year = await getYearNumber(date);
   const week = await getWeekNumber(date);
 

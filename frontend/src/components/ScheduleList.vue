@@ -2,14 +2,27 @@
   <div class="schedule-grid">
     <div v-for="(courses, day) in organizedSchedules" :key="day" class="day-column">
       <h3>{{ getDayName(day) }}</h3>
-      <div class="time-slot" v-for="time in timeSlots" :key="time">
-        <div v-if="getCourseAtTime(courses, time)" class="course-item">
-          <p>{{ getCourseAtTime(courses, time).course.name }}</p>
-          <p>{{ getCourseAtTime(courses, time).room }}</p>
-          <p>{{ minutesToTime(getCourseAtTime(courses, time).start_time) }}</p>
+      <template v-for="time in timeSlots" :key="time">
+        <div class="time-slot">
+          <template v-for="course in [getCourseAtTime(courses, time)]" :key="course ? course.id : 'no-course'">
+            <div v-if="course" class="course-item" :style="{ backgroundColor: course.display.color_bg, color: course.display.color_txt }">
+              <p>{{ course.course.name }}</p>
+              <p>{{ course.room }}{{ course.prof ? ' - ' + course.prof : '' }}</p>
+              <p>{{ minutesToTime(course.start_time) }}</p>
+            </div>
+
+            <!--
+            <div v-else-if="time === 755 && !getCourseAtTime(courses, 755)" class="time-slot">
+              <div :key="time + '-break'" class="break-slot">
+                PAUSE DÉJEUNER
+              </div>
+            </div>
+            -->
+            <div v-else class="empty-slot">&nbsp;</div>
+          </template>
         </div>
-        <div v-else class="empty-slot"></div>
-      </div>
+        
+      </template>
     </div>
   </div>
 </template>
@@ -23,7 +36,7 @@ export default {
     return {
       schedules: [],
       organizedSchedules: {},
-      timeSlots: [480, 570, 665, 855, 945, 1030] // Exemple de créneaux horaires en minutes
+      timeSlots: [480, 570, 665, 755, 855, 945, 1030] // Exemple de créneaux horaires en minutes
     };
   },
   async created() {
@@ -31,9 +44,15 @@ export default {
     this.organizedSchedules = organizeSchedules(this.schedules);
   },
   methods: {
-    getDayName(day) {
-      const days = ["Lun.", "Mar.", "Mer.", "Jeu.", "Ven.", "Sam.", "Dim."];
-      return days[day];
+    getDayName(dayLetter) {
+      const days = {
+        "m": "Lun.",
+        "tu": "Mar.",
+        "w": "Mer.",
+        "th": "Jeu.",
+        "f": "Ven."
+      };
+      return days[dayLetter] || "Jour inconnu";
     },
     getCourseAtTime(courses, time) {
       return courses.find(course => course.start_time === time);
@@ -47,29 +66,57 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .schedule-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr); /* 7 colonnes pour les jours de la semaine */
+  grid-template-columns: repeat(5, 1fr);
   gap: 10px;
+  width: fit-content;
 }
 
 .day-column {
   border: 1px solid #ccc;
   padding: 10px;
+  text-align: center;
 }
 
 .time-slot {
-  border-bottom: 1px solid #ddd;
+  border-top: 1px solid #ddd;
+}
+
+.course-item,
+.empty-slot {
+  padding: 3px;
+  margin: 5px 0;
+  height: 5em;
+  box-sizing: border-box;
 }
 
 .course-item {
   border: 1px solid #ddd;
-  padding: 5px;
-  margin: 5px 0;
+  overflow: hidden;
+}
+
+.course-item p {
+  margin: 0;
 }
 
 .empty-slot {
-  height: 20px; /* Ajustez la hauteur pour représenter un créneau vide */
+  background-color: white;
+  border: 1px solid transparent;
+}
+
+.break-slot {
+  text-align: center;
+  margin: 5px 0;
+  padding: 10px;
+  background-color: #e9e9e9;
+  font-weight: bold;
+  border: 1px solid #ccc;
+  height: 5em;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

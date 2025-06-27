@@ -1,23 +1,30 @@
 // services/scheduleService.js
 
 export const organizeSchedules = (schedules) => {
-    const organized = {};
-  
+    // Initialiser l'objet avec tous les jours de la semaine
+    const organized = {
+        m: [], // Lundi
+        tu: [], // Mardi
+        w: [], // Mercredi
+        th: [], // Jeudi
+        f: [] // Vendredi
+    };
+
     schedules.forEach(course => {
-      const day = course.date.day; // Assurez-vous que 'day' est une propriété de votre objet 'date'
-      if (!organized[day]) {
-        organized[day] = [];
-      }
-      organized[day].push(course);
+        const day = course.date.day;
+        if (organized[day] !== undefined) {
+            organized[day].push(course);
+        }
     });
-  
-    // Trier les cours par heure de début
+
+    // Trier les cours par heure de début pour chaque jour
     for (const day in organized) {
-      organized[day].sort((a, b) => a.start_time - b.start_time);
+        organized[day].sort((a, b) => a.start_time - b.start_time);
     }
-  
+
     return organized;
 };
+
 
   
 /*  
