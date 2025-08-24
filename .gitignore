@@ -1,2 +1,7 @@
 backend/nodes_modules
 frontend/nodes_modules
+
+# Variables d'environnement
+.env
+frontend/.env.local
+frontend/.env.development

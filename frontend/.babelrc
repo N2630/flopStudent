@@ -1,0 +1,9 @@
+{
+  "presets": ["@vue/cli-plugin-babel/preset"],
+  "ignore": ["node_modules"],
+  "env": {
+    "test": {
+      "presets": ["@vue/cli-plugin-babel/preset"]
+    }
+  }
+} 

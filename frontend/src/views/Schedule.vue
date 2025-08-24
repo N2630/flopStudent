@@ -1,23 +1,22 @@
 <template>
   <div class="plantEDT">
-    <h1>Flop Student</h1>
-    <router-link to="/settings" class="settings-link">
-      <img src="https://cdn-icons-png.flaticon.com/128/45/45493.png" alt="Paramètres" class="settings-icon"> Paramètres
-    </router-link>
+    
 
-
-      <ScheduleList />
+    <ScheduleList />
+    <FreeRoomsList />
 
   </div>
 </template>
 
 <script>
 import ScheduleList from '../components/ScheduleList.vue'
+import FreeRoomsList from '../components/FreeRoomsList.vue';
 
 export default {
   name: 'SchedulePage',
   components: {
-    ScheduleList
+    ScheduleList,
+    FreeRoomsList
   }
 };
 </script>

@@ -1,49 +1,82 @@
 <template>
-  <div class="schedule-grid">
-    <div v-for="(courses, day) in organizedSchedules" :key="day" class="day-column">
-      <h3>{{ getDayName(day) }}</h3>
-      <template v-for="time in timeSlots" :key="time">
-        <div class="time-slot">
-          <template v-for="course in [getCourseAtTime(courses, time)]" :key="course ? course.id : 'no-course'">
-            <div v-if="course" class="course-item" :style="{ backgroundColor: course.display.color_bg, color: course.display.color_txt }">
-              <p>{{ course.course.name }}</p>
-              <p>{{ course.room }}{{ course.prof ? ' - ' + course.prof : '' }}</p>
-              <p>{{ minutesToTime(course.start_time) }}</p>
-            </div>
+  <div class="schedule-container">
+    <div class="week-navigation">
+      <button @click="goToPreviousWeek">&#60;</button>
+      <h2>Semaine {{ currentWeek }} - {{ currentYear }}</h2>
+      <button @click="goToNextWeek">></button>
+    </div>
 
-            <!--
-            <div v-else-if="time === 755 && !getCourseAtTime(courses, 755)" class="time-slot">
-              <div :key="time + '-break'" class="break-slot">
-                PAUSE DÉJEUNER
-              </div>
+    <div class="schedule-grid-container">
+      <div class="schedule-grid">
+        <div v-for="(courses, day) in organizedSchedules" :key="day" class="day-column">
+          <h3>{{ getDayAndDate(day) }}</h3>
+          <template v-for="time in timeSlots" :key="time">
+            <div class="time-slot">
+              <template v-for="course in [getCourseAtTime(courses, time)]" :key="course ? course.id : 'no-course'">
+                <div v-if="course" class="course-item" :style="{ backgroundColor: course.display.color_bg, color: course.display.color_txt }">
+                  <p>{{ course.course.name }}</p>
+                  <p>{{ course.room }}{{ course.prof ? ' - ' + course.prof : '' }}</p>
+                  <p>{{ minutesToTime(course.start_time) }}</p>
+                </div>
+                <div v-else class="empty-slot">&nbsp;</div>
+              </template>
             </div>
-            -->
-            <div v-else class="empty-slot">&nbsp;</div>
           </template>
         </div>
-        
-      </template>
+      </div>
     </div>
+
   </div>
 </template>
 
 <script>
 import { fetchSchedules } from '../services/api';
-import { organizeSchedules} from '../services/scheduleService';
+import { organizeSchedules, getWeekNumber, getYearNumber } from '../services/scheduleService';
 
 export default {
   data() {
     return {
       schedules: [],
       organizedSchedules: {},
-      timeSlots: [480, 570, 665, 755, 855, 945, 1030] // Exemple de créneaux horaires en minutes
+      timeSlots: [480, 570, 665, 755, 855, 945, 1030], 
+      currentWeek: null,
+      currentYear: null,
+      initialDate: new Date('2025-06-16T10:00:00') // Fixé au 9 juin 2025, 10h00 pour les tests
     };
   },
   async created() {
-    this.schedules = await fetchSchedules();
-    this.organizedSchedules = organizeSchedules(this.schedules);
+    await this.initializeWeek();
+    await this.loadSchedules();
   },
   methods: {
+    async initializeWeek() {
+      this.currentYear = await getYearNumber(this.initialDate);
+      this.currentWeek = await getWeekNumber(this.initialDate);
+    },
+    async loadSchedules() {
+      try {
+        this.schedules = await fetchSchedules(this.currentYear, this.currentWeek);
+        this.organizedSchedules = organizeSchedules(this.schedules);
+      } catch (error) {
+        console.error("Erreur lors du chargement des EDT:", error);
+        this.schedules = [];
+        this.organizedSchedules = {};
+      }
+    },
+    async goToPreviousWeek() {
+      let date = new Date(this.initialDate);
+      date.setDate(date.getDate() - 7); // Reculer d'une semaine
+      this.initialDate = date;
+      await this.initializeWeek();
+      await this.loadSchedules();
+    },
+    async goToNextWeek() {
+      let date = new Date(this.initialDate);
+      date.setDate(date.getDate() + 7); // Avancer d'une semaine
+      this.initialDate = date;
+      await this.initializeWeek();
+      await this.loadSchedules();
+    },
     getDayName(dayLetter) {
       const days = {
         "m": "Lun.",
@@ -54,9 +87,31 @@ export default {
       };
       return days[dayLetter] || "Jour inconnu";
     },
+    getDayAndDate(dayLetter) {
+      const daysOfWeek = ["m", "tu", "w", "th", "f"];
+      const dayIndex = daysOfWeek.indexOf(dayLetter);
+      if (dayIndex === -1) return this.getDayName(dayLetter);
+
+      let date = new Date(this.initialDate);
+
+      // Trouver le début de la semaine (lundi) de initialDate
+      const day = date.getDay(); 
+      const diff = date.getDate() - day + (day === 0 ? -6 : 1); 
+      date.setDate(diff);
+
+      // Ajouter le décalage pour le jour actuel de la semaine (0 pour Lun, 1 pour Mar...)
+      date.setDate(date.getDate() + dayIndex);
+
+      const dayNum = String(date.getDate()).padStart(2, '0');
+      const monthNum = String(date.getMonth() + 1).padStart(2, '0'); // Mois est de 0 à 11
+
+      return `${this.getDayName(dayLetter)} ${dayNum}/${monthNum}`;
+    },
+
     getCourseAtTime(courses, time) {
       return courses.find(course => course.start_time === time);
     },
+
     minutesToTime(minutes) {
       const hours = Math.floor(minutes / 60);
       const mins = minutes % 60;
@@ -66,57 +121,4 @@ export default {
 };
 </script>
 
-<style>
-.schedule-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
-  width: fit-content;
-}
-
-.day-column {
-  border: 1px solid #ccc;
-  padding: 10px;
-  text-align: center;
-}
-
-.time-slot {
-  border-top: 1px solid #ddd;
-}
-
-.course-item,
-.empty-slot {
-  padding: 3px;
-  margin: 5px 0;
-  height: 5em;
-  box-sizing: border-box;
-}
-
-.course-item {
-  border: 1px solid #ddd;
-  overflow: hidden;
-}
-
-.course-item p {
-  margin: 0;
-}
-
-.empty-slot {
-  background-color: white;
-  border: 1px solid transparent;
-}
-
-.break-slot {
-  text-align: center;
-  margin: 5px 0;
-  padding: 10px;
-  background-color: #e9e9e9;
-  font-weight: bold;
-  border: 1px solid #ccc;
-  height: 5em;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-</style>
+<style src="../assets/css/ScheduleList.css"></style>

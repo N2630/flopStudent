@@ -1,9 +1,13 @@
 const express = require('express');
-const { connectToDatabase, dbClient } = require('./config/connectDb');
-const axios = require('axios');
+const { connectToDatabase } = require('./config/connectDb');
+const { fetchAndStoreSchedules } = require('./utils/fetchAndStoreSchedules');
+const { updateSchedulesAndClean, updateFreeRooms } = require('./utils/scheduleTasks'); // Importation des fonctions groupées
 const cron = require('node-cron');
 const apiRoutes = require("./routes/api");
 const cors = require('cors');
+const wait = require('node:timers/promises').setTimeout;
+
+require('dotenv').config(); // Charger les variables d'environnement
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -15,74 +19,76 @@ app.use(express.json());
 
 //Définition de la route de l'API
 app.use('/api', apiRoutes)
+
 // Connexion à MongoDB
 connectToDatabase();
 
-// Fonction pour récupérer et stocker les données
-async function fetchAndStoreSchedules() {
-  try {
-    const response = await axios.get('https://flopedt.iut-blagnac.fr/fr/api/fetch/scheduledcourses/?week=25&year=2025&dept=INFO');
-    const schedules = response.data;
-
-    
-    await storeInfo(schedules, "info");
-
-    console.log('Données récupérées et stockées avec succès.');
-  } catch (error) {
-    console.error('Erreur lors de la récupération ou du stockage des données :', error);
-  }
-}
-
-// Planifier la tâche pour s'exécuter toutes les semaines (par exemple, tous les dimanches à minuit)
-//cron.schedule('0 0 * * 0', fetchAndStoreSchedules);
-
-// Exécuter une fois au démarrage pour s'assurer que les données sont à jour
-fetchAndStoreSchedules();
-
-app.listen(PORT, () => {
-  console.log(`Serveur démarré sur le port ${PORT}`);
+// Tâche planifiée pour récupérer, valider et stocker les 4 prochaines semaines de l'EDT
+// Tous les vendredis à 17h00
+cron.schedule('0 17 * * 5', async () => {
+    console.log('Exécution de la tâche planifiée de récupération et nettoyage des emplois du temps.');
+    try {
+        await updateSchedulesAndClean();
+        console.log('Tâche de récupération et nettoyage des emplois du temps terminée.');
+    } catch (error) {
+        console.error('Erreur lors de la tâche planifiée de récupération et nettoyage des emplois du temps :', error);
+    }
+}, {
+    scheduled: true,
+    timezone: "Europe/Paris" 
 });
 
-async function storeInfo(schedulList, collectionName) {
-  try{
-    for(const schedule of schedulList) {
-
-      const formatedData = {
-        id: schedule.id,
-        room: schedule.room.name,
-        date:{
-          day: schedule.day,
-          week: schedule.course.week,
-          year: schedule.course.year,
-        },
-        start_time: schedule.start_time,
-        course:{
-          type: schedule.course.type,
-          name: schedule.course.module.name,
-          abbrev: schedule.course.module.abbrev
-        },
-        groupe: {
-          name: schedule.course.groups[0].name,
-          train_prog: schedule.course.groups[0].train_prog,
-        },
-        prof: schedule.tutor,
-        display: {
-          color_bg: schedule.course.module.display.color_bg,
-          color_txt: schedule.course.module.display.color_txt
-        }
-        
-      }
-
-      const existingSchedul = await dbClient.db("flopStudent").collection("info").findOne({id: schedule.id})
-
-      if(!existingSchedul){
-        await dbClient.db("flopStudent").collection(collectionName).insertOne(formatedData)
-      } else {
-        await dbClient.db("flopStudent").collection(collectionName).updateOne({id: schedule.id}, {$set: formatedData})
-      }
-      
+// Tâche planifiée pour récupérer et stocker les salles libres
+// Toutes les dix minutes du lundi au vendredi entre 8h et 17h)
+cron.schedule('*/10 * * * 1-5', async () => {
+    console.log('Exécution de la tâche planifiée de récupération des salles libres.');
+    try {
+        await updateFreeRooms();
+        console.log('Tâche de récupération des salles libres terminée.');
+    } catch (error) {
+        console.error('Erreur lors de la tâche planifiée de récupération des salles libres :', error);
     }
-  }catch(error) {
-    console.error("Erreur lors de la sauvegarde des données :", error)
+}, {
+    scheduled: true,
+    timezone: "Europe/Paris"
+});
+
+// Tâche planifiée pour récupérer et vérifier la validiter de l'EDT de la semaine actuel
+// Toutes les 30min entre 8h et 18h59 du lundi au vendredi
+cron.schedule('*/30 8-18 * * 1-5', async () => {
+  console.log('Exécution de la tâche planifiée de récupération et nettoyage des emplois du temps.');
+  try {
+    const now = new Date();
+    const { week, year } = getWeekAndYear(now);
+
+    await fetchAndStoreSchedules(week, year);
+    console.log('Tâche de récupération et nettoyage des emplois du temps terminée.');
+  } catch (error) {
+      console.error('Erreur lors de la tâche planifiée de récupération et nettoyage des emplois du temps :', error);
+  }
+}, {
+  scheduled: true,
+  timezone: "Europe/Paris" 
+});
+
+
+app.listen(PORT, "0.0.0.0", async () => {
+  await console.log(`Serveur démarré sur le port ${PORT}`);
+});
+
+initializeServer();
+
+// Fonction d'initialisation
+async function initializeServer() {
+  await wait(1000)
+  try {
+    console.log("Récupération initiale des données...");
+    await updateSchedulesAndClean(); 
+    await updateFreeRooms(); 
+
+    console.log("Initialisation du serveur terminée avec succès.");
+  } catch (error) {
+    console.error('Erreur lors de l\'initialisation:', error);
+    return
   }
 }

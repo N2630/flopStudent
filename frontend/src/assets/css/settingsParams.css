@@ -1,0 +1,65 @@
+
+
+.params-container {
+    border: 7px solid #5c8177ec;
+    border-radius: 8px;
+    background-color: #5c8177ec;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.params-container h1 {
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 25px; 
+}
+
+.params-container div {
+    text-align: left;
+}
+
+.params-container label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
+}
+
+.params-container input[type="text"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1em;
+    box-sizing: border-box; /* S'assurer que la largeur inclut le padding */
+}
+
+.params-container button[type="submit"] {
+    background-color: #5c8177ec;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.params-container button[type="submit"]:hover {
+    background-color: #4a6a60;
+}
+
+.params-form {
+    justify-content: space-around;
+    background-color: #b1b9b7ec;
+    padding: 25px;
+    width: 100%;
+    box-sizing: border-box; /* Corrige le débordement dû au padding */
+    border-radius: 5px; /* Ajouter un border-radius pour correspondre au design */
+}

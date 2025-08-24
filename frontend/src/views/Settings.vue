@@ -1,9 +1,12 @@
 <template>
-  <h1>Test</h1>
-  <router-link to="/" class="settings-link">
-    <img src="https://cdn-icons-png.flaticon.com/128/15281/15281992.png" alt="Retour" class="settings-icon"> Retour
-  </router-link>
-  <SettingsParams />
+  <div class="center-div">
+    <div class="params-container">
+      <h1>Paramètres</h1>
+      <SettingsParams />
+    </div>
+  </div>
+  
+  
   
 </template>
   
@@ -17,3 +20,12 @@
     }
   };
 </script>
+<style>
+.center-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+</style>
+<style src="../assets/css/settingsParams.css"></style>

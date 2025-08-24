@@ -1,0 +1,77 @@
+    name: Deploy FlopStudent
+
+    on:
+      push:
+        branches:
+          - main # Déclenche le workflow lors d'un push sur la branche main
+
+    jobs:
+      deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+
+        # --- Build et Push de l'image Docker du Frontend ---
+        - name: Build and push Frontend Docker image
+          uses: docker/build-push-action@v3
+          with:
+            context: ./frontend
+            file: ./frontend/Dockerfile
+            push: true
+            tags: ${{ secrets.DOCKER_USERNAME }}/flopstudent-frontend:latest
+            build-args:
+              VUE_APP_API_BASE_URL=${{ secrets.FRONTEND_API_BASE_URL }}
+            secrets: |
+              "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}"
+              "DOCKER_PASSWORD=${{ secrets.DOCKER_PASSWORD }}"
+
+        # --- Build et Push de l'image Docker du Backend ---
+        - name: Build and push Backend Docker image
+          uses: docker/build-push-action@v3
+          with:
+            context: ./backend
+            file: ./backend/Dockerfile
+            push: true
+            tags: ${{ secrets.DOCKER_USERNAME }}/flopstudent-backend:latest
+            secrets: |
+              "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}"
+              "DOCKER_PASSWORD=${{ secrets.DOCKER_PASSWORD }}"
+
+        # --- Déploiement sur le serveur via SSH ---
+        - name: Deploy to Server
+          uses: appleboy/ssh-action@master
+          with:
+            host: ${{ secrets.SSH_HOST }}
+            username: ${{ secrets.SSH_USERNAME }}
+            key: ${{ secrets.SSH_PRIVATE_KEY }}
+            script: |
+              # Créer le répertoire de l'application si non existant
+              mkdir -p /home/${{ secrets.SSH_USERNAME }}/flopStudent
+              cd /home/${{ secrets.SSH_USERNAME }}/flopStudent
+
+              # --- Mise à jour du Backend ---
+              # Assurez-vous d'avoir docker-compose installé sur votre serveur
+              # Créez le fichier .env pour le backend sur le serveur
+              echo "PORT=3000" > backend/.env
+              echo "MONGODB_URI=${{ secrets.BACKEND_MONGODB_URI }}" >> backend/.env
+
+              # Télécharger la dernière image backend et redémarrer le conteneur
+              docker-compose pull backend
+              docker-compose up -d backend
+
+              # --- Mise à jour du Frontend (fichiers statiques) ---
+              # Lancer un conteneur temporaire du frontend pour extraire les fichiers dist
+              docker create --name temp_frontend_extract ${{ secrets.DOCKER_USERNAME }}/flopstudent-frontend:latest
+              docker cp temp_frontend_extract:/app/dist ./frontend_dist
+              docker rm temp_frontend_extract
+
+              # S'assurer que le répertoire Nginx existe
+              sudo mkdir -p /var/www/flopstudent/frontend_dist
+
+              # Copier les nouveaux fichiers du frontend
+              sudo rsync -av --delete ./frontend_dist/ /var/www/flopstudent/frontend_dist/
+
+              # Recharger Nginx pour prendre en compte les changements
+              sudo systemctl reload nginx

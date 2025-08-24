@@ -19,7 +19,10 @@ async function connectToDatabase() {
   }
 }
 
+const db = dbClient.db("flopStudent");
+
 module.exports = {
     dbClient,
-    connectToDatabase
+    connectToDatabase,
+    db
 }
