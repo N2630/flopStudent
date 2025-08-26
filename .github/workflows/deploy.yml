@@ -23,9 +23,8 @@
             tags: ${{ secrets.DOCKER_USERNAME }}/flopstudent-frontend:latest
             build-args:
               VUE_APP_API_BASE_URL=${{ secrets.FRONTEND_API_BASE_URL }}
-            secrets: |
-              "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}"
-              "DOCKER_PASSWORD=${{ secrets.DOCKER_PASSWORD }}"
+            username: ${{ secrets.DOCKER_USERNAME }}
+            password: ${{ secrets.DOCKER_PASSWORD }}
 
         # --- Build et Push de l'image Docker du Backend ---
         - name: Build and push Backend Docker image
@@ -35,9 +34,8 @@
             file: ./backend/Dockerfile
             push: true
             tags: ${{ secrets.DOCKER_USERNAME }}/flopstudent-backend:latest
-            secrets: |
-              "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}"
-              "DOCKER_PASSWORD=${{ secrets.DOCKER_PASSWORD }}"
+            username: ${{ secrets.DOCKER_USERNAME }}
+            password: ${{ secrets.DOCKER_PASSWORD }}
 
         # --- Déploiement sur le serveur via SSH ---
         - name: Deploy to Server
