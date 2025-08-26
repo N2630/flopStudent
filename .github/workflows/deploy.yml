@@ -60,7 +60,7 @@
                 git pull origin main
               else
                 echo "Clonage du dépôt..."
-                git clone https://github.com/${{ github.repository }}.git "$REPO_DIR"
+                git clone git@github.com:${{ github.repository }}.git "$REPO_DIR"
                 cd "$REPO_DIR"
               fi
 
