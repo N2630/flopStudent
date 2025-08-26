@@ -51,16 +51,27 @@
             username: ${{ secrets.SSH_USERNAME }}
             key: ${{ secrets.SSH_PRIVATE_KEY }}
             script: |
-              # Créer le répertoire de l'application si non existant
-              mkdir -p /home/${{ secrets.SSH_USERNAME }}/flopStudent
-              cd /home/${{ secrets.SSH_USERNAME }}/flopStudent
+              REPO_DIR="/home/${{ secrets.SSH_USERNAME }}/flopStudent"
+              
+              # Cloner ou mettre à jour le dépôt sur le serveur
+              if [ -d "$REPO_DIR/.git" ]; then
+                echo "Mise à jour du dépôt existant..."
+                cd "$REPO_DIR"
+                git pull origin main
+              else
+                echo "Clonage du dépôt..."
+                git clone https://github.com/${{ github.repository }}.git "$REPO_DIR"
+                cd "$REPO_DIR"
+              fi
+
+              # Créer le fichier .env pour le backend sur le serveur (s'il n'existe pas)
+              if [ ! -f backend/.env ]; then
+                  echo "PORT=3000" > backend/.env
+                  echo "MONGODB_URI=${{ secrets.BACKEND_MONGODB_URI }}" >> backend/.env
+              fi
 
               # --- Mise à jour du Backend ---
               # Assurez-vous d'avoir docker-compose installé sur votre serveur
-              # Créez le fichier .env pour le backend sur le serveur
-              echo "PORT=3000" > backend/.env
-              echo "MONGODB_URI=${{ secrets.BACKEND_MONGODB_URI }}" >> backend/.env
-
               # Télécharger la dernière image backend et redémarrer le conteneur
               docker-compose pull backend
               docker-compose up -d backend
@@ -71,10 +82,8 @@
               docker cp temp_frontend_extract:/app/dist ./frontend_dist
               docker rm temp_frontend_extract
 
-              # S'assurer que le répertoire Nginx existe
+              # S'assurer que le répertoire Nginx existe et copier les nouveaux fichiers du frontend
               sudo mkdir -p /var/www/flopstudent/frontend_dist
-
-              # Copier les nouveaux fichiers du frontend
               sudo rsync -av --delete ./frontend_dist/ /var/www/flopstudent/frontend_dist/
 
               # Recharger Nginx pour prendre en compte les changements
