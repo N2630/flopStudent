@@ -73,8 +73,8 @@
               # --- Mise à jour du Backend ---
               # Assurez-vous d'avoir docker-compose installé sur votre serveur
               # Télécharger la dernière image backend et redémarrer le conteneur
-              docker-compose pull backend
-              docker-compose up -d backend
+              docker compose pull backend
+              docker compose up -d backend
 
               # --- Mise à jour du Frontend (fichiers statiques) ---
               # Lancer un conteneur temporaire du frontend pour extraire les fichiers dist
