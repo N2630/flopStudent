@@ -14,15 +14,15 @@
           <li><a @click="toggleSidebar" :href="'https://flopedt.iut-blagnac.fr/fr/edt/' + dept + '/'" target="_blank" rel="noopener noreferrer">Flop EDT</a></li>
         </ul>
       </nav>
-      
-      <router-link to="/settings" class="settings-link">
-        <img src="https://cdn-icons-png.flaticon.com/128/45/45493.png" alt="Paramètres" class="settings-icon"> Paramètres
-      </router-link>
+    
+    <router-link to="/settings" class="settings-link">
+      <img src="https://cdn-icons-png.flaticon.com/128/45/45493.png" alt="Paramètres" class="settings-icon"> Paramètres
+    </router-link>
     </aside>
-    
+
     <main :class="{'content': true, 'sidebar-open': isSidebarOpen}">
-      <router-view></router-view>
-    
+  <router-view></router-view>
+
     </main>
   </div>
 </template>

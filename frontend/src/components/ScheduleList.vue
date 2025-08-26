@@ -41,7 +41,7 @@ export default {
       timeSlots: [480, 570, 665, 755, 855, 945, 1030], 
       currentWeek: null,
       currentYear: null,
-      initialDate: new Date('2025-06-16T10:00:00') // Fixé au 9 juin 2025, 10h00 pour les tests
+      initialDate: new Date() // Fixé au 9 juin 2025, 10h00 pour les tests
     };
   },
   async created() {
