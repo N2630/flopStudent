@@ -13,6 +13,12 @@
         - name: Checkout code
           uses: actions/checkout@v3
 
+        - name: Login to Docker Hub
+          uses: docker/login-action@v2
+          with:
+            username: ${{ secrets.DOCKER_USERNAME }}
+            password: ${{ secrets.DOCKER_PASSWORD }}
+
         # --- Build et Push de l'image Docker du Frontend ---
         - name: Build and push Frontend Docker image
           uses: docker/build-push-action@v3
