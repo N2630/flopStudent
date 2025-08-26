@@ -56,8 +56,6 @@ jobs:
           # Note: C'est une bonne pratique de s'assurer que ces installations sont faites manuellement une fois
           # ou via une étape dédiée d'initialisation du serveur, plutôt que dans chaque déploiement.
           # Cependant, pour s'assurer que le script est auto-suffisant:
-          sudo apt update
-          sudo apt install -y docker-compose-plugin
           sudo usermod -aG docker ${{ secrets.SSH_USERNAME }}
           # Reconnexion nécessaire pour les changements de groupe, mais pas possible dans le script actuel.
           # Un 'newgrp docker' peut aider mais n'est pas toujours fiable dans un script non-interactif.
