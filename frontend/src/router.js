@@ -7,21 +7,25 @@ const routes = [
   {
     path: '/settings',
     name: 'SettingsPage',
-    component: SettingsPage
+    component: SettingsPage,
+    meta: { title: 'Paramètres - Flop Student' }
   },
   {
     path: '/schedule',
     name: 'SchedulePage',
-    component: SchedulePage
+    component: SchedulePage,
+    meta: { title: 'Emploi du temps - Flop Student' }
   },
   {
     path: '/info',
     name: 'InfoPage',
-    component: InfoPage
+    component: InfoPage,
+    meta: { title: 'Informations - Flop Student' }
   },
   {
     path: '/',
-    redirect: '/schedule' // Redirige la route racine vers /schedule
+    redirect: '/schedule',
+    meta: { title: 'Accueil - Flop Student' } // Le redirect peut aussi avoir un titre
   }
 ];
 

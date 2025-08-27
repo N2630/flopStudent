@@ -1,6 +1,10 @@
 <template>
   <header id="app-header">
     <button @click="toggleSidebar" class="menu-button">☰</button>
+    <div id="logo-site-container">
+      <img src="./assets/logo1.png" id="logo-site">
+    </div>
+
     <h1>Flop Student</h1>
   </header>
 
@@ -43,11 +47,16 @@ export default {
     }
   },
   watch: {
-    $route() {
+    $route(to) {
       if (this.isSidebarOpen) {
         this.isSidebarOpen = false;
       }
+      document.title = to.meta.title || 'Flop Student'; // Mettre à jour le titre de l'onglet
     }
+  },
+  created() {
+    // Définir le titre initial au chargement de l'application
+    document.title = this.$route.meta.title || 'Flop Student';
   }
 };
 </script>

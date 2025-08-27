@@ -4,6 +4,23 @@ body {
     background-color:#7b968f;
 }
 
+#logo-site-container {
+  background-color: rgba(60, 115, 170, 0.507);
+  height: 40px;
+  width: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+#logo-site {
+  max-width: 200%;
+  max-height: 200%;
+  margin-top: 5%;
+  
+}
+
 #app-header {
     margin: 0; /* Réinitialiser les marges */
     padding: 10px;
