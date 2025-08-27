@@ -66,23 +66,25 @@ jobs:
           mkdir -p $APP_DIR
           cd $APP_DIR
 
-          # --- Récupérer/mettre à jour le dépôt ---
+          # --- Cloner/Puller le dépôt GitHub sur le serveur (pour docker-compose.yml et Dockerfiles) ---
           if [ -d "$APP_DIR/.git" ]; then
-            echo "Reset dépôt vers la dernière version distante..."
-            git fetch --all
-            git reset --hard origin/main
+            echo "Mise à jour du dépôt existant..."
+            git pull origin main
           else
-            echo "Clonage du dépôt depuis GitHub (HTTPS + token)..."
-            git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git "$APP_DIR"
-            cd "$APP_DIR"
+            echo "Clonage du dépôt..."
+            git clone git@github.com:${{ github.repository }}.git "$APP_DIR"
           fi
 
-          # --- Créer .env si manquant ---
-          if [ ! -f backend/.env ]; then
-              echo "PORT=3000" > backend/.env
-              echo "MONGODB_URI=${{ secrets.BACKEND_MONGODB_URI }}" >> backend/.env
+          # --- Créer le fichier .env pour Docker Compose (sur le serveur) si absent ---
+          # Ce fichier .env doit être à la racine du projet sur le serveur, à côté de docker-compose.yml
+          # Il contient les variables d'environnement sensibles ou spécifiques au déploiement.
+          if [ ! -f ./.env ]; then
+              echo ".env file not found. Creating it with default values from GitHub Secrets."
+              touch .env
+              echo "PORT_MAPPING=${{ secrets.PORT_MAPPING}}" > .env # Valeur par défaut, peut être modifiée manuellement
+              echo "MONGODB_URI=${{ secrets.BACKEND_MONGODB_URI }}" >> .env
           else
-              echo "Fichier backend/.env déjà présent, pas écrasé."
+              echo ".env file already exists. Not overwriting it."
           fi
 
           # --- Nettoyer le cache Docker pour éviter les anciennes images ---
@@ -91,7 +93,7 @@ jobs:
           docker image prune -af || true
           docker builder prune -af || true
 
-          # --- Déploiement du Backend ---
+          # --- Déploiement du Backend (avec docker-compose) ---
           echo "Déploiement du backend..."
           docker compose pull backend
           docker compose up -d --force-recreate --no-deps backend

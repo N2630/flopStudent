@@ -6,7 +6,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "${PORT_MAPPING:-3000:3000}" # Utilisez une variable d'environnement pour le mapping de port
     environment:
-      - PORT=3000
-      - MONGODB_URI=mongodb://<adresse_ip_mongodb_externe>:27017/flopStudent
+      - PORT=3000 # Le port interne du conteneur reste 3000
+      - MONGODB_URI=${MONGODB_URI} # Référence la variable d'environnement MONGODB_URI
