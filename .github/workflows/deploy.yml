@@ -55,10 +55,11 @@ jobs:
           # Assurez-vous que Docker est bien installé. docker-compose-plugin pour 'docker compose'
           # Note: C'est une bonne pratique de s'assurer que ces installations sont faites manuellement une fois
           # ou via une étape dédiée d'initialisation du serveur, plutôt que dans chaque déploiement.
-          # Cependant, pour s'assurer que le script est auto-suffisant:
-          sudo usermod -aG docker ${{ secrets.SSH_USERNAME }}
-          # Reconnexion nécessaire pour les changements de groupe, mais pas possible dans le script actuel.
-          # Un 'newgrp docker' peut aider mais n'est pas toujours fiable dans un script non-interactif.
+          # Elles sont laissées ici pour référence si vous voulez un script auto-suffisant, mais ne devraient pas
+          # être exécutées à chaque déploiement.
+          # sudo apt update
+          # sudo apt install -y docker-compose-plugin
+          # sudo usermod -aG docker ${{ secrets.SSH_USERNAME }}
           # C'est une raison pour s'assurer que l'utilisateur est dans le groupe 'docker' AVANT le premier déploiement.
 
           # Ajouter github.com aux hôtes connus pour éviter l'échec de vérification de clé hôte
@@ -95,6 +96,9 @@ jobs:
 
           # --- Déploiement du Frontend (fichiers statiques via extraction) ---
           echo "Déploiement du frontend..."
+          # Supprimer le répertoire temporaire existant pour s'assurer d'une mise à jour propre
+          rm -rf $APP_DIR/frontend_dist
+          
           docker create --name temp_frontend_extract ${{ secrets.DOCKER_USERNAME }}/flopstudent-frontend:latest
           docker cp temp_frontend_extract:/app/dist $APP_DIR/frontend_dist
           docker rm temp_frontend_extract
@@ -102,6 +106,9 @@ jobs:
           # Copier les fichiers du frontend vers le répertoire servi par Nginx
           sudo mkdir -p /var/www/flopstudent/frontend_dist
           sudo rsync -av --delete $APP_DIR/frontend_dist/ /var/www/flopstudent/frontend_dist/
+
+          # Supprimer le répertoire temporaire frontend_dist sur le serveur après la copie finale
+          rm -rf $APP_DIR/frontend_dist
 
           # Recharger Nginx pour prendre en compte les changements
           echo "Rechargement de Nginx..."
