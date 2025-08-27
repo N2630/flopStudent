@@ -39,8 +39,8 @@ cron.schedule('0 17 * * 5', async () => {
 });
 
 // Tâche planifiée pour récupérer et stocker les salles libres
-// Toutes les dix minutes du lundi au vendredi entre 8h et 17h)
-cron.schedule('*/10 * * * 1-5', async () => {
+// Toutes les 12 min du lundi au vendredi entre 8h et 16h59h)
+cron.schedule('*/12 8-16 * * 1-5', async () => {
     console.log('Exécution de la tâche planifiée de récupération des salles libres.');
     try {
         await updateFreeRooms();
@@ -54,8 +54,8 @@ cron.schedule('*/10 * * * 1-5', async () => {
 });
 
 // Tâche planifiée pour récupérer et vérifier la validiter de l'EDT de la semaine actuel
-// Toutes les 30min entre 8h et 18h59 du lundi au vendredi
-cron.schedule('*/30 8-18 * * 1-5', async () => {
+// Toutes les 10min entre 8h et 18h59 du lundi au vendredi
+cron.schedule('*/10 8-18 * * 1-5', async () => {
   console.log('Exécution de la tâche planifiée de récupération et nettoyage des emplois du temps.');
   try {
     const now = new Date();
