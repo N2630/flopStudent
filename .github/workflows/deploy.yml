@@ -35,7 +35,9 @@ jobs:
         context: ./frontend
         file: ./frontend/Dockerfile
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/flopstudent-frontend:latest
+        tags: |
+          ${{ secrets.DOCKER_USERNAME }}/flopstudent-frontend:latest
+          ${{ secrets.DOCKER_USERNAME }}/flopstudent-frontend:${{ github.sha }}
         no-cache: true # Ajouté pour forcer une reconstruction complète
         build-args: |
           VUE_APP_API_BASE_URL=${{ secrets.FRONTEND_API_BASE_URL }}
@@ -83,24 +85,35 @@ jobs:
               echo "Fichier backend/.env déjà présent, pas écrasé."
           fi
 
-          # --- Backend ---
+          # --- Nettoyer le cache Docker pour éviter les anciennes images ---
+          echo "Nettoyage des anciennes images..."
+          docker container prune -f || true
+          docker image prune -af || true
+          docker builder prune -af || true
+
+          # --- Déploiement du Backend ---
           echo "Déploiement du backend..."
           docker compose pull backend
-          docker compose up -d backend
+          docker compose up -d --force-recreate --no-deps backend
 
-          # --- Frontend ---
+          # --- Déploiement du Frontend ---
           echo "Déploiement du frontend..."
-          rm -rf $APP_DIR/frontend_dist
-          
+
+          # Supprimer les anciens fichiers frontend servis par Nginx
+          sudo rm -rf /var/www/flopstudent/frontend_dist/* || true
+
+          # Extraire les fichiers dist depuis l'image frontend la plus fraîche
           docker create --name temp_frontend_extract ${{ secrets.DOCKER_USERNAME }}/flopstudent-frontend:latest
           docker cp temp_frontend_extract:/app/dist $APP_DIR/frontend_dist
           docker rm temp_frontend_extract
 
+          # Copier les nouveaux fichiers dans le répertoire de Nginx
           sudo mkdir -p /var/www/flopstudent/frontend_dist
           sudo rsync -av --delete $APP_DIR/frontend_dist/ /var/www/flopstudent/frontend_dist/
           rm -rf $APP_DIR/frontend_dist
 
+          # Recharger Nginx
           echo "Rechargement de Nginx..."
           sudo systemctl reload nginx
 
-          echo "Déploiement terminé."
+          echo "✅ Déploiement terminé avec succès."
