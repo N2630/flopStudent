@@ -10,6 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # Nettoyer le répertoire de travail avant le checkout pour éviter les problèmes de cache résiduel
+    - name: Clean workspace
+      run: |-
+        echo "Nettoyage du répertoire de travail..."
+        rm -rf ${{ github.workspace }}/*
+        rm -rf ${{ github.workspace }}/.git
+
     # 1. Récupérer le code
     - name: Checkout code
       uses: actions/checkout@v3
@@ -52,67 +59,47 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           APP_DIR="/home/${{ secrets.SSH_USERNAME }}/flopStudent"
-          
-          # --- Préparation du serveur : Installation et Permissions ---
-          # Assurez-vous que Docker est bien installé. docker-compose-plugin pour 'docker compose'
-          # Note: C'est une bonne pratique de s'assurer que ces installations sont faites manuellement une fois
-          # ou via une étape dédiée d'initialisation du serveur, plutôt que dans chaque déploiement.
-          # Elles sont laissées ici pour référence si vous voulez un script auto-suffisant, mais ne devraient pas
-          # être exécutées à chaque déploiement.
-          # sudo apt update
-          # sudo apt install -y docker-compose-plugin
-          # sudo usermod -aG docker ${{ secrets.SSH_USERNAME }}
-          # C'est une raison pour s'assurer que l'utilisateur est dans le groupe 'docker' AVANT le premier déploiement.
 
-          # Ajouter github.com aux hôtes connus pour éviter l'échec de vérification de clé hôte
-          mkdir -p ~/.ssh
-          ssh-keyscan github.com >> ~/.ssh/known_hosts || true # '|| true' pour ignorer l'erreur si déjà présent
-          chmod 600 ~/.ssh/known_hosts
-
-          # Créer le dossier de l'application si besoin
+          # Créer le dossier si besoin
           mkdir -p $APP_DIR
           cd $APP_DIR
 
-          # --- Cloner/Puller le dépôt GitHub sur le serveur (pour docker-compose.yml et Dockerfiles) ---
+          # --- Récupérer/mettre à jour le dépôt ---
           if [ -d "$APP_DIR/.git" ]; then
-            echo "Mise à jour du dépôt existant..."
-            git pull origin main
+            echo "Reset dépôt vers la dernière version distante..."
+            git fetch --all
+            git reset --hard origin/main
           else
-            echo "Clonage du dépôt..."
-            git clone git@github.com:${{ github.repository }}.git "$APP_DIR"
+            echo "Clonage du dépôt depuis GitHub (HTTPS + token)..."
+            git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git "$APP_DIR"
+            cd "$APP_DIR"
           fi
 
-          # --- Créer ou mettre à jour le fichier .env pour le backend ---
-          # N'écrase que si le fichier n'existe pas pour permettre les modifications manuelles sur le serveur.
+          # --- Créer .env si manquant ---
           if [ ! -f backend/.env ]; then
               echo "PORT=3000" > backend/.env
               echo "MONGODB_URI=${{ secrets.BACKEND_MONGODB_URI }}" >> backend/.env
           else
-              echo "Fichier backend/.env existe déjà. Pas de création automatique."
+              echo "Fichier backend/.env déjà présent, pas écrasé."
           fi
 
-          # --- Déploiement du Backend (avec docker-compose ) ---
+          # --- Backend ---
           echo "Déploiement du backend..."
           docker compose pull backend
           docker compose up -d backend
 
-          # --- Déploiement du Frontend (fichiers statiques via extraction) ---
+          # --- Frontend ---
           echo "Déploiement du frontend..."
-          # Supprimer le répertoire temporaire existant pour s'assurer d'une mise à jour propre
           rm -rf $APP_DIR/frontend_dist
           
           docker create --name temp_frontend_extract ${{ secrets.DOCKER_USERNAME }}/flopstudent-frontend:latest
           docker cp temp_frontend_extract:/app/dist $APP_DIR/frontend_dist
           docker rm temp_frontend_extract
 
-          # Copier les fichiers du frontend vers le répertoire servi par Nginx
           sudo mkdir -p /var/www/flopstudent/frontend_dist
           sudo rsync -av --delete $APP_DIR/frontend_dist/ /var/www/flopstudent/frontend_dist/
-
-          # Supprimer le répertoire temporaire frontend_dist sur le serveur après la copie finale
           rm -rf $APP_DIR/frontend_dist
 
-          # Recharger Nginx pour prendre en compte les changements
           echo "Rechargement de Nginx..."
           sudo systemctl reload nginx
 
