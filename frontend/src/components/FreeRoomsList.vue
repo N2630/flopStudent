@@ -44,7 +44,7 @@ export default {
       currentDay: null,
       timeSlots: [480, 570, 665, 755, 855, 945, 1030],
       updateInterval: null,
-      testDate: new Date('2025-06-16T09:00:00'), // Date de test fixée
+      testDate: new Date(), // Date de test fixée
     };
   },
   async created() {
