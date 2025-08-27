@@ -29,6 +29,7 @@ jobs:
         file: ./frontend/Dockerfile
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/flopstudent-frontend:latest
+        no-cache: true # Ajouté pour forcer une reconstruction complète
         build-args: |
           VUE_APP_API_BASE_URL=${{ secrets.FRONTEND_API_BASE_URL }}
 
@@ -40,6 +41,7 @@ jobs:
         file: ./backend/Dockerfile
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/flopstudent-backend:latest
+        no-cache: true 
 
     # 5. Déployer sur le VPS
     - name: Deploy to Server
