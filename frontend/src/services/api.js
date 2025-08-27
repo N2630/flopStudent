@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.VUE_APP_API_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
 
 export const fetchSchedules = async (year, week) => {
   const dept = localStorage.getItem('dept');

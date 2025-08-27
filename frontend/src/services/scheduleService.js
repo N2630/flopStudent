@@ -10,6 +10,11 @@ export const organizeSchedules = (schedules) => {
         f: [] // Vendredi
     };
 
+    if (!Array.isArray(schedules)) {
+        console.error("organizeSchedules a reçu des données qui ne sont pas un tableau :", schedules);
+        return organized; // Retourne un objet vide ou l'objet initialisé
+    }
+
     schedules.forEach(course => {
         const day = course.date.day;
         if (organized[day] !== undefined) {
