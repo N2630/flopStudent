@@ -2,6 +2,7 @@ const express = require('express');
 const { connectToDatabase } = require('./config/connectDb');
 const { fetchAndStoreSchedules } = require('./utils/fetchAndStoreSchedules');
 const { updateSchedulesAndClean, updateFreeRooms } = require('./utils/scheduleTasks'); // Importation des fonctions groupées
+const { getWeekAndYear } = require("./utils/dateUtils")
 const cron = require('node-cron');
 const apiRoutes = require("./routes/api");
 const cors = require('cors');

@@ -1,9 +1,11 @@
 <template>
     <div class="free-rooms-container">
       <h2>Salles libres</h2>
+      <p v-if="lastUpdated">Dernière mise à jour : {{ formatDateTime(lastUpdated) }}</p>
       
       <div class="free-rooms-display">
-        <div class="slot-column">
+        <!-- Bloc pour le créneau actuel -->
+        <div class="slot-column" v-if="currentSlot !== null && currentSlot < timeSlots[timeSlots.length -1]">
           <h3>Créneau actuel: {{ minutesToTime(currentSlot) }} - {{ getDayName(currentDay) }}</h3>
           <div v-if="freeRoomsData && freeRoomsData[currentDay] && freeRoomsData[currentDay][currentSlot]">
             <div class="dept-rooms">
@@ -15,7 +17,8 @@
           </div>
         </div>
 
-        <div class="slot-column">
+        <!-- Bloc pour le créneau suivant -->
+        <div class="slot-column" v-else-if="nextSlot !== null && nextSlot < timeSlots[timeSlots.length -1]">
           <h3>Créneau suivant: {{ minutesToTime(nextSlot) }} - {{ getDayName(currentDay) }}</h3>
           <div v-if="freeRoomsData && freeRoomsData[currentDay] && freeRoomsData[currentDay][nextSlot]">
             <div class="dept-rooms">
@@ -25,6 +28,12 @@
           <div v-else>
             <p>Chargement ou aucune salle libre pour ce créneau suivant.</p>
           </div>
+        </div>
+
+        <!-- Bloc si le dernier créneau est passé ou aucun créneau n'est disponible -->
+        <div class="slot-column" v-else-if="currentSlot !== null && currentSlot >= timeSlots[timeSlots.length -1] || currentSlot === null && nextSlot === null">
+          <h3>Il n'y a plus de créneaux libre pour aujourd'hui.</h3>
+          <p>Prochain créneau demain.</p>
         </div>
       </div>
     </div>
@@ -42,26 +51,39 @@ export default {
       currentSlot: null,
       nextSlot: null,
       currentDay: null,
-      timeSlots: [480, 570, 665, 755, 855, 945, 1030],
+      timeSlots: [480, 570, 665, 755, 855, 945, 1035],
       updateInterval: null,
-      testDate: new Date(), // Date de test fixée
+      date: new Date(), 
+      lastUpdated: null, // Nouvelle propriété pour stocker le timestamp
     };
   },
   async created() {
-    // Utiliser la testDate pour l'initialisation
-    const year = await getYearNumber(this.testDate);
-    const week = await getWeekNumber(this.testDate);
-    this.freeRoomsData = await fetchFreeRooms(year, week);
-    this.updateCurrentSlotsAndDay(this.testDate); // Passer la date de test
-    // Pas d'intervalle de rafraîchissement automatique pour les tests
-    // this.updateInterval = setInterval(() => this.updateCurrentSlotsAndDay(this.testDate), 60 * 1000);
-  },
-  beforeUnmount() {
-    // clearInterval(this.updateInterval);
+    const year = await getYearNumber(this.date);
+    const week = await getWeekNumber(this.date);
+    const response = await fetchFreeRooms(year, week); // Récupérer la réponse complète
+    this.freeRoomsData = response.salles; // Assigner les salles
+    this.lastUpdated = response.lastUpdated; // Assigner le timestamp
+    this.updateCurrentSlotsAndDay(this.date); 
+
   },
   methods: {
+    // Nouvelle méthode pour formater la date et l'heure
+    formatDateTime(timestamp) {
+        if (!timestamp) return 'N/A';
+        const date = new Date(timestamp);
+        return date.toLocaleDateString('fr-FR', { 
+            year: 'numeric', 
+            month: '2-digit', 
+            day: '2-digit', 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            second: '2-digit' 
+        });
+    },
     updateCurrentSlotsAndDay(dateToUse) {
-      const now = dateToUse || new Date(); // Utiliser la date passée ou la date actuelle
+      console.log(dateToUse)
+      console.log(getWeekNumber(dateToUse))
+      const now = dateToUse || new Date(); 
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
       this.currentDay = this.getDayLetter(now);
 

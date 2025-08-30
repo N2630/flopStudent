@@ -67,8 +67,20 @@ const getFreeRooms = async (year, week) => {
   return await db.collection("freeRooms").find(query).toArray();
 }
 
+async function getLastScheduleUpdate(year, week) {
+  try {
+    const updateKey = `schedules_${year}_${week}`;
+    const document = await db.collection("lastUpdates").findOne({ _id: updateKey });
+    return document ? document.lastUpdated : null;
+  } catch (error) {
+    console.error("Erreur lors de la récupération du timestamp de mise à jour des emplois du temps :", error);
+    throw error;
+  }
+}
+
 module.exports = {
     getFreeRooms,
     getSchedule,
-    getUsedRoom
+    getUsedRoom,
+    getLastScheduleUpdate
 };

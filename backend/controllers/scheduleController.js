@@ -21,6 +21,26 @@ const getSchedules = async (req, res) => {
   }
 };
 
+const getSchedulesLastUpdate = async (req, res) => {
+  try {
+    const { year, week} = req.query;
+
+    if(!year || !week){
+      return res.status(400).json({ 
+        message: 'Paramètres manquants', 
+        required: ['year', 'week'],
+        received: { year, week}
+      });
+    }
+
+    const lastUpdated = await scheduleService.fetchLastScheduleUpdate(year, week);
+    res.json(lastUpdated);
+  } catch (error) {
+    console.error('Erreur dans getSchedules:', error);
+    res.status(500).json({ message: 'Erreur lors de la récupération des données', error: error.message });
+  }
+}
 module.exports = {
-    getSchedules
+    getSchedules,
+    getSchedulesLastUpdate
 };
