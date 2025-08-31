@@ -7,7 +7,7 @@ module.exports = defineConfig({
     host: '0.0.0.0',
     proxy: {
       '/api': {
-        target: 'http://192.168.1.195:3000'
+        target: 'http://localhost:3000'
       }
     }
   }

@@ -5,6 +5,7 @@
       <h2>Semaine {{ currentWeek }} - {{ currentYear }}</h2>
       <button @click="goToNextWeek">></button>
     </div>
+    <p v-if="schedulesLastUpdated">Dernière mise à jour : {{ formatDateTime(schedulesLastUpdated) }}</p>
 
     <div class="schedule-grid-container">
       <div class="schedule-grid">
@@ -38,10 +39,11 @@ export default {
     return {
       schedules: [],
       organizedSchedules: {},
-      timeSlots: [480, 570, 665, 755, 855, 945, 1030], 
+      timeSlots: [480, 570, 665, 755, 855, 945, 1040], 
       currentWeek: null,
       currentYear: null,
-      initialDate: new Date() // Fixé au 9 juin 2025, 10h00 pour les tests
+      initialDate: new Date(), 
+      schedulesLastUpdated: JSON.parse(localStorage.getItem('lastSchedulesUpdate')) || null, // Nouvelle propriété pour stocker le timestamp
     };
   },
   async created() {
@@ -55,12 +57,14 @@ export default {
     },
     async loadSchedules() {
       try {
-        this.schedules = await fetchSchedules(this.currentYear, this.currentWeek);
+        const response = await fetchSchedules(this.currentYear, this.currentWeek); // Récupérer la réponse complète
+        this.schedules = response; // Assigner les emplois du temps
         this.organizedSchedules = organizeSchedules(this.schedules);
       } catch (error) {
         console.error("Erreur lors du chargement des EDT:", error);
         this.schedules = [];
         this.organizedSchedules = {};
+        this.schedulesLastUpdated = null;
       }
     },
     async goToPreviousWeek() {
@@ -112,6 +116,19 @@ export default {
       return courses.find(course => course.start_time === time);
     },
 
+    // Nouvelle méthode pour formater la date et l'heure
+    formatDateTime(timestamp) {
+        if (!timestamp) return 'N/A';
+        const date = new Date(timestamp);
+        return date.toLocaleDateString('fr-FR', { 
+            year: 'numeric', 
+            month: '2-digit', 
+            day: '2-digit', 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            second: '2-digit' 
+        });
+    },
     minutesToTime(minutes) {
       const hours = Math.floor(minutes / 60);
       const mins = minutes % 60;
@@ -121,4 +138,4 @@ export default {
 };
 </script>
 
-<style src="../assets/css/ScheduleList.css"></style>
+<style src="../assets/css/scheduleList.css"></style>

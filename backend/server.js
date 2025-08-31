@@ -2,6 +2,7 @@ const express = require('express');
 const { connectToDatabase } = require('./config/connectDb');
 const { fetchAndStoreSchedules } = require('./utils/fetchAndStoreSchedules');
 const { updateSchedulesAndClean, updateFreeRooms } = require('./utils/scheduleTasks'); // Importation des fonctions groupées
+const { getWeekAndYear } = require("./utils/dateUtils")
 const cron = require('node-cron');
 const apiRoutes = require("./routes/api");
 const cors = require('cors');
@@ -25,7 +26,7 @@ connectToDatabase();
 
 // Tâche planifiée pour récupérer, valider et stocker les 4 prochaines semaines de l'EDT
 // Tous les vendredis à 17h00
-cron.schedule('0 17 * * 5', async () => {
+cron.schedule('*/60 10-17 * * 0-5', async () => {
     console.log('Exécution de la tâche planifiée de récupération et nettoyage des emplois du temps.');
     try {
         await updateSchedulesAndClean();

@@ -30,7 +30,7 @@ async function storeSchedule(schedulList, collectionName) {
           
         }
   
-        const existingSchedul = await db.collection("info").findOne({id: schedule.id})
+        const existingSchedul = await db.collection(collectionName).findOne({id: schedule.id})
   
         if(!existingSchedul){
           await db.collection(collectionName).insertOne(formatedData)
@@ -76,7 +76,26 @@ async function storeFreeRooms(year, week, freeRoomsData) {
   }
 }
 
+async function storeLastScheduleUpdate(year, week) {
+  try {
+    const collection = db.collection("lastUpdates");
+    const updateKey = `schedules_${year}_${week}`;
+    const now = new Date();
+
+    await collection.updateOne(
+      { _id: updateKey },
+      { $set: { lastUpdated: now } },
+      { upsert: true } // Crée le document s'il n'existe pas
+    );
+    console.log(`Timestamp de mise à jour des emplois du temps enregistré pour la semaine ${week}, année ${year}.`);
+  } catch (error) {
+    console.error("Erreur lors de l'enregistrement du timestamp de mise à jour des emplois du temps :", error);
+    throw error;
+  }
+}
+
 module.exports = {
     storeSchedule,
-    storeFreeRooms
-}
+    storeFreeRooms,
+    storeLastScheduleUpdate
+};

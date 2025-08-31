@@ -7,7 +7,6 @@ async function updateSchedulesAndClean() {
     console.log("Début de la mise à jour des emplois du temps et du nettoyage.");
     try {
         const now = new Date();
-        const { week: currentWeek, year: currentYear } = getWeekAndYear(now);
 
         // Récupérer les 4 prochaines semaines d'emplois du temps
         for (let i = 0; i < 4; i++) {
