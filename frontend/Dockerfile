@@ -1,8 +1,8 @@
 # Stage 1: Build the Vue.js application
-FROM node:latest as build-stage
+FROM node:18 as build-stage
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm ci --legacy-peer-deps
 COPY . .
 ARG VUE_APP_API_BASE_URL
 ENV VUE_APP_API_BASE_URL=$VUE_APP_API_BASE_URL
