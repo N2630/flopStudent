@@ -39,7 +39,7 @@ export default {
     return {
       schedules: [],
       organizedSchedules: {},
-      timeSlots: [480, 570, 665, 755, 855, 945, 1030], 
+      timeSlots: [480, 570, 665, 755, 855, 945, 1040], 
       currentWeek: null,
       currentYear: null,
       initialDate: new Date('2025-09-01T12:34:56.789Z'), 

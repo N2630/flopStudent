@@ -51,7 +51,7 @@ export default {
       currentSlot: null,
       nextSlot: null,
       currentDay: null,
-      timeSlots: [480, 570, 665, 755, 855, 945, 1035],
+      timeSlots: [480, 570, 665, 755, 855, 945, 1040],
       updateInterval: null,
       date: new Date(), 
       lastUpdated: null, // Nouvelle propriété pour stocker le timestamp
