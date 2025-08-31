@@ -1,4 +1,7 @@
 <template>
+  <OfflineBanner />
+  <InitialSetupBanner :showBanner="showInitialSetupBanner" @close-banner="hideInitialSetupBanner" />
+  
   <header id="app-header">
     <button @click="toggleSidebar" class="menu-button">☰</button>
     <div id="logo-site-container">
@@ -8,7 +11,7 @@
     <h1>Flop Student</h1>
   </header>
 
-  <div class="app-layout">
+  <div :class="{'app-layout': true, 'initial-setup-active': showInitialSetupBanner}">
     
     <aside :class="{'sidebar': true, 'is-open': isSidebarOpen}">
       <nav>
@@ -32,18 +35,43 @@
 </template>
 
 <script>
+import OfflineBanner from './components/OfflineBanner.vue';
+import InitialSetupBanner from './components/InitialSetupBanner.vue';
+
 export default {
   name: 'App',
+  components: {
+    OfflineBanner,
+    InitialSetupBanner
+  },
   data() {
     return {
       isSidebarOpen: false,
-      dept: localStorage.getItem('dept')
+      dept: localStorage.getItem('dept'),
+      showInitialSetupBanner: false
     };
     
   },
   methods: {
     toggleSidebar() {
       this.isSidebarOpen = !this.isSidebarOpen;
+    },
+    checkInitialSetup() {
+      const dept = localStorage.getItem('dept');
+      const train_prog = localStorage.getItem('train_prog');
+      const group = localStorage.getItem('group');
+
+      if (!dept || !train_prog || !group) {
+        this.showInitialSetupBanner = true;
+        if (this.$route.path !== '/settings') {
+          this.$router.push('/settings');
+        }
+      } else {
+        this.showInitialSetupBanner = false;
+      }
+    },
+    hideInitialSetupBanner() {
+      this.showInitialSetupBanner = false;
     }
   },
   watch: {
@@ -52,11 +80,12 @@ export default {
         this.isSidebarOpen = false;
       }
       document.title = to.meta.title || 'Flop Student'; // Mettre à jour le titre de l'onglet
+      this.checkInitialSetup(); // Vérifier les paramètres à chaque changement de route
     }
   },
   created() {
-    // Définir le titre initial au chargement de l'application
     document.title = this.$route.meta.title || 'Flop Student';
+    this.checkInitialSetup(); // Vérifier les paramètres au chargement initial
   }
 };
 </script>

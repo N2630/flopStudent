@@ -15,9 +15,8 @@ const fetchSchedules = async (year, week, dept, train_prog, groupe ) => {
     }
     
     const schedules = await getSchedule(year, week, dept, train_prog, groupe, tdGroup);
-    const lastUpdated = await getLastScheduleUpdate(year, week); // Récupérer le timestamp
 
-    return { schedules: schedules, lastUpdated: lastUpdated }; // Renvoie les deux informations
+    return  schedules; // Renvoie les deux informations
   } catch (error) {
     console.error('Erreur dans fetchSchedules: ', error);
     throw error;

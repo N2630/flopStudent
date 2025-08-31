@@ -16,11 +16,11 @@
       <button type="submit">Enregistrer</button>
     </form>
   </div>
-    
-
-  </template>
+</template>
   
   <script>
+  import { connectionStore } from '../services/connectionStore';
+
   export default {
     name: 'SettingsParams',
     data() {
@@ -28,6 +28,8 @@
         dept: localStorage.getItem('dept') || '',
         train_prog: localStorage.getItem('train_prog') || '',
         group: localStorage.getItem('group') || '',
+        testing: false,
+        connectionStore
       };
     },
     methods: {

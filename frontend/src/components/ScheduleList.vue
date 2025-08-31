@@ -42,8 +42,8 @@ export default {
       timeSlots: [480, 570, 665, 755, 855, 945, 1030], 
       currentWeek: null,
       currentYear: null,
-      initialDate: new Date(), 
-      schedulesLastUpdated: null, // Nouvelle propriété pour stocker le timestamp
+      initialDate: new Date('2025-09-01T12:34:56.789Z'), 
+      schedulesLastUpdated: JSON.parse(localStorage.getItem('lastSchedulesUpdate')) || null, // Nouvelle propriété pour stocker le timestamp
     };
   },
   async created() {
@@ -58,9 +58,8 @@ export default {
     async loadSchedules() {
       try {
         const response = await fetchSchedules(this.currentYear, this.currentWeek); // Récupérer la réponse complète
-        this.schedules = response.schedules; // Assigner les emplois du temps
+        this.schedules = response; // Assigner les emplois du temps
         this.organizedSchedules = organizeSchedules(this.schedules);
-        this.schedulesLastUpdated = response.lastUpdated; // Assigner le timestamp
       } catch (error) {
         console.error("Erreur lors du chargement des EDT:", error);
         this.schedules = [];
