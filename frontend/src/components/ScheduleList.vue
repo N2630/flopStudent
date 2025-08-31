@@ -42,7 +42,7 @@ export default {
       timeSlots: [480, 570, 665, 755, 855, 945, 1040], 
       currentWeek: null,
       currentYear: null,
-      initialDate: new Date('2025-09-01T12:34:56.789Z'), 
+      initialDate: new Date(), 
       schedulesLastUpdated: JSON.parse(localStorage.getItem('lastSchedulesUpdate')) || null, // Nouvelle propriété pour stocker le timestamp
     };
   },
@@ -138,4 +138,4 @@ export default {
 };
 </script>
 
-<style src="../assets/css/ScheduleList.css"></style>
+<style src="../assets/css/scheduleList.css"></style>

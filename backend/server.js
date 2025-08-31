@@ -26,7 +26,7 @@ connectToDatabase();
 
 // Tâche planifiée pour récupérer, valider et stocker les 4 prochaines semaines de l'EDT
 // Tous les vendredis à 17h00
-cron.schedule('0 17 * * 5', async () => {
+cron.schedule('*/60 10-17 * * 0-5', async () => {
     console.log('Exécution de la tâche planifiée de récupération et nettoyage des emplois du temps.');
     try {
         await updateSchedulesAndClean();

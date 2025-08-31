@@ -8,7 +8,7 @@
       <img src="./assets/logo1.png" id="logo-site">
     </div>
 
-    <h1>Flop Student</h1>
+    <h1>FlopStudent</h1>
   </header>
 
   <div :class="{'app-layout': true, 'initial-setup-active': showInitialSetupBanner}">
