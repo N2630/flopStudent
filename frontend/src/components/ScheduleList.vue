@@ -138,4 +138,4 @@ export default {
 };
 </script>
 
-<style src="../assets/css/scheduleList.css"></style>
+<style src="../assets/css/ScheduleList.css"></style>
