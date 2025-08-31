@@ -113,6 +113,7 @@ jobs:
           sudo mkdir -p /var/www/flopstudent/frontend_dist
           sudo rsync -av --delete $APP_DIR/frontend_dist/ /var/www/flopstudent/frontend_dist/
           rm -rf $APP_DIR/frontend_dist
+          rm -rf $APP_DIR/frontend
 
           # Recharger Nginx
           echo "Rechargement de Nginx..."

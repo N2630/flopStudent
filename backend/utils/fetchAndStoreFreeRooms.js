@@ -2,8 +2,10 @@ const axios = require('axios');
 const { storeFreeRooms } = require('../DB/storeInfo');
 const { getUsedRoom } = require("../DB/getInfo")
 const freeRoomsData = require('../config/freeRooms.json');
+const { logBox } = require('./logUtils'); // Importation
 
 async function fetchAndStoreFreeRooms(year, week) {
+    logBox(`Début du calcul et du stockage des salles libres`, week, year);
     const depts = Object.keys(freeRoomsData);
     const timeSlots = [480, 570, 665, 755, 855, 945];
     const days = ['m', 'tu', 'w', 'th', 'f'];
@@ -38,6 +40,7 @@ async function fetchAndStoreFreeRooms(year, week) {
     }
     console.log("Calcul des salles libres terminé.");
     await storeFreeRooms(year, week, result)
+    logBox(`Fin du calcul et du stockage des salles libres`, week, year);
 }
 
 module.exports = {
