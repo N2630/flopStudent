@@ -2,7 +2,7 @@ import axios from 'axios';
 import { isDateCurrent } from './utils';
 import { updateConnectionStatus } from './connectionStore';
 
-const API_BASE_URL = process.env.VUE_APP_API_BASE_URL || 'http://192.168.1.93:3000';
+const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
 
 const fetchLastSchedulesUpdate = async (year, week) => {
 
@@ -65,7 +65,6 @@ export const fetchSchedules = async (year, week) => {
   
     const localSchedule = localStorage.getItem('schedule');
     if (localSchedule) {
-      console.log(`Utilisation des données locales pour la semaine ${week}-${year} en mode déconnecté.`);
       if ( await isDateCurrent(year, week) ) {
         return JSON.parse(localSchedule); 
       } else {
