@@ -16,7 +16,7 @@
               <template v-for="course in [getCourseAtTime(courses, time)]" :key="course ? course.id : 'no-course'">
                 <div v-if="course" class="course-item" :style="{ backgroundColor: course.display.color_bg, color: course.display.color_txt }">
                   <p>{{ course.course.name }}</p>
-                  <p>{{ course.room }}{{ course.prof ? ' - ' + course.prof : '' }}</p>
+                  <p>{{ course.course.type + ' -  ' + course.room }}{{ course.prof ? ' - ' + course.prof : '' }}</p>
                   <p>{{ minutesToTime(course.start_time) }}</p>
                 </div>
                 <div v-else class="empty-slot">&nbsp;</div>
