@@ -107,8 +107,55 @@ ul {
     font-weight: bold;
 }
   
-.sidebar nav li a:hover {
-    background-color: #4a6a60; 
+.sidebar nav li a {
+  display: block;
+  padding: 10px;
+  text-align: left;
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  position: relative;
+  overflow: hidden;
+  z-index: 0; /* pour que le pseudo-élément reste derrière le texte */
+}
+
+.sidebar nav li a::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0; /* commence invisible */
+  background: linear-gradient(to right, #4a6a60, #5c8177);
+  z-index: -1;
+  transition: width 0.3s ease;
+}
+
+.sidebar nav li a:hover::before {
+  width: 100%; /* se remplit de gauche à droite */
+}
+
+/* Même effet pour le bouton paramètres */
+.settings-link {
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.settings-link::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(to right, #4a6a60, #5c8177);
+  z-index: -1;
+  transition: width 0.3s ease;
+}
+
+.settings-link:hover::before {
+  width: 100%;
 }
   
 .settings-link {
@@ -132,9 +179,6 @@ ul {
     color: white !important; 
 }
 
-.settings-link:hover {
-    background-color: #4a6a60; 
-}
   
 .settings-link .settings-icon {
     width: 20px;

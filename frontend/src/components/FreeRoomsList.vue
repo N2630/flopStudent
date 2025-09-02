@@ -18,7 +18,7 @@
         </div>
 
         <!-- Bloc pour le créneau suivant -->
-        <div class="slot-column" v-else-if="nextSlot !== null && nextSlot < timeSlots[timeSlots.length -1]">
+        <div class="slot-column" v-if="nextSlot !== null && nextSlot < timeSlots[timeSlots.length -1]">
           <h3>Créneau suivant: {{ minutesToTime(nextSlot) }} - {{ getDayName(currentDay) }}</h3>
           <div v-if="freeRoomsData && freeRoomsData[currentDay] && freeRoomsData[currentDay][nextSlot]">
             <div class="dept-rooms">
@@ -31,7 +31,7 @@
         </div>
 
         <!-- Bloc si le dernier créneau est passé ou aucun créneau n'est disponible -->
-        <div class="slot-column" v-else-if="currentSlot !== null && currentSlot >= timeSlots[timeSlots.length -1] || currentSlot === null && nextSlot === null">
+        <div class="slot-column" v-if="currentSlot !== null && currentSlot >= timeSlots[timeSlots.length -1] || currentSlot === null && nextSlot === null">
           <h3>Il n'y a plus de créneaux libre pour aujourd'hui.</h3>
           <p>Prochain créneau demain.</p>
         </div>
@@ -54,20 +54,20 @@ export default {
       timeSlots: [480, 570, 665, 755, 855, 945, 1040],
       updateInterval: null,
       date: new Date(), 
-      lastUpdated: null, // Nouvelle propriété pour stocker le timestamp
+      lastUpdated: null, 
     };
   },
   async created() {
     const year = await getYearNumber(this.date);
     const week = await getWeekNumber(this.date);
-    const response = await fetchFreeRooms(year, week); // Récupérer la réponse complète
-    this.freeRoomsData = response.salles; // Assigner les salles
-    this.lastUpdated = response.lastUpdated; // Assigner le timestamp
+    const response = await fetchFreeRooms(year, week); 
+    this.freeRoomsData = response.salles; 
+    this.lastUpdated = response.lastUpdated; 
     this.updateCurrentSlotsAndDay(this.date); 
 
   },
   methods: {
-    // Nouvelle méthode pour formater la date et l'heure
+    // Méthode pour formater la date et l'heure
     formatDateTime(timestamp) {
         if (!timestamp) return 'N/A';
         const date = new Date(timestamp);
@@ -131,7 +131,7 @@ export default {
         "f": "Vendredi"
       };
       return days[dayLetter] || "Jour inconnu";
-    }
+    },
   },
 };
 </script>

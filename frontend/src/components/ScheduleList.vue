@@ -5,6 +5,7 @@
       <h2>Semaine {{ currentWeek }} - {{ currentYear }}</h2>
       <button @click="goToNextWeek">></button>
     </div>
+    <p v-if="group_name_view === 'true'">Emplois du temps actuel: {{ group }} ({{ dept + ' ' + train_prog }})</p>
     <p v-if="schedulesLastUpdated">Dernière mise à jour : {{ formatDateTime(schedulesLastUpdated) }}</p>
 
     <div class="schedule-grid-container">
@@ -17,7 +18,7 @@
                 <div v-if="course" class="course-item" :style="{ backgroundColor: course.display.color_bg, color: course.display.color_txt }">
                   <p>{{ course.course.name }}</p>
                   <p>{{ course.course.type + ' -  ' + course.room }}{{ course.prof ? ' - ' + course.prof : '' }}</p>
-                  <p>{{ minutesToTime(course.start_time) }}</p>
+                  <p>{{ minutesToTime(course.start_time) +' à ' + minutesToTime(course.start_time+90)}}</p>
                 </div>
                 <div v-else class="empty-slot">&nbsp;</div>
               </template>
@@ -43,7 +44,11 @@ export default {
       currentWeek: null,
       currentYear: null,
       initialDate: new Date(), 
-      schedulesLastUpdated: JSON.parse(localStorage.getItem('lastSchedulesUpdate')) || null, // Nouvelle propriété pour stocker le timestamp
+      schedulesLastUpdated: JSON.parse(localStorage.getItem('lastSchedulesUpdate')) || null, 
+      group_name_view: localStorage.getItem('group_name_view') || 'false',
+      dept: localStorage.getItem('dept') || '',
+      train_prog: localStorage.getItem('train_prog') || '',
+      group: localStorage.getItem('group') || '',
     };
   },
   async created() {

@@ -18,7 +18,11 @@
         <ul>
           <li><router-link to="/schedule" @click="toggleSidebar">Emploi du temps</router-link></li>
           <li><router-link to="/info" @click="toggleSidebar">Infos</router-link></li>
+          <li><a @click="toggleSidebar" :href="'https://efts.univ-tlse2.fr/accueil/ent'" target="_blank" rel="noopener noreferrer">ENT</a></li>
           <li><a @click="toggleSidebar" :href="'https://flopedt.iut-blagnac.fr/fr/edt/' + dept + '/'" target="_blank" rel="noopener noreferrer">Flop EDT</a></li>
+          <li><a @click="toggleSidebar" :href="'https://scout.univ-toulouse.fr/'" target="_blank" rel="noopener noreferrer">Scout</a></li>
+          <li><a @click="toggleSidebar" :href="'https://scodocetudiant.iut-blagnac.fr/'" target="_blank" rel="noopener noreferrer">Scodoc</a></li>
+          <li><a @click="toggleSidebar" :href="'https://webetud.iut-blagnac.fr/'" target="_blank" rel="noopener noreferrer">Web Etude</a></li>
         </ul>
       </nav>
     
