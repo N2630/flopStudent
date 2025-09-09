@@ -38,33 +38,24 @@ async function getSchedule(year, week, dept, train_prog, groupe, tdGroup) {
     return await db.collection(dept.toLowerCase()).find(query).toArray();
 }
 
-async function getUsedRoom(year, week, dept, slot) {
-  const query = {
-      $and: [
-        {'date.week': parseInt(week)},
-        {'date.year': parseInt(year)},
-        {'start_time': slot},
-        { // Utilisation de $nor pour l'exclusion des salles
-          $nor :[
-            {'room': { $regex: "Amphi" }},
-            {'room': { $regex: "A011" }},
-            {'room': { $regex: "Labo" }}
-          ]
-        }
-      ]
-    };
-  return await db.collection(dept.toLowerCase()).find(query).toArray();
-}
-
-const getFreeRooms = async (year, week) => {
+async function getUsedRoom(year, week, slot) {
   const query = {
     $and: [
-      {'week': parseInt(week)},
-      {'year': parseInt(year)}
+      { "date.week": parseInt(week) },
+      { "date.year": parseInt(year) },
+      { "date.day": day },              
+      { "start_time": slot },
+      {
+        $nor: [
+          { "room": { $regex: "Amphi" } },
+          { "room": { $regex: "A011" } },
+          { "room": { $regex: "Labo" } }
+        ]
+      }
     ]
-  }
-  
-  return await db.collection("freeRooms").find(query).toArray();
+  };
+
+  return await db.collection("all_courses").find(query).toArray();
 }
 
 async function getLastScheduleUpdate(year, week) {
@@ -79,7 +70,6 @@ async function getLastScheduleUpdate(year, week) {
 }
 
 module.exports = {
-    getFreeRooms,
     getSchedule,
     getUsedRoom,
     getLastScheduleUpdate
