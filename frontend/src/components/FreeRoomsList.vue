@@ -53,7 +53,7 @@ export default {
       currentDay: null,
       timeSlots: [480, 570, 665, 755, 855, 945, 1040],
       updateInterval: null,
-      date: new Date(), 
+      date: new Date('2025-09-10T10:00:00'), 
       lastUpdated: null, 
     };
   },
@@ -81,8 +81,6 @@ export default {
         });
     },
     updateCurrentSlotsAndDay(dateToUse) {
-      console.log(dateToUse)
-      console.log(getWeekNumber(dateToUse))
       const now = dateToUse || new Date(); 
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
       this.currentDay = this.getDayLetter(now);

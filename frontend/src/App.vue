@@ -89,8 +89,9 @@ export default {
       if (this.isSidebarOpen) {
         this.isSidebarOpen = false;
       }
-      document.title = to.meta.title || 'Flop Student'; // Mettre à jour le titre de l'onglet
-      this.checkInitialSetup(); // Vérifier les paramètres à chaque changement de route
+      document.body.style.overflow = ''; // <-- Ajoute cette ligne ici
+      document.title = to.meta.title || 'Flop Student';
+      this.checkInitialSetup();
     }
   },
   created() {

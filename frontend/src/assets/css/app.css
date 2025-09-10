@@ -1,8 +1,11 @@
 body {
-    margin: 0; /* S'assurer qu'il n'y a pas de marge par défaut sur le body */
-    overflow-x: hidden;
-    background-color:#7b968f;
+  margin: 0; /* S'assurer qu'il n'y a pas de marge par défaut sur le body */
+  overflow-x: hidden;
+  background-color:#7b968f;
+  scrollbar-width: thin;
+  scrollbar-color: #8BC34A #2c3e50;
 }
+
 
 #logo-site-container {
   background-color: rgba(60, 115, 170, 0.507);

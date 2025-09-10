@@ -1,6 +1,5 @@
 const { getWeekAndYear } = require('./dateUtils'); 
 const { fetchAndStoreSchedules } = require('./fetchAndStoreSchedules');
-const { fetchAndStoreFreeRooms } = require('./fetchAndStoreFreeRooms');
 const { cleanOldSchedules } = require('./cleanOldSchedules');
 
 async function updateSchedulesAndClean() {
@@ -27,20 +26,6 @@ async function updateSchedulesAndClean() {
     }
 }
 
-async function updateFreeRooms() {
-    console.log("Début de la mise à jour des salles libres.");
-    try {
-        const now = new Date();
-        const { week, year } = getWeekAndYear(now);
-        await fetchAndStoreFreeRooms(year, week);
-        console.log("Mise à jour des salles libres terminée.");
-    } catch (error) {
-        console.error("Erreur lors de la mise à jour des salles libres :", error);
-        throw error; // Propager l'erreur
-    }
-}
-
 module.exports = {
     updateSchedulesAndClean,
-    updateFreeRooms
 }; 

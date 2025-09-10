@@ -2,7 +2,7 @@ import axios from 'axios';
 import { isDateCurrent } from './utils';
 import { updateConnectionStatus } from './connectionStore';
 
-const API_BASE_URL = process.env.VUE_APP_API_BASE_URL || 'https://flocalhost:8080';
+const API_BASE_URL = process.env.VUE_APP_API_BASE_URL || 'http://localhost:3000';
 
 const fetchLastSchedulesUpdate = async (year, week) => {
 

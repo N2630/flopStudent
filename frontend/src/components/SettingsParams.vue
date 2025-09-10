@@ -49,6 +49,7 @@ export default {
       localStorage.setItem('group', this.group.toUpperCase());
       localStorage.setItem('group_name_view', this.group_name_view);
       alert('Paramètres enregistrés avec succès!');
+      this.$router.push('/');
     },
     toggleGroupNameBtnView() {
       this.group_name_view = !this.group_name_view;
