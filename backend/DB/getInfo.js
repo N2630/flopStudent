@@ -38,7 +38,7 @@ async function getSchedule(year, week, dept, train_prog, groupe, tdGroup) {
     return await db.collection(dept.toLowerCase()).find(query).toArray();
 }
 
-async function getUsedRoom(year, week, slot) {
+async function getUsedRoom(year, week, slot, day) {
   const query = {
     $and: [
       { "date.week": parseInt(week) },
