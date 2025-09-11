@@ -1,5 +1,14 @@
 // backend/utils/logUtils.js
 
+/**
+ * Affiche un encadré lisible dans la console avec message, date/heure et métadonnées (dept, semaine, année).
+ *
+ * @param {string} message - Message principal à afficher
+ * @param {number|null} [week=null] - Semaine concernée
+ * @param {number|null} [year=null] - Année concernée
+ * @param {string|null} [dept=null] - Département concerné (ex: INFO)
+ * @returns {void}
+ */
 function logBox(message, week = null, year = null, dept = null) {
     const borderChar = '═';
     const cornerTopLeft = '╔';

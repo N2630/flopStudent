@@ -42,6 +42,8 @@
 <script>
 import OfflineBanner from './components/OfflineBanner.vue';
 import InitialSetupBanner from './components/InitialSetupBanner.vue';
+import { getDept } from './utils/storageUtils';
+import { isInitialSetupNeeded } from './services/initialSetupService';
 
 export default {
   name: 'App',
@@ -52,12 +54,17 @@ export default {
   data() {
     return {
       isSidebarOpen: false,
-      dept: localStorage.getItem('dept'),
+      dept: getDept(),
       showInitialSetupBanner: false
     };
-    
   },
   methods: {
+    /**
+     * Ouvre ou ferme la sidebar de navigation.
+     * Désactive le scroll de la page quand la sidebar est ouverte, le réactive sinon.
+     *
+     * @returns {void}
+     */
     toggleSidebar() {
       this.isSidebarOpen = !this.isSidebarOpen;
       if (this.isSidebarOpen) {
@@ -66,12 +73,15 @@ export default {
         document.body.style.overflow = ''; // Réactive le défilement
       }
     },
-    checkInitialSetup() {
-      const dept = localStorage.getItem('dept');
-      const train_prog = localStorage.getItem('train_prog');
-      const group = localStorage.getItem('group');
 
-      if (!dept || !train_prog || !group) {
+    /**
+     * Vérifie si l'utilisateur doit effectuer la configuration initiale (département, année, groupe).
+     * Si nécessaire, affiche la bannière d'initialisation et redirige vers la page des paramètres.
+     *
+     * @returns {void}
+     */
+    checkInitialSetup() {
+      if (isInitialSetupNeeded()) {
         this.showInitialSetupBanner = true;
         if (this.$route.path !== '/settings') {
           this.$router.push('/settings');
@@ -80,20 +90,41 @@ export default {
         this.showInitialSetupBanner = false;
       }
     },
+
+    /**
+     * Masque la bannière d'initialisation.
+     *
+     * @returns {void}
+     */
     hideInitialSetupBanner() {
       this.showInitialSetupBanner = false;
     }
   },
   watch: {
+
+    /**
+     * Watcher sur la route : ferme la sidebar, réactive le scroll, met à jour le titre de la page
+     * et vérifie la configuration initiale à chaque changement de route.
+     *
+     * @param {Route} to - Nouvelle route cible
+     * @returns {void}
+     */
     $route(to) {
       if (this.isSidebarOpen) {
         this.isSidebarOpen = false;
       }
-      document.body.style.overflow = ''; // <-- Ajoute cette ligne ici
+      document.body.style.overflow = '';
       document.title = to.meta.title || 'Flop Student';
       this.checkInitialSetup();
     }
   },
+
+  /**
+   * Hook de cycle de vie appelé à la création du composant.
+   * Met à jour le titre de la page et vérifie la configuration initiale.
+   *
+   * @returns {void}
+   */
   created() {
     document.title = this.$route.meta.title || 'Flop Student';
     this.checkInitialSetup(); // Vérifier les paramètres au chargement initial

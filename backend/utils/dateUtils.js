@@ -1,5 +1,11 @@
 // backend/utils/dateUtils.js
 
+/**
+ * Calcule la semaine ISO (1-53) et l'année pour une date donnée.
+ *
+ * @param {Date|string|number} [dateToAnalyse] - Date à analyser (par défaut: maintenant)
+ * @returns {{week: number, year: number}} - Numéro de semaine et année
+ */
 function getWeekAndYear(dateToAnalyse) {
     const date = dateToAnalyse ? new Date(dateToAnalyse) : new Date();
     date.setHours(0,0,0,0);

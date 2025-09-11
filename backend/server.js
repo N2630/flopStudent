@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 
-// Middleware pour parser le JSON
+
 app.use(express.json());
 
 //Définition de la route de l'API
@@ -62,7 +62,7 @@ app.listen(PORT, "0.0.0.0", async () => {
   await console.log(`Serveur démarré sur le port ${PORT}`);
 });
 
-initializeServer();
+//initializeServer();
 
 // Fonction d'initialisation
 async function initializeServer() {

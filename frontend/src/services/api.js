@@ -1,30 +1,52 @@
 import axios from 'axios';
 import { isDateCurrent } from './utils';
 import { updateConnectionStatus } from './connectionStore';
+import { getDept, getTrainProg, getGroup, getLastSchedulesUpdate, setLastSchedulesUpdate, getSchedule, setSchedule } from '../utils/storageUtils';
 
+/**
+ * URL de base de l’API backend.
+ * @constant
+ * @type {string}
+ */
 const API_BASE_URL = process.env.VUE_APP_API_BASE_URL || 'http://localhost:3000';
 
+/**
+ * Récupère la date de dernière mise à jour des emplois du temps pour une année/semaine.
+ *
+ * @param {string|number} year - Année (ex: "2025" ou 2025)
+ * @param {string|number} week - Semaine ISO sur 2 chiffres (ex: "03" ou 3)
+ * @returns {Promise<import('axios').AxiosResponse>} Réponse Axios contenant la date dans `data`
+ */
 const fetchLastSchedulesUpdate = async (year, week) => {
-
   if (!year || !week) {
-    console.warn('Paramètres manquants dans le localStorage. Retourne un tableau vide.');
-    return null; // Retourne un tableau vide au lieu de undefined
+    console.warn('Paramètres manquants. Retourne null.');
+    return null;
   }
-
   return await axios.get(`${API_BASE_URL}/api/get-last-schedules-update?year=${year}&week=${week}`);
 }
 
+/**
+ * Récupère les emplois du temps pour une année/semaine.
+ * - Si le backend est joignable, tente un fetch distant et met à jour le cache local.
+ * - Si hors-ligne ou incohérence, retombe sur le cache local si valide (même année/semaine).
+ * - Met à jour l'état de connexion (affiche/masque la bannière hors-ligne).
+ *
+ * @param {string|number} year - Année (ex: "2025" ou 2025)
+ * @param {string|number} week - Semaine ISO sur 2 chiffres (ex: "03" ou 3)
+ * @returns {Promise<Array<Object>>} Tableau de cours (éventuellement vide)
+ */
 export const fetchSchedules = async (year, week) => {
-  const dept = localStorage.getItem('dept');
-  const train_prog = localStorage.getItem('train_prog');
-  const groupe = localStorage.getItem('group');
-  let localLastUpdate = localStorage.getItem('lastSchedulesUpdate') || null;
+  const dept = getDept();
+  const train_prog = getTrainProg();
+  const groupe = getGroup();
+  const localLastUpdate = getLastSchedulesUpdate();
   let backendJoinable = true;
   let remoteLastSchedulesUpdate;
+
   // Vérification des paramètres requis
   if (!dept || !train_prog || !groupe) {
-    console.warn('Paramètres manquants dans le localStorage. Retourne un tableau vide.');
-    return []; // Retourne un tableau vide au lieu de undefined
+    console.warn('Paramètres manquants. Retourne un tableau vide.');
+    return [];
   }
 
   try {
@@ -35,52 +57,58 @@ export const fetchSchedules = async (year, week) => {
     backendJoinable = false;
   }
 
-  if(remoteLastSchedulesUpdate === localLastUpdate && await isDateCurrent(year, week)) {
-    const localSchedule = localStorage.getItem('schedule');
-    return localSchedule ? JSON.parse(localSchedule) : [];
+  // Si la dernière MAJ distante est identique au cache local et que la date est courante → renvoyer le cache
+  if (remoteLastSchedulesUpdate && JSON.stringify(remoteLastSchedulesUpdate.data) === JSON.stringify(localLastUpdate) && await isDateCurrent(year, week)) {
+    const localSchedule = getSchedule();
+    return Array.isArray(localSchedule) ? localSchedule : (localSchedule || []);
   }
 
-  // Les paramètres year et week sont maintenant passés directement
   try {
     // 1. Tenter de récupérer les données complètes directement depuis le backend
     const remoteResponse = await axios.get(`${API_BASE_URL}/api/get-schedules?year=${year}&week=${week}&dept=${dept}&train_prog=${train_prog}&groupe=${groupe}`);
     updateConnectionStatus(); // Connexion réussie, masque le bandeau
 
-    // Si on a des données distantes, les stocker localement
-    if ( await isDateCurrent(year, week) ) {
-      localStorage.setItem('lastSchedulesUpdate', JSON.stringify(remoteLastSchedulesUpdate.data));
-      localStorage.setItem('schedule', JSON.stringify(remoteResponse.data));
+    // Si on a des données distantes et qu'on est bien sur la semaine courante, les stocker localement
+    if (await isDateCurrent(year, week)) {
+      setLastSchedulesUpdate(remoteLastSchedulesUpdate ? remoteLastSchedulesUpdate.data : null);
+      setSchedule(remoteResponse.data);
     }
-    
-    if(backendJoinable) {
+
+    if (backendJoinable) {
       return remoteResponse.data;
     } else {
       return []
     }
-    
 
   } catch (error) {
     console.error(`Erreur lors de la récupération des données de l'emploi du temps pour la semaine ${week}-${year} depuis le backend :`, error);
     updateConnectionStatus(error);
-  
-    const localSchedule = localStorage.getItem('schedule');
+
+    const localSchedule = getSchedule();
     if (localSchedule) {
-      if ( await isDateCurrent(year, week) ) {
-        return JSON.parse(localSchedule); 
+      if (await isDateCurrent(year, week)) {
+        return localSchedule;
       } else {
         return [];
       }
     }
-  
+
     console.log(`Aucune donnée d'emploi du temps disponible pour la semaine ${week}-${year} (ni backend, ni cache valide).`);
     return [];
   }
-  
 };
 
+/**
+ * Récupère les salles libres pour une année/semaine et le département courant.
+ *
+ * @param {string|number} year - Année (ex: "2025" ou 2025)
+ * @param {string|number} week - Semaine ISO sur 2 chiffres (ex: "03" ou 3)
+ * @returns {Promise<Object>} Données des salles libres (structure renvoyée par l’API)
+ * @throws {Error} Si l’API renvoie une 400 (paramètres invalides) ou autre erreur réseau
+ */
 export const fetchFreeRooms = async (year, week) => {
   try {
-    const dept = localStorage.getItem('dept');
+    const dept = getDept();
     const response = await axios.get(`${API_BASE_URL}/api/get-free-rooms?year=${year}&week=${week}&dept=${dept}`);
     return response.data;
   } catch (error) {

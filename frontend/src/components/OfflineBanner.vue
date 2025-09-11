@@ -24,6 +24,12 @@ export default {
     };
   },
   methods: {
+    /**
+     * Masque la bannière d'information "hors ligne" en mettant à jour l'état global
+     * via la fonction utilitaire `hideOfflineBanner` (store réactif).
+     *
+     * @returns {void}
+     */
     hideBanner() {
       hideOfflineBanner();
     }

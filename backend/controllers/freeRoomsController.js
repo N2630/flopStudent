@@ -1,5 +1,13 @@
 const freeRoomsService = require('../services/freeRoomsService');
 
+/**
+ * Contrôleur HTTP: retourne les salles libres pour une année/semaine et un département.
+ * Lit les paramètres depuis req.query et gère les erreurs/validations.
+ *
+ * @param {import('express').Request} req - Requête Express (query: year, week, dept)
+ * @param {import('express').Response} res - Réponse Express
+ * @returns {Promise<void>}
+ */
 const getFreeRoomsByWeek = async (req, res) => {
   try {
     const { year, week, dept } = req.query;

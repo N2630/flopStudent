@@ -2,6 +2,13 @@ const { getWeekAndYear } = require('./dateUtils');
 const { fetchAndStoreSchedules } = require('./fetchAndStoreSchedules');
 const { cleanOldSchedules } = require('./cleanOldSchedules');
 
+/**
+ * Met à jour les emplois du temps pour les 4 prochaines semaines (à partir d’aujourd’hui),
+ * puis lance un nettoyage des anciennes semaines.
+ *
+ * @returns {Promise<void>}
+ * @throws {Error} - Propage l’erreur afin que l’appelant puisse la gérer
+ */
 async function updateSchedulesAndClean() {
     console.log("Début de la mise à jour des emplois du temps et du nettoyage.");
     try {

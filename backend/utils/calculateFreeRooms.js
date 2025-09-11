@@ -3,6 +3,14 @@ const freeRoomsData = require('../config/freeRooms.json');
 const { logBox } = require('./logUtils');
 const fs = require('fs/promises'); // Importation du module fs
 
+/**
+ * Calcule les salles libres par jour et créneau pour un département donné.
+ *
+ * @param {number|string} year - Année ciblée
+ * @param {number|string} week - Semaine ISO ciblée
+ * @param {string} targetDept - Département (clé de config/freeRooms.json)
+ * @returns {Promise<Record<string, Record<string, string[]>>>} Objet: { [dayLetter]: { [slotMinutes]: string[] } }
+ */
 async function calculateFreeRooms(year, week, targetDept) {
 
 
