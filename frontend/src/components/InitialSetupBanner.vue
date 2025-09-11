@@ -23,6 +23,11 @@ export default {
     }
   },
   methods: {
+    /**
+     * Émet un événement 'close-banner' au parent pour demander la fermeture de la bannière.
+     *
+     * @returns {void}
+     */
     hideBanner() {
       this.$emit('close-banner');
     }

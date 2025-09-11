@@ -1,7 +1,27 @@
 body {
-    margin: 0; /* S'assurer qu'il n'y a pas de marge par défaut sur le body */
-    overflow-x: hidden;
-    background-color:#7b968f;
+  margin: 0; 
+  overflow-x: hidden;
+  background-color:#7b968f;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  background: #f0f0f0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Scrollbar globale pour Firefox */
+body, * {
+  scrollbar-width: thin;
+  scrollbar-color: #485664 #49575375;
 }
 
 #logo-site-container {
@@ -41,12 +61,12 @@ body {
 }
 
 #app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    margin-top: 0; 
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 0; 
 }
 
 .app-layout {

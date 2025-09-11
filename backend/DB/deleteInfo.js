@@ -1,5 +1,15 @@
 const { db } = require("../config/connectDb");
 
+/**
+ * Supprime les cours obsolètes en base pour une semaine/année/collection
+ * en se basant sur la nouvelle liste récupérée (diff sur les IDs).
+ *
+ * @param {Array<Object>} newSchedules - Nouvelle liste de cours (contient les IDs à conserver)
+ * @param {string} collectionName - Nom de la collection MongoDB (département)
+ * @param {number|string} week - Semaine ISO
+ * @param {number|string} year - Année
+ * @returns {Promise<void>}
+ */
 async function cleanUnSchedulesCourse(newSchedules, collectionName, week, year) {
     try {
         console.log(`Début du nettoyage des cours non programmés pour ${collectionName}, semaine ${week}, année ${year}.`);

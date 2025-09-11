@@ -1,6 +1,13 @@
 const { db } = require('../config/connectDb');
 const { getWeekAndYear } = require('./dateUtils'); 
 
+/**
+ * Supprime de la base les emplois du temps trop anciens pour chaque département.
+ * - Conserve 3 semaines d’historique sur l’année courante.
+ * - Supprime tout ce qui est antérieur à l’année courante.
+ *
+ * @returns {Promise<void>}
+ */
 async function cleanOldSchedules() {
     try {
         console.log("Début du nettoyage des anciennes semaines d'emplois du temps.");

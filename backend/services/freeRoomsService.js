@@ -1,27 +1,18 @@
-const { getFreeRooms } = require('../DB/getInfo');
+const { calculateFreeRooms } = require('../utils/calculateFreeRooms');
 
+/**
+ * Récupère les salles libres pour une année/semaine et un département,
+ * en s'appuyant sur le calcul utilitaire.
+ *
+ * @param {number|string} year - Année (ex: 2025)
+ * @param {number|string} week - Semaine ISO (ex: 17)
+ * @param {string} dept - Département (clé dans config/freeRooms.json)
+ * @returns {Promise<{salles: Record<string, Record<string, string[]>>, lastUpdated: Date}>}
+ */
 const fetchFreeRooms = async (year, week, dept) => {
     try {
-        const result = await getFreeRooms(year, week) || [];
-        const weekFreeRooms = result[0] || {}; // Prend le premier élément du tableau
-        const data = weekFreeRooms.data || {};
-        const lastUpdated = weekFreeRooms.lastUpdated || null; // Récupère le timestamp
-        const jours = ['m', 'tu', 'w', 'th', 'f'];
-        const timeSlots = [480, 570, 665, 755, 855, 945];
-        const sallesDept = {};
-
-        jours.forEach(jour => {
-            // Initialiser l'objet pour chaque jour
-            sallesDept[jour] = {};
-        
-            timeSlots.forEach(slot => {
-                // Convertir le slot en string si nécessaire (car les clés sont souvent des strings)
-                const slotKey = slot.toString();
-                sallesDept[jour][slotKey] = data[jour]?.[slotKey]?.[dept] || [];
-            });
-        });
-
-        return { salles: sallesDept, lastUpdated: lastUpdated }; // Renvoie les deux informations
+        const result = await calculateFreeRooms(year, week, dept);
+        return { salles: result, lastUpdated: new Date() };
     } catch (error) {
         console.error("Erreur lors de la récupération des salles :", error);
         throw error;

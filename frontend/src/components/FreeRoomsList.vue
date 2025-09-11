@@ -42,6 +42,7 @@
 <script>
 import { getWeekNumber, getYearNumber } from '../services/scheduleService';
 import { fetchFreeRooms } from '../services/api';
+import { formatDateTime, minutesToTime, getDayLetter, getDayName } from '../utils/dateUtils';
 
 export default {
   name: 'FreeRoomsList',
@@ -64,32 +65,26 @@ export default {
     this.freeRoomsData = response.salles; 
     this.lastUpdated = response.lastUpdated; 
     this.updateCurrentSlotsAndDay(this.date); 
-
   },
   methods: {
-    // Méthode pour formater la date et l'heure
-    formatDateTime(timestamp) {
-        if (!timestamp) return 'N/A';
-        const date = new Date(timestamp);
-        return date.toLocaleDateString('fr-FR', { 
-            year: 'numeric', 
-            month: '2-digit', 
-            day: '2-digit', 
-            hour: '2-digit', 
-            minute: '2-digit', 
-            second: '2-digit' 
-        });
-    },
+    formatDateTime,
+    minutesToTime,
+    getDayLetter,
+    getDayName,
+
+    /**
+     * Met à jour les créneaux horaires courants (currentSlot, nextSlot) et le jour courant (currentDay)
+     * en fonction de la date passée en paramètre (ou de la date actuelle si non précisé).
+     *
+     * @param {Date} [dateToUse] - Date à utiliser pour le calcul (par défaut : maintenant)
+     * @returns {void}
+     */
     updateCurrentSlotsAndDay(dateToUse) {
-      console.log(dateToUse)
-      console.log(getWeekNumber(dateToUse))
       const now = dateToUse || new Date(); 
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
       this.currentDay = this.getDayLetter(now);
-
       let currentFoundSlot = null;
       let nextFoundSlot = null;
-
       for (let i = 0; i < this.timeSlots.length; i++) {
         if (currentMinutes >= this.timeSlots[i] && (i === this.timeSlots.length - 1 || currentMinutes < this.timeSlots[i + 1])) {
           currentFoundSlot = this.timeSlots[i];
@@ -104,33 +99,6 @@ export default {
       }
       this.currentSlot = currentFoundSlot;
       this.nextSlot = nextFoundSlot;
-    },
-    minutesToTime(minutes) {
-      if (minutes === null) return 'N/A';
-      const hours = Math.floor(minutes / 60);
-      const mins = minutes % 60;
-      return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
-    },
-    getDayLetter(date) {
-      const dayOfWeek = date.getDay(); // 0 pour Dimanche, 1 pour Lundi, ..., 6 pour Samedi
-      const daysMap = {
-        1: 'm',
-        2: 'tu',
-        3: 'w',
-        4: 'th',
-        5: 'f',
-      };
-      return daysMap[dayOfWeek] || 'N/A'; // Retourne N/A pour le weekend ou jour inconnu
-    },
-    getDayName(dayLetter) {
-      const days = {
-        "m": "Lundi",
-        "tu": "Mardi",
-        "w": "Mercredi",
-        "th": "Jeudi",
-        "f": "Vendredi"
-      };
-      return days[dayLetter] || "Jour inconnu";
     },
   },
 };
