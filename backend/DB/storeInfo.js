@@ -80,6 +80,5 @@ async function storeLastScheduleUpdate(year, week) {
 
 module.exports = {
     storeSchedule,
-    storeFreeRooms,
     storeLastScheduleUpdate
 };
