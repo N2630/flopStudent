@@ -32,12 +32,7 @@ async function getSchedule(year, week, dept, train_prog, groupe, tdGroup) {
             },
             {
               $and: [
-                {
-                  $or: [
-                    { 'groupe.name': { $regex: tdGroup } },
-                    { 'groupe.name': "CE" }
-                  ]
-                },
+                { 'groupe.name': "CE" },
                 { 'groupe.train_prog': train_prog }
               ]
             }
