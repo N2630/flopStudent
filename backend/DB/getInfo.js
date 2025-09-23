@@ -38,7 +38,11 @@ async function getSchedule(year, week, dept, train_prog, groupe, tdGroup) {
                     { 'groupe.name': "CE" }
                   ]
                 },
-                { 'course.type': "CM" },
+                { $or: [
+                    { 'course.type': "CM"  },
+                    { 'course.type': "DS"  }
+                  ]
+                },
                 { 'groupe.train_prog': train_prog }
               ]
             }
