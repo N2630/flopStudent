@@ -1,5 +1,13 @@
 const { db} = require('../config/connectDb');
 
+/**
+ * Insère ou met à jour les cours d'une collection à partir d'une liste récupérée à distance.
+ * Formate les données pour stockage (jours, heures, groupe, affichage, etc.).
+ *
+ * @param {Array<Object>} schedulList - Liste brute des cours (API flop!EDT)
+ * @param {string} collectionName - Nom de la collection MongoDB cible (département)
+ * @returns {Promise<void>}
+ */
 async function storeSchedule(schedulList, collectionName) {
     try{
       for(const schedule of schedulList) {
@@ -45,37 +53,13 @@ async function storeSchedule(schedulList, collectionName) {
     }
 }
 
-async function storeFreeRooms(year, week, freeRoomsData) {
-  try {
-
-    const collection = db.collection("freeRooms"); 
-    const documentToStore = {
-      year: year,
-      week: week,
-      data: freeRoomsData, 
-      lastUpdated: new Date() 
-    };
-
-
-    const existingDocument = await collection.findOne({ year: year, week: week });
-
-    if (existingDocument) {
-      await collection.updateOne(
-        { _id: existingDocument._id },
-        { $set: documentToStore }
-      );
-      console.log(`Données des salles libres mises à jour pour la semaine ${week}, année ${year}.`);
-
-    } else {
-      await collection.insertOne(documentToStore);
-      console.log(`Nouvelles données des salles libres stockées pour la semaine ${week}, année ${year}.`);
-    }
-  } catch (error) {
-    console.error("Erreur lors du stockage des salles libres calculées :", error);
-    throw error;
-  }
-}
-
+/**
+ * Enregistre le timestamp de dernière mise à jour pour une année/semaine d'EDT.
+ *
+ * @param {number|string} year - Année
+ * @param {number|string} week - Semaine ISO
+ * @returns {Promise<void>}
+ */
 async function storeLastScheduleUpdate(year, week) {
   try {
     const collection = db.collection("lastUpdates");
@@ -96,6 +80,5 @@ async function storeLastScheduleUpdate(year, week) {
 
 module.exports = {
     storeSchedule,
-    storeFreeRooms,
     storeLastScheduleUpdate
 };

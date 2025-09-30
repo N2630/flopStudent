@@ -3,6 +3,14 @@ const { storeSchedule, storeLastScheduleUpdate } = require('../DB/storeInfo'); /
 const { cleanUnSchedulesCourse } = require('../DB/deleteInfo');
 const { logBox } = require('./logUtils'); // Importation
 
+/**
+ * Récupère les cours depuis l’API flop!EDT pour chaque département,
+ * nettoie les cours obsolètes, stocke les nouveaux cours et enregistre la date de dernière mise à jour.
+ *
+ * @param {number} week - Semaine ISO
+ * @param {number} year - Année
+ * @returns {Promise<void>}
+ */
 async function fetchAndStoreSchedules(week, year){
     try { // Réactivation du try-catch externe
         const depts = ['INFO', 'CS', 'RT', 'GIM', 'LPMA']

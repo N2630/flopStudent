@@ -36,9 +36,39 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 1em;
-    box-sizing: border-box; /* S'assurer que la largeur inclut le padding */
+    box-sizing: border-box; 
 }
 
+.params-container input[type="button"] {
+    width: 40%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    font-size: 1em;
+    box-sizing: border-box; 
+    margin-bottom: 20px;
+}
+
+.btn-active {
+    background-color: #30a818;
+    border: 1px solid #30a818;
+}
+
+.btn-desactive {
+    background-color: #be2d2d;
+    border: 1px solid #be2d2d;
+}
+
+.btn-active:hover {
+    background-color: #278115;
+    border: 1px solid #30a818;
+    
+}
+
+.btn-desactive:hover {
+    background-color: #a11d1d;
+    border: 1px solid #be2d2d;
+}
 .params-container button[type="submit"] {
     background-color: #5c8177ec;
     color: white;

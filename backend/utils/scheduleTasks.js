@@ -1,8 +1,14 @@
 const { getWeekAndYear } = require('./dateUtils'); 
 const { fetchAndStoreSchedules } = require('./fetchAndStoreSchedules');
-const { fetchAndStoreFreeRooms } = require('./fetchAndStoreFreeRooms');
 const { cleanOldSchedules } = require('./cleanOldSchedules');
-
+const clearSchedule = process.env.CLEAR_SCHEDULE_OPTION || true;
+/**
+ * Met à jour les emplois du temps pour les 4 prochaines semaines (à partir d’aujourd’hui),
+ * puis lance un nettoyage des anciennes semaines.
+ *
+ * @returns {Promise<void>}
+ * @throws {Error} - Propage l’erreur afin que l’appelant puisse la gérer
+ */
 async function updateSchedulesAndClean() {
     console.log("Début de la mise à jour des emplois du temps et du nettoyage.");
     try {
@@ -18,7 +24,10 @@ async function updateSchedulesAndClean() {
         }
 
         // Nettoyer les anciennes semaines
-        await cleanOldSchedules();
+        if(clearSchedule) {
+            await cleanOldSchedules();
+        }
+        
 
         console.log("Mise à jour des emplois du temps et nettoyage terminés.");
     } catch (error) {
@@ -27,20 +36,6 @@ async function updateSchedulesAndClean() {
     }
 }
 
-async function updateFreeRooms() {
-    console.log("Début de la mise à jour des salles libres.");
-    try {
-        const now = new Date();
-        const { week, year } = getWeekAndYear(now);
-        await fetchAndStoreFreeRooms(year, week);
-        console.log("Mise à jour des salles libres terminée.");
-    } catch (error) {
-        console.error("Erreur lors de la mise à jour des salles libres :", error);
-        throw error; // Propager l'erreur
-    }
-}
-
 module.exports = {
     updateSchedulesAndClean,
-    updateFreeRooms
 }; 
