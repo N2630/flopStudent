@@ -1,7 +1,7 @@
 const { getWeekAndYear } = require('./dateUtils'); 
 const { fetchAndStoreSchedules } = require('./fetchAndStoreSchedules');
 const { cleanOldSchedules } = require('./cleanOldSchedules');
-
+const clearSchedule = process.env.CLEAR_SCHEDULE_OPTION || true;
 /**
  * Met à jour les emplois du temps pour les 4 prochaines semaines (à partir d’aujourd’hui),
  * puis lance un nettoyage des anciennes semaines.
@@ -24,7 +24,10 @@ async function updateSchedulesAndClean() {
         }
 
         // Nettoyer les anciennes semaines
-        await cleanOldSchedules();
+        if(clearSchedule) {
+            await cleanOldSchedules();
+        }
+        
 
         console.log("Mise à jour des emplois du temps et nettoyage terminés.");
     } catch (error) {
