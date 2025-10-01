@@ -91,8 +91,19 @@ async function getLastScheduleUpdate(year, week) {
   }
 }
 
+async function getProfSchedule(year, week, profDet) {
+  const query = {
+    $and: [
+      {'date.week': parseInt(week)},
+      {'date.year': parseInt(year)},
+      {'prof':profDet}
+    ]
+  };
+  return await db.collection("all_courses").find(query).toArray();
+}
 module.exports = {
     getSchedule,
     getUsedRoom,
-    getLastScheduleUpdate
+    getLastScheduleUpdate,
+    getProfSchedule
 };
