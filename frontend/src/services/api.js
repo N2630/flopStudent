@@ -119,3 +119,16 @@ export const fetchFreeRooms = async (year, week) => {
     throw error;
   }
 }
+
+export const fetchProfSchedules = async (year, week, profDet) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/get-prof-schedule?year=${year}&week=${week}&profDet=${profDet}`);
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des données :', error);
+    if (error.response?.status === 400) {
+      throw new Error('Paramètres API invalides. Veuillez vérifier votre configuration ou les données.');
+    }
+    throw error;
+  }
+}

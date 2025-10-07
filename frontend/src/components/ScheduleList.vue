@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { fetchSchedules } from '../services/api';
+import { fetchSchedules, fetchProfSchedules } from '../services/api';
 import { organizeSchedules, getWeekNumber, getYearNumber } from '../services/scheduleService';
 import { getLastSchedulesUpdate, getGroupNameView, getDept, getTrainProg, getGroup } from '../utils/storageUtils';
 import { formatDateTime, minutesToTime, getDayName } from '../utils/dateUtils';
@@ -80,7 +80,7 @@ export default {
      */
     async loadSchedules() {
       try {
-        const response = await fetchSchedules(this.currentYear, this.currentWeek); // Récupérer la réponse complète
+        const response = this.sourceType === 'prof' ? await fetchProfSchedules(this.currentYear, this.currentWeek, this.profDet) : await fetchSchedules(this.currentYear, this.currentWeek,);
         this.schedules = response; // Assigner les emplois du temps
         this.organizedSchedules = organizeSchedules(this.schedules);
       } catch (error) {

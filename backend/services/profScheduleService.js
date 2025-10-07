@@ -1,14 +1,11 @@
 const { getProfSchedule } = require("../DB/getInfo") // Importation
 
 /**
- * Récupère les emplois du temps pour une année/semaine et un groupe donné,
- * après validation des paramètres et extraction du groupe TD.
+ * Récupère les emplois du temps pour une année/semaine et un professeur donné.
  *
  * @param {number|string} year - Année (ex: 2025)
  * @param {number|string} week - Semaine ISO (ex: 17)
- * @param {string} dept - Département (ex: "info")
- * @param {string} train_prog - Année de formation (ex: "BUT1")
- * @param {string} groupe - Groupe complet (ex: "1A")
+ * @param {string} profDet - Initiales du professeur (ex: "TA")
  * @returns {Promise<Array<Object>>} - Tableau des cours
  */
 const fetchProfSchedules = async (year, week, profDet ) => {
