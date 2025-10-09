@@ -152,7 +152,8 @@ Remarques:
 ---
 
 ## API Backend (documentation rapide)
-Base URL: `http://<host>:<port>/api`
+Base URL: `http://<host>:<port>/` ou `http://mondomaine.fr/`.
+Par exemeple : `http://flopstudent-api.belucraft.fr/`
 
 ### Emplois du temps
 - GET `/api/get-schedules`
