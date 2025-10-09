@@ -1,7 +1,27 @@
 body {
-    margin: 0; /* S'assurer qu'il n'y a pas de marge par défaut sur le body */
-    overflow-x: hidden;
-    background-color:#7b968f;
+  margin: 0; 
+  overflow-x: hidden;
+  background-color:#7b968f;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  background: #f0f0f0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Scrollbar globale pour Firefox */
+body, * {
+  scrollbar-width: thin;
+  scrollbar-color: #485664 #49575375;
 }
 
 #logo-site-container {
@@ -41,12 +61,12 @@ body {
 }
 
 #app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    margin-top: 0; 
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 0; 
 }
 
 .app-layout {
@@ -107,8 +127,55 @@ ul {
     font-weight: bold;
 }
   
-.sidebar nav li a:hover {
-    background-color: #4a6a60; 
+.sidebar nav li a {
+  display: block;
+  padding: 10px;
+  text-align: left;
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  position: relative;
+  overflow: hidden;
+  z-index: 0; /* pour que le pseudo-élément reste derrière le texte */
+}
+
+.sidebar nav li a::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0; /* commence invisible */
+  background: linear-gradient(to right, #4a6a60, #5c8177);
+  z-index: -1;
+  transition: width 0.3s ease;
+}
+
+.sidebar nav li a:hover::before {
+  width: 100%; /* se remplit de gauche à droite */
+}
+
+/* Même effet pour le bouton paramètres */
+.settings-link {
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.settings-link::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(to right, #4a6a60, #5c8177);
+  z-index: -1;
+  transition: width 0.3s ease;
+}
+
+.settings-link:hover::before {
+  width: 100%;
 }
   
 .settings-link {
@@ -132,9 +199,6 @@ ul {
     color: white !important; 
 }
 
-.settings-link:hover {
-    background-color: #4a6a60; 
-}
   
 .settings-link .settings-icon {
     width: 20px;

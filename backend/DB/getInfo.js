@@ -1,5 +1,16 @@
 const { db } = require('../config/connectDb');
 
+/**
+ * Récupère les cours filtrés par année/semaine et groupe (avec logique TD/CM) pour un département.
+ *
+ * @param {number|string} year - Année (ex: 2025)
+ * @param {number|string} week - Semaine ISO (ex: 17)
+ * @param {string} dept - Département (ex: "info")
+ * @param {string} train_prog - Année de formation (ex: "BUT1")
+ * @param {string} groupe - Groupe complet (ex: "1A")
+ * @param {string} tdGroup - Numéro de groupe extrait (ex: "1")
+ * @returns {Promise<Array<Object>>} - Tableau des cours
+ */
 async function getSchedule(year, week, dept, train_prog, groupe, tdGroup) {
     const query = {
       $and: [
@@ -21,13 +32,7 @@ async function getSchedule(year, week, dept, train_prog, groupe, tdGroup) {
             },
             {
               $and: [
-                {
-                  $or: [
-                    { 'groupe.name': { $regex: tdGroup } },
-                    { 'groupe.name': "CE" }
-                  ]
-                },
-                { 'course.type': "CM" },
+                { 'groupe.name': "CE" },
                 { 'groupe.train_prog': train_prog }
               ]
             }
@@ -38,35 +43,43 @@ async function getSchedule(year, week, dept, train_prog, groupe, tdGroup) {
     return await db.collection(dept.toLowerCase()).find(query).toArray();
 }
 
-async function getUsedRoom(year, week, dept, slot) {
-  const query = {
-      $and: [
-        {'date.week': parseInt(week)},
-        {'date.year': parseInt(year)},
-        {'start_time': slot},
-        { // Utilisation de $nor pour l'exclusion des salles
-          $nor :[
-            {'room': { $regex: "Amphi" }},
-            {'room': { $regex: "A011" }},
-            {'room': { $regex: "Labo" }}
-          ]
-        }
-      ]
-    };
-  return await db.collection(dept.toLowerCase()).find(query).toArray();
-}
-
-const getFreeRooms = async (year, week) => {
+/**
+ * Récupère les salles utilisées pour un créneau/ jour / semaine / année,
+ * en excluant certains types de salles (Amphi, A011, Labo).
+ *
+ * @param {number|string} year - Année (ex: 2025)
+ * @param {number|string} week - Semaine ISO (ex: 17)
+ * @param {number} slot - Début du créneau (en minutes depuis minuit)
+ * @param {"m"|"tu"|"w"|"th"|"f"} day - Jour (lettre)
+ * @returns {Promise<Array<Object>>} - Cours trouvés au créneau
+ */
+async function getUsedRoom(year, week, slot, day) {
   const query = {
     $and: [
-      {'week': parseInt(week)},
-      {'year': parseInt(year)}
+      { "date.week": parseInt(week) },
+      { "date.year": parseInt(year) },
+      { "date.day": day },              
+      { "start_time": slot },
+      {
+        $nor: [
+          { "room": { $regex: "Amphi" } },
+          { "room": { $regex: "A011" } },
+          { "room": { $regex: "Labo" } }
+        ]
+      }
     ]
-  }
-  
-  return await db.collection("freeRooms").find(query).toArray();
+  };
+
+  return await db.collection("all_courses").find(query).toArray();
 }
 
+/**
+ * Récupère la date/heure de dernière mise à jour pour une semaine/année.
+ *
+ * @param {number|string} year - Année (ex: 2025)
+ * @param {number|string} week - Semaine ISO (ex: 17)
+ * @returns {Promise<Date|null>} - Timestamp ou null si non trouvé
+ */
 async function getLastScheduleUpdate(year, week) {
   try {
     const updateKey = `schedules_${year}_${week}`;
@@ -78,9 +91,19 @@ async function getLastScheduleUpdate(year, week) {
   }
 }
 
+async function getProfSchedule(year, week, profDet) {
+  const query = {
+    $and: [
+      {'date.week': parseInt(week)},
+      {'date.year': parseInt(year)},
+      {'prof':profDet}
+    ]
+  };
+  return await db.collection("all_courses").find(query).toArray();
+}
 module.exports = {
-    getFreeRooms,
     getSchedule,
     getUsedRoom,
-    getLastScheduleUpdate
+    getLastScheduleUpdate,
+    getProfSchedule
 };

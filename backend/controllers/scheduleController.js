@@ -1,5 +1,13 @@
 const scheduleService = require('../services/scheduleService');
 
+/**
+ * Contrôleur HTTP: retourne les emplois du temps filtrés par année, semaine, département, formation et groupe.
+ * Valide les paramètres requis et délègue au service.
+ *
+ * @param {import('express').Request} req - Requête Express (query: year, week, dept, train_prog, groupe)
+ * @param {import('express').Response} res - Réponse Express
+ * @returns {Promise<void>}
+ */
 const getSchedules = async (req, res) => {
   try {
     const { year, week, dept, train_prog, groupe } = req.query;
@@ -21,6 +29,13 @@ const getSchedules = async (req, res) => {
   }
 };
 
+/**
+ * Contrôleur HTTP: retourne la date/heure de dernière mise à jour des emplois du temps pour une année/semaine.
+ *
+ * @param {import('express').Request} req - Requête Express (query: year, week)
+ * @param {import('express').Response} res - Réponse Express
+ * @returns {Promise<void>}
+ */
 const getSchedulesLastUpdate = async (req, res) => {
   try {
     const { year, week} = req.query;

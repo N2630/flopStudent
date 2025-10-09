@@ -18,7 +18,7 @@
         </div>
 
         <!-- Bloc pour le créneau suivant -->
-        <div class="slot-column" v-else-if="nextSlot !== null && nextSlot < timeSlots[timeSlots.length -1]">
+        <div class="slot-column" v-if="nextSlot !== null && nextSlot < timeSlots[timeSlots.length -1]">
           <h3>Créneau suivant: {{ minutesToTime(nextSlot) }} - {{ getDayName(currentDay) }}</h3>
           <div v-if="freeRoomsData && freeRoomsData[currentDay] && freeRoomsData[currentDay][nextSlot]">
             <div class="dept-rooms">
@@ -31,7 +31,7 @@
         </div>
 
         <!-- Bloc si le dernier créneau est passé ou aucun créneau n'est disponible -->
-        <div class="slot-column" v-else-if="currentSlot !== null && currentSlot >= timeSlots[timeSlots.length -1] || currentSlot === null && nextSlot === null">
+        <div class="slot-column" v-if="currentSlot !== null && currentSlot >= timeSlots[timeSlots.length -1] || currentSlot === null && nextSlot === null">
           <h3>Il n'y a plus de créneaux libre pour aujourd'hui.</h3>
           <p>Prochain créneau demain.</p>
         </div>
@@ -42,6 +42,7 @@
 <script>
 import { getWeekNumber, getYearNumber } from '../services/scheduleService';
 import { fetchFreeRooms } from '../services/api';
+import { formatDateTime, minutesToTime, getDayLetter, getDayName } from '../utils/dateUtils';
 
 export default {
   name: 'FreeRoomsList',
@@ -54,42 +55,36 @@ export default {
       timeSlots: [480, 570, 665, 755, 855, 945, 1040],
       updateInterval: null,
       date: new Date(), 
-      lastUpdated: null, // Nouvelle propriété pour stocker le timestamp
+      lastUpdated: null, 
     };
   },
   async created() {
     const year = await getYearNumber(this.date);
     const week = await getWeekNumber(this.date);
-    const response = await fetchFreeRooms(year, week); // Récupérer la réponse complète
-    this.freeRoomsData = response.salles; // Assigner les salles
-    this.lastUpdated = response.lastUpdated; // Assigner le timestamp
+    const response = await fetchFreeRooms(year, week); 
+    this.freeRoomsData = response.salles; 
+    this.lastUpdated = response.lastUpdated; 
     this.updateCurrentSlotsAndDay(this.date); 
-
   },
   methods: {
-    // Nouvelle méthode pour formater la date et l'heure
-    formatDateTime(timestamp) {
-        if (!timestamp) return 'N/A';
-        const date = new Date(timestamp);
-        return date.toLocaleDateString('fr-FR', { 
-            year: 'numeric', 
-            month: '2-digit', 
-            day: '2-digit', 
-            hour: '2-digit', 
-            minute: '2-digit', 
-            second: '2-digit' 
-        });
-    },
+    formatDateTime,
+    minutesToTime,
+    getDayLetter,
+    getDayName,
+
+    /**
+     * Met à jour les créneaux horaires courants (currentSlot, nextSlot) et le jour courant (currentDay)
+     * en fonction de la date passée en paramètre (ou de la date actuelle si non précisé).
+     *
+     * @param {Date} [dateToUse] - Date à utiliser pour le calcul (par défaut : maintenant)
+     * @returns {void}
+     */
     updateCurrentSlotsAndDay(dateToUse) {
-      console.log(dateToUse)
-      console.log(getWeekNumber(dateToUse))
       const now = dateToUse || new Date(); 
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
       this.currentDay = this.getDayLetter(now);
-
       let currentFoundSlot = null;
       let nextFoundSlot = null;
-
       for (let i = 0; i < this.timeSlots.length; i++) {
         if (currentMinutes >= this.timeSlots[i] && (i === this.timeSlots.length - 1 || currentMinutes < this.timeSlots[i + 1])) {
           currentFoundSlot = this.timeSlots[i];
@@ -105,33 +100,6 @@ export default {
       this.currentSlot = currentFoundSlot;
       this.nextSlot = nextFoundSlot;
     },
-    minutesToTime(minutes) {
-      if (minutes === null) return 'N/A';
-      const hours = Math.floor(minutes / 60);
-      const mins = minutes % 60;
-      return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
-    },
-    getDayLetter(date) {
-      const dayOfWeek = date.getDay(); // 0 pour Dimanche, 1 pour Lundi, ..., 6 pour Samedi
-      const daysMap = {
-        1: 'm',
-        2: 'tu',
-        3: 'w',
-        4: 'th',
-        5: 'f',
-      };
-      return daysMap[dayOfWeek] || 'N/A'; // Retourne N/A pour le weekend ou jour inconnu
-    },
-    getDayName(dayLetter) {
-      const days = {
-        "m": "Lundi",
-        "tu": "Mardi",
-        "w": "Mercredi",
-        "th": "Jeudi",
-        "f": "Vendredi"
-      };
-      return days[dayLetter] || "Jour inconnu";
-    }
   },
 };
 </script>

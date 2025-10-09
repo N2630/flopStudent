@@ -10,6 +10,12 @@ const dbClient = new MongoClient(uri, {
     }
 })
 
+/**
+ * Établit la connexion au cluster MongoDB en utilisant l'URI d'environnement.
+ * Loggue le succès ou l'erreur ; à appeler au démarrage du serveur.
+ *
+ * @returns {Promise<void>}
+ */
 async function connectToDatabase() {
   try {
     await dbClient.connect();
@@ -19,10 +25,14 @@ async function connectToDatabase() {
   }
 }
 
+/**
+ * Instance de base de données MongoDB (db "flopStudent").
+ * À utiliser pour effectuer les opérations CRUD dans les modules DB.
+ * @type {import('mongodb').Db}
+ */
 const db = dbClient.db("flopStudent");
 
 module.exports = {
-    dbClient,
     connectToDatabase,
     db
 }

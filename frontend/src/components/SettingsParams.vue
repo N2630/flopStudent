@@ -13,39 +13,83 @@
         <label for="group">Groupe (ex 1A):</label>
         <input type="text" id="group" v-model="group" />
       </div>
+      <div>
+        <label for="group_name_view">Afficher le nom du groupe:</label>
+        <input type="button" id="group_name_view" :value="groupNameBtnText" @click="toggleGroupNameBtnView" :class="{ 'btn-desactive': !group_name_view, 'btn-active': group_name_view }"/>
+      </div>
       <button type="submit">Enregistrer</button>
     </form>
   </div>
 </template>
   
-  <script>
-  import { connectionStore } from '../services/connectionStore';
+<script>
+import { connectionStore } from '../services/connectionStore';
+import { getDept, setDept, getTrainProg, setTrainProg, getGroup, setGroup, getGroupNameView, setGroupNameView } from '../utils/storageUtils';
 
-  export default {
-    name: 'SettingsParams',
-    data() {
-      return {
-        dept: localStorage.getItem('dept') || '',
-        train_prog: localStorage.getItem('train_prog') || '',
-        group: localStorage.getItem('group') || '',
-        testing: false,
-        connectionStore
-      };
+export default {
+  name: 'SettingsParams',
+  data() {
+    return {
+      dept: getDept() || '',
+      train_prog: getTrainProg() || '',
+      group: getGroup() || '',
+      testing: false,
+      group_name_view: getGroupNameView(), // booléen
+      connectionStore
+    };
+  },
+  computed: {
+    /**
+     * Retourne le texte à afficher sur le bouton d'activation de l'affichage du nom du groupe.
+     *
+     * @returns {string} - "Activé" si l'affichage est activé, "Désactivé" sinon
+     */
+    groupNameBtnText() {
+      return this.group_name_view ? 'Activé' : 'Désactivé';
+    }
+  },
+  methods: {
+    /**
+     * Enregistre les paramètres saisis (département, année, groupe, affichage du nom du groupe)
+     * dans le localStorage via les fonctions utilitaires, puis affiche une alerte de succès
+     * et redirige l'utilisateur vers la page d'accueil.
+     *
+     * @returns {void}
+     */
+    saveSettings() {
+      setDept(this.dept.toUpperCase());
+      setTrainProg(this.train_prog.toUpperCase());
+      setGroup(this.group.toUpperCase());
+      setGroupNameView(this.group_name_view);
+      alert('Paramètres enregistrés avec succès!');
+      this.$router.push('/');
     },
-    methods: {
-      saveSettings() {
-        localStorage.setItem('dept', this.dept);
-        localStorage.setItem('train_prog', this.train_prog);
-        localStorage.setItem('group', this.group);
-        alert('Paramètres enregistrés avec succès!');
+
+    /**
+     * Bascule l'état d'affichage du nom du groupe (activé/désactivé) et
+     * met à jour dynamiquement la classe CSS du bouton pour refléter l'état.
+     *
+     * @returns {void}
+     */
+    toggleGroupNameBtnView() {
+      this.group_name_view = !this.group_name_view;
+
+      const btn = document.getElementById('group_name_view');
+
+      if(btn.classList.contains('btn-desactive')) {
+        btn.classList.remove('btn-desactive');
+        btn.classList.add('btn-active');
+      } else {
+        btn.classList.add('btn-desactive');
+        btn.classList.remove('btn-active');
       }
     }
-  };
-  </script>
+  }
+};
+</script>
   
 <style scoped>
 form {
   width: 100%;
 }
 </style>
-  

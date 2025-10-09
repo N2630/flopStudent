@@ -3,5 +3,6 @@ frontend/nodes_modules
 
 # Variables d'environnement
 .env
+backend/.env
 frontend/.env.local
 frontend/.env.development
