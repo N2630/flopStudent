@@ -83,6 +83,7 @@ jobs:
               touch .env
               echo "PORT_MAPPING=${{ secrets.PORT_MAPPING}}" > .env # Valeur par défaut, peut être modifiée manuellement
               echo "MONGODB_URI=${{ secrets.BACKEND_MONGODB_URI }}" >> .env
+              echo "FRONTEND_API_BASE_URL=${{ secrets.FRONTEND_API_BASE_URL }}" >> .env
           else
               echo ".env file already exists. Not overwriting it."
           fi
