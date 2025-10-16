@@ -26,13 +26,14 @@ async function getSchedule(year, week, dept, train_prog, groupe, tdGroup) {
             },
             {
               $and: [
+                { 'course.type': {$regex: "TD"}},
                 { 'groupe.name': tdGroup },
                 { 'groupe.train_prog': train_prog }
               ]
             },
             {
               $and: [
-                { 'groupe.name': "CE" },
+                { 'room': {$regex: "Amphi"} },
                 { 'groupe.train_prog': train_prog }
               ]
             }

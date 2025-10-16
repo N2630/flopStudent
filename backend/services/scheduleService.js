@@ -64,7 +64,7 @@ const fetchLastScheduleUpdate = async (year, week) => {
  */
 function extractGroupe(str) {
   if (!str) return null;
-  const match = str.match(/\d+/); // \d+ correspond à un ou plusieurs chiffres
+  const match = str.match(/\d+/);
   return match ? match[0] : null;
 }
 
