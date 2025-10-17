@@ -18,14 +18,8 @@ const fetchSchedules = async (year, week, dept, train_prog, groupe ) => {
     if (!year || !week || !dept || !train_prog || !groupe) {
       throw new Error('Tous les paramètres sont requis');
     }
-  
-    const tdGroup = extractGroupe(groupe);
     
-    if (!tdGroup) {
-      throw new Error('Impossible d\'extraire le groupe du paramètre groupe');
-    }
-    
-    const schedules = await getSchedule(year, week, dept, train_prog, groupe, tdGroup);
+    const schedules = await getSchedule(year, week, dept, train_prog, groupe);
 
     return  schedules; // Renvoie les deux informations
   } catch (error) {

@@ -11,37 +11,76 @@ const { db } = require('../config/connectDb');
  * @param {string} tdGroup - Numéro de groupe extrait (ex: "1")
  * @returns {Promise<Array<Object>>} - Tableau des cours
  */
-async function getSchedule(year, week, dept, train_prog, groupe, tdGroup) {
-    const query = {
-      $and: [
-        {'date.week': parseInt(week)},
-        {'date.year': parseInt(year)},
-        {
-          $or: [
-            {
-              $and: [
-                { 'groupe.name': groupe },
-                { 'groupe.train_prog': train_prog }
-              ]
-            },
-            {
-              $and: [
-                { 'course.type': {$regex: "TD"}},
-                { 'groupe.name': tdGroup },
-                { 'groupe.train_prog': train_prog }
-              ]
-            },
-            {
-              $and: [
-                { 'room': {$regex: "Amphi"} },
-                { 'groupe.train_prog': train_prog }
-              ]
-            }
+async function getSchedule(year, week, dept, train_prog, groupe) {
+  const query = [
+    {
+      // Trouver le groupe cible (ex: "1")
+      "$match": {
+        "dept": dept,
+        "train_prog": train_prog,
+        "$or": [
+          { "tdGroup": groupe },              // Si c'est un TD
+          { "subGroups": { "$in": [groupe] } } // Si c'est déjà un sous-groupe d'un parent
+        ]
+      }
+    },
+    {
+      // Trouver dynamiquement tous les "parents" (ici, potentiellement "12") du groupe de TD
+      "$graphLookup": {
+        "from": "groupsStructure",
+        "startWith": groupe,
+        "connectFromField": "tdGroup",
+        "connectToField": "subGroups",
+        "as": "parents",
+        "restrictSearchWithMatch": {
+          "dept": dept,
+          "train_prog": train_prog
+        }
+      }
+    },
+    {
+      // Définir dynamiquement la liste des groupes à utiliser pour la recherche des cours
+      "$addFields": {
+        "allGroups": {
+          "$concatArrays": [
+            [groupe],
+            { "$map": { "input": "$parents", "as": "p", "in": "$$p.tdGroup" } }
           ]
         }
-      ]
-    };
-    return await db.collection(dept.toLowerCase()).find(query).toArray();
+      }
+    },
+    {
+      // Lookup dans info avec tous les groupes trouvés (le TD et les parents englobants potentiels)
+      "$lookup": {
+        "from": dept.toLowerCase(),
+        "let": {
+          "groups": "$allGroups",
+          "train_prog": "$train_prog"
+        },
+        "pipeline": [
+          {
+            "$match": {
+              "$expr": {
+                "$and": [
+                  { "$eq": [ { "$getField": { "field": "week", "input": "$date" } }, parseInt(week) ] },
+                  { "$eq": [ { "$getField": { "field": "year", "input": "$date" } }, parseInt(year) ] },
+                  { "$eq": [ "$groupe.train_prog", "$$train_prog" ] },
+                  { "$or": [
+                    { "$in": [ "$groupe.name", "$$groups" ] },
+                    { "$in": [ "$groupe.name", ["CE", train_prog] ] }
+                  ]},
+                ]
+              }
+            }
+          }
+        ],
+        "as": "courses"
+      }
+    }
+  ];
+  
+  const schedule = await db.collection("groupsStructure").aggregate(query).toArray();
+  return schedule[0].courses;
 }
 
 /**

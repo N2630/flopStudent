@@ -15,7 +15,7 @@
           <template v-for="time in timeSlots" :key="time">
             <div class="time-slot">
               <template v-for="course in [getCourseAtTime(courses, time)]" :key="course ? course.id : 'no-course'">
-                <div v-if="course" class="course-item" :style="{ backgroundColor: course.display.color_bg, color: course.display.color_txt }">
+                <div v-if="course" class="course-item" :style="{ backgroundColor: course.display.color_bg, color: course.display.color_txt, fontWeight: course.course.is_graded ? 'bold' : 'normal'}">
                   <p>{{ course.course.name }}</p>
                   <p>{{ course.course.type + ' -  ' + course.room }}{{ course.prof ? ' - ' + course.prof : '' }}</p>
                   <p>{{ minutesToTime(course.start_time) +' à ' + minutesToTime(course.start_time+90)}}</p>

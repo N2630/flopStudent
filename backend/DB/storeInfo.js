@@ -24,7 +24,8 @@ async function storeSchedule(schedulList, collectionName) {
           course:{
             type: schedule.course.type,
             name: schedule.course.module.name,
-            abbrev: schedule.course.module.abbrev
+            abbrev: schedule.course.module.abbrev,
+            is_grade: schedule.course.is_graded
           },
           groupe: {
             name: schedule.course.groups[0].name,
@@ -78,7 +79,26 @@ async function storeLastScheduleUpdate(year, week) {
   }
 }
 
+async function storeGroupsStructure(groupList) {
+  try{
+    const collection = db.collection("groupsStructure");
+    
+    for(group of groupList) {
+      await collection.updateOne(
+        { _id: group._id },
+        { $set: group },
+        { upsert: true }
+      );      
+    }
+
+    console.log(`Maj des groups effectué.`);
+  }catch(error) {
+      console.error("Erreur lors de la sauvegarde des données :", error)
+      return
+  }
+}
 module.exports = {
     storeSchedule,
-    storeLastScheduleUpdate
+    storeLastScheduleUpdate,
+    storeGroupsStructure
 };
