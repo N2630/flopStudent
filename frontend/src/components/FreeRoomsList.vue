@@ -1,42 +1,50 @@
 <template>
-    <div class="free-rooms-container">
-      <h2>Salles libres</h2>
-      <p v-if="lastUpdated">Dernière mise à jour : {{ formatDateTime(lastUpdated) }}</p>
-      
-      <div class="free-rooms-display">
-        <!-- Bloc pour le créneau actuel -->
-        <div class="slot-column" v-if="currentSlot !== null && currentSlot < timeSlots[timeSlots.length -1]">
-          <h3>Créneau actuel: {{ minutesToTime(currentSlot) }} - {{ getDayName(currentDay) }}</h3>
-          <div v-if="freeRoomsData && freeRoomsData[currentDay] && freeRoomsData[currentDay][currentSlot]">
-            <div class="dept-rooms">
-              <p><strong>Salles :</strong> {{ Array.isArray(freeRoomsData[currentDay][currentSlot]) && freeRoomsData[currentDay][currentSlot].length > 0 ? freeRoomsData[currentDay][currentSlot].join(', ') : 'Aucune salle libre' }}</p>
-            </div>
-          </div>
-          <div v-else>
-            <p>Chargement ou aucune salle libre pour ce créneau.</p>
-          </div>
-        </div>
-
-        <!-- Bloc pour le créneau suivant -->
-        <div class="slot-column" v-if="nextSlot !== null && nextSlot < timeSlots[timeSlots.length -1]">
-          <h3>Créneau suivant: {{ minutesToTime(nextSlot) }} - {{ getDayName(currentDay) }}</h3>
-          <div v-if="freeRoomsData && freeRoomsData[currentDay] && freeRoomsData[currentDay][nextSlot]">
-            <div class="dept-rooms">
-              <p><strong>Salles :</strong> {{ Array.isArray(freeRoomsData[currentDay][nextSlot]) && freeRoomsData[currentDay][nextSlot].length > 0 ? freeRoomsData[currentDay][nextSlot].join(', ') : 'Aucune salle libre' }}</p>
-            </div>
-          </div>
-          <div v-else>
-            <p>Chargement ou aucune salle libre pour ce créneau suivant.</p>
-          </div>
-        </div>
-
-        <!-- Bloc si le dernier créneau est passé ou aucun créneau n'est disponible -->
-        <div class="slot-column" v-if="currentSlot !== null && currentSlot >= timeSlots[timeSlots.length -1] || currentSlot === null && nextSlot === null">
-          <h3>Il n'y a plus de créneaux libre pour aujourd'hui.</h3>
-          <p>Prochain créneau demain.</p>
-        </div>
+  <section class="free-rooms-container">
+    <header class="free-rooms-header">
+      <div>
+        <h2>Salles libres</h2>
+        <p v-if="lastUpdated" class="muted">Dernière mise à jour : {{ formatDateTime(lastUpdated) }}</p>
       </div>
+      <div>
+        <button class="btn btn-secondary" @click="refresh">Rafraîchir</button>
+      </div>
+    </header>
+
+    <div class="cards">
+      <article class="card" v-if="hasCurrent">
+        <div class="card-header">
+          <h3>Créneau actuel</h3>
+          <small class="muted">{{ minutesToTime(currentSlot) }} — {{ getDayName(currentDay) }}</small>
+        </div>
+        <div class="card-body">
+          <div v-if="roomsFor(currentSlot).length">
+            <span class="room-badge" v-for="r in roomsFor(currentSlot)" :key="r">{{ r }}</span>
+          </div>
+          <div v-else class="muted">Aucune salle libre pour le créneau actuel.</div>
+        </div>
+      </article>
+
+      <article class="card" v-if="hasNext">
+        <div class="card-header">
+          <h3>Créneau suivant</h3>
+          <small class="muted">{{ minutesToTime(nextSlot) }} — {{ getDayName(currentDay) }}</small>
+        </div>
+        <div class="card-body">
+          <div v-if="roomsFor(nextSlot).length">
+            <span class="room-badge" v-for="r in roomsFor(nextSlot)" :key="r">{{ r }}</span>
+          </div>
+          <div v-else class="muted">Aucune salle libre pour le créneau suivant.</div>
+        </div>
+      </article>
+
+      <article class="card" v-if="!hasCurrent && !hasNext">
+        <div class="card-header">
+          <h3>Pas de créneaux disponibles</h3>
+        </div>
+        <div class="card-body muted">Il n'y a plus de créneaux libres pour aujourd'hui.</div>
+      </article>
     </div>
+  </section>
 </template>
 
 <script>
@@ -56,15 +64,15 @@ export default {
       updateInterval: null,
       date: new Date(), 
       lastUpdated: null, 
+      loading: false,
+      error: null
     };
   },
   async created() {
-    const year = await getYearNumber(this.date);
-    const week = await getWeekNumber(this.date);
-    const response = await fetchFreeRooms(year, week); 
-    this.freeRoomsData = response.salles; 
-    this.lastUpdated = response.lastUpdated; 
-    this.updateCurrentSlotsAndDay(this.date); 
+    await this.loadFreeRooms();
+  },
+  beforeUnmount() {
+    if (this.updateInterval) clearInterval(this.updateInterval);
   },
   methods: {
     formatDateTime,
@@ -100,8 +108,72 @@ export default {
       this.currentSlot = currentFoundSlot;
       this.nextSlot = nextFoundSlot;
     },
+
+    async loadFreeRooms() {
+      this.loading = true;
+      this.error = null;
+      try {
+        const year = await getYearNumber(this.date);
+        const week = await getWeekNumber(this.date);
+        const response = await fetchFreeRooms(year, week);
+        // réponse attendue : { salles: { 'L': {480: ['A1', ...], ... }}, lastUpdated }
+        this.freeRoomsData = response?.salles || {};
+        this.lastUpdated = response?.lastUpdated || null;
+        this.updateCurrentSlotsAndDay(this.date);
+        // option : mettre un intervalle de refresh toutes les 2 minutes
+        if (!this.updateInterval) {
+          this.updateInterval = setInterval(() => this.loadFreeRooms(), 2 * 60 * 1000);
+        }
+      } catch (err) {
+        console.error('Erreur loadFreeRooms', err);
+        this.error = 'Impossible de charger les salles libres.';
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    refresh() {
+      this.loadFreeRooms();
+    },
+
+    roomsFor(slot) {
+      if (!slot || !this.currentDay) return [];
+      const dayData = this.freeRoomsData?.[this.currentDay] || {};
+      const list = Array.isArray(dayData[slot]) ? dayData[slot] : [];
+      return list;
+    }
+  },
+  computed: {
+    hasCurrent() {
+      return this.currentSlot !== null && this.currentSlot < this.timeSlots[this.timeSlots.length -1];
+    },
+    hasNext() {
+      return this.nextSlot !== null && this.nextSlot < this.timeSlots[this.timeSlots.length -1];
+    }
   },
 };
 </script>
 
-<style src="../assets/css/freeRooms.css"></style>
+<style scoped>
+.free-rooms-container {
+  margin-top: 24px;
+}
+.free-rooms-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.muted { color: #666; font-size: 0.9rem; }
+.cards { display: flex; gap: 16px; flex-wrap: wrap; }
+.card { flex: 1 1 280px; background: #fff; border-radius: 10px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); padding: 12px; border: 1px solid #e6e6e6; }
+.card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px }
+.card-body { min-height:56px; display:flex; align-items:center; flex-wrap:wrap; gap:8px }
+.room-badge { background: #1976d2; color: #fff; padding:6px 10px; border-radius:999px; font-weight:600; font-size:0.95rem }
+.btn { padding:8px 12px; border-radius:8px; cursor:pointer }
+.btn-secondary { background:#fd9797; border:2px solid #fc3939; color:#333 }
+
+@media (max-width: 900px) {
+  .cards { flex-direction: column; }
+}
+</style>
