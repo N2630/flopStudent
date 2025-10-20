@@ -141,9 +141,83 @@ async function getProfSchedule(year, week, profDet) {
   };
   return await db.collection("all_courses").find(query).toArray();
 }
+
+async function getAllDepartments() {
+  try {
+    const docs = await db.collection('groupsStructure').aggregate([
+      { $group: { _id: "$dept" } },
+      { $sort: { _id: 1 } }
+    ]).toArray();
+    return docs.map(d => d._id).filter(Boolean);
+  } catch (error) {
+    console.error('Erreur DB getAllDepartments:', error);
+    throw error;
+  }
+}
+
+async function getDaptTrainProgs(dept) {
+  try {
+    const docs = await db.collection('groupsStructure').aggregate([
+      { $match: { dept } },
+      { $group: { _id: "$train_prog" } },
+      { $sort: { _id: 1 } }
+    ]).toArray();
+    return docs.map(d => d._id).filter(Boolean);
+  } catch (error) {
+    console.error('Erreur DB getDaptTrainProgs:', error);
+    throw error;
+  }
+}
+
+async function getDeptTrainGroups(dept, train_prog) {
+  try {
+    const result = await db.collection("groupsStructure").aggregate([
+      { $match: { dept: dept, train_prog: train_prog } },
+      {
+        $group: {
+          _id: null,
+          allParents: { $addToSet: "$tdGroup" },
+          allSubGroups: { $push: "$subGroups" }
+        }
+      },
+      {
+        $project: {
+          subGroupsFlattened: {
+            $reduce: {
+              input: "$allSubGroups",
+              initialValue: [],
+              in: { $concatArrays: ["$$value", "$$this"] }
+            }
+          },
+          allParents: 1
+        }
+      },
+      {
+        $project: {
+          finalGroups: {
+            $filter: {
+              input: "$subGroupsFlattened",
+              as: "sg",
+              cond: { $not: { $in: ["$$sg", "$allParents"] } }
+            }
+          }
+        }
+      }
+    ]).toArray();
+    
+    // Retourner directement le tableau de groupes finaux
+    return result.length > 0 ? result[0].finalGroups : [];
+  } catch (error) {
+    console.error('Erreur DB getDeptTrainGroups:', error);
+    throw error;
+  }
+}
 module.exports = {
     getSchedule,
     getUsedRoom,
     getLastScheduleUpdate,
-    getProfSchedule
+    getProfSchedule,
+    getAllDepartments,
+    getDaptTrainProgs,
+    getDeptTrainGroups
 };

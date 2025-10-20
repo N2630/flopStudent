@@ -70,8 +70,8 @@ async function initializeServer() {
   await wait(1000)
   try {
     console.log("Récupération initiale des données...");
-    await fetchAndStoreGroups();
-    await updateSchedulesAndClean(); 
+    //await fetchAndStoreGroups();
+    //await updateSchedulesAndClean(); 
 
     console.log("Initialisation du serveur terminée avec succès.");
   } catch (error) {
