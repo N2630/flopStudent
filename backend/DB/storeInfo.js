@@ -24,7 +24,8 @@ async function storeSchedule(schedulList, collectionName) {
           course:{
             type: schedule.course.type,
             name: schedule.course.module.name,
-            abbrev: schedule.course.module.abbrev
+            abbrev: schedule.course.module.abbrev,
+            is_graded: schedule.course.is_graded
           },
           groupe: {
             name: schedule.course.groups[0].name,
