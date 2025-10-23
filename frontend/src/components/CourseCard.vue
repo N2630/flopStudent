@@ -1,22 +1,113 @@
 <template>
-  <div class="course-card" :style="{ borderLeft: '4px solid ' + course.color }">
-    <div class="subject">{{ course.subject }}</div>
-    <div class="time">{{ course.time }}</div>
-    <div class="duration">Durée : {{ course.duration }}</div>
-    <div class="detail">{{ course.detail }}</div>
+  <div class="course-card" :style="{ borderLeftColor: course.display.color_bg }">
+    <div class="course-header">
+      <div class="course-title" :style="{ fontWeight: course.course.is_graded ? 'bold' : 'normal' }">
+        {{ course.course.name }}
+      </div>
+      <div v-if="course.course.is_graded" class="graded-course">DS</div>
+    </div>
+    <div class="course-time">{{ formatTime(course.start_time) }} - {{ formatTime(course.start_time +getMinutesDuration(course.course.type)) }}</div>
+    <div class="course-duration">Durée: {{ getDuration(course.start_time, course.start_time + getMinutesDuration(course.course.type)) }}</div>
+    <div class="course-detail">{{ course.course.type }} - {{ course.room }}{{ course.prof ? ' - ' + course.prof : '' }}</div>
   </div>
 </template>
-<script setup>
-defineProps({ course: Object })
+<script>
+  export default {
+    name: 'CourseCard',
+    props: {
+      course: {
+        type: Object,
+        required: true
+      }
+    },
+    setup() {
+      return {};
+    },
+    methods: {
+      formatTime(minutes) {
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+      },
+
+      getDuration(startMinutes, endMinutes) {
+        const duration = endMinutes - startMinutes;
+        const hours = Math.floor(duration / 60);
+        const minutes = duration % 60;
+        if (hours > 0 && minutes > 0) {
+          return `${hours}h${minutes}`;
+        } else if (hours > 0) {
+          return `${hours}h`;
+        } else {
+          return `${minutes}min`;
+        }
+      },
+
+      getMinutesDuration(courseType) {
+        const duration = parseInt(courseType.split(/[A-Za-z]{2,}/)[1]) || 90;
+        return duration;
+      }
+    }
+  }
 </script>
+
 <style scoped>
 .course-card {
-  background: #f7f7fa;
-  margin-bottom: 1em;
-  padding: 1em;
-  border-radius: 9px;
-  box-shadow: 0 1px 4px rgba(10,10,10,0.05);
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.425);
+  border-left: 4px solid #ddd;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
-.subject { font-weight: 600; }
-.time, .duration, .detail { font-size: 0.96em; }
+
+.course-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.course-header {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+}
+
+.course-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.course-time {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 2px;
+}
+
+.course-duration {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.course-detail {
+  font-size: 12px;
+  color: #888;
+  line-height: 1.3;
+}
+
+.graded-course {
+  background-color: rgb(245, 148, 38);
+  border-radius: 10px;
+  padding: 4px;
+  font-size: 12px;
+  color: white;
+  text-align: center;
+  align-items: center;
+  width: 30px;
+  height: 25px;
+  right: 0;
+  top: 0;
+}
 </style>

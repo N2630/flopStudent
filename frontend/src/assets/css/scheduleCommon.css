@@ -1,0 +1,53 @@
+/* Styles communs pour les vues schedule (desktop et mobile) */
+
+/* Grille hebdomadaire */
+.schedule-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  max-width: 100%;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.day-column {
+  background: rgb(255, 255, 255);
+  border-radius: 12px;
+  padding: 16px;
+  width: 20%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1 1 0;
+}
+
+.day-header {
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 16px;
+  text-align: center;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.courses-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lunch-card {
+  background: #f8eacc;
+  color: #8a6d3b;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .lunch-card {
+    margin-bottom: 10px;
+  }
+}

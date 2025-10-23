@@ -17,9 +17,9 @@
           <small class="muted">{{ minutesToTime(currentSlot) }} — {{ getDayName(currentDay) }}</small>
         </div>
         <div class="card-body">
-          <div v-if="roomsFor(currentSlot).length">
+          <template v-if="roomsFor(currentSlot).length">
             <span class="room-badge" v-for="r in roomsFor(currentSlot)" :key="r">{{ r }}</span>
-          </div>
+          </template>
           <div v-else class="muted">Aucune salle libre pour le créneau actuel.</div>
         </div>
       </article>
@@ -30,9 +30,9 @@
           <small class="muted">{{ minutesToTime(nextSlot) }} — {{ getDayName(currentDay) }}</small>
         </div>
         <div class="card-body">
-          <div v-if="roomsFor(nextSlot).length">
-            <span class="room-badge" v-for="r in roomsFor(nextSlot)" :key="r">{{ r }}</span>
-          </div>
+          <template v-if="roomsFor(nextSlot).length">
+            <span class="room-badge" v-for="room in roomsFor(nextSlot)" :key="room">{{ room }}</span>
+          </template>
           <div v-else class="muted">Aucune salle libre pour le créneau suivant.</div>
         </div>
       </article>
@@ -157,23 +157,105 @@ export default {
 <style scoped>
 .free-rooms-container {
   margin-top: 24px;
+  max-width: 100%;
+  background: rgb(255, 255, 255);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1 1 0;
+  margin-bottom: 20px;
 }
+
+
 .free-rooms-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
 }
-.muted { color: #666; font-size: 0.9rem; }
-.cards { display: flex; gap: 16px; flex-wrap: wrap; }
-.card { flex: 1 1 280px; background: #fff; border-radius: 10px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); padding: 12px; border: 1px solid #e6e6e6; }
-.card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px }
-.card-body { min-height:56px; display:flex; align-items:center; flex-wrap:wrap; gap:8px }
-.room-badge { background: #1976d2; color: #fff; padding:6px 10px; border-radius:999px; font-weight:600; font-size:0.95rem }
-.btn { padding:8px 12px; border-radius:8px; cursor:pointer }
-.btn-secondary { background:#fd9797; border:2px solid #fc3939; color:#333 }
+
+
+.muted {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+
+.cards {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+
+.card {
+  display: flex;
+  flex: 1 1;
+  max-width: 100%;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  padding: 12px;
+  border: 1px solid #e6e6e6;
+}
+
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+
+.card-body {
+  min-height: 56px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(60px, max-content));
+  justify-content: start;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+
+
+.room-badge {
+  background: #1976d2;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+
+.btn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+
+.btn-secondary {
+  background: #fd9797;
+  border: 2px solid #fc3939;
+  color: #333;
+}
+
+
+.btn-secondary:hover {
+  background: #fca2a2;
+  border: 2px solid #ee4c4c;
+}
+
 
 @media (max-width: 900px) {
-  .cards { flex-direction: column; }
+  .cards {
+    flex-direction: column;
+  }
 }
 </style>
