@@ -1,7 +1,7 @@
 <template>
     <!-- Grille hebdomadaire (desktop) -->
     <div v-for="day in days" :key="day.key" class="day-column">
-        <div class="day-header">{{ day.name }}</div>
+        <div class="day-header">{{ getDayAndDate(day)}}</div>
         <div class="courses-container">
           <template v-for="(course, idx) in getCoursesForDay(day.key)" :key="course.id">
             <!-- Insérer un bloc repas si écart >= 60min avec le précédent et si créneau chevauche midi -->
@@ -14,6 +14,7 @@
 </template>
 
 <script>
+import { getDate } from '../utils/dateUtils';
 import CourseCard from './CourseCard.vue';
 
 export default {
@@ -37,6 +38,10 @@ export default {
   methods: {
     getCoursesForDay(dayKey) {
       return this.organizedSchedules[dayKey] || [];
+    },
+
+    getDayAndDate(day) {
+      return `${day.name} ${getDate(day.key)}`;
     },
 
     /**
@@ -66,14 +71,5 @@ export default {
 <style src="../assets/css/scheduleCommon.css"></style>
 
 <style scoped>
-/* Responsive desktop */
-.desktop-only {
-  display: flex;
-}
-
-@media (max-width: 768px) {
-  .desktop-only {
-    display: none;
-  }
-}
+/* desktop-only helper is centralized in src/assets/css/main.css */
 </style>

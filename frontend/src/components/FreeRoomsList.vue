@@ -233,24 +233,7 @@ export default {
 }
 
 
-.btn {
-  padding: 8px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-
-.btn-secondary {
-  background: #fd9797;
-  border: 2px solid #fc3939;
-  color: #333;
-}
-
-
-.btn-secondary:hover {
-  background: #fca2a2;
-  border: 2px solid #ee4c4c;
-}
+/* button styles centralized in main.css */
 
 
 @media (max-width: 900px) {

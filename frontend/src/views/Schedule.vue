@@ -3,7 +3,7 @@
     <!-- Navigation semaine -->
     <div class="week-navigation">
       <button @click="goToPreviousWeek" class="nav-button">‹</button>
-      <span class="week-text">Semaine du {{ weekStart }} au {{ weekEnd }} 2025</span>
+      <span class="week-text">Semaine {{ currentWeek }} - {{ currentYear }} </span>
       <button @click="goToNextWeek" class="nav-button">›</button>
     </div>
 
@@ -90,12 +90,11 @@ export default {
   methods: {
     formatDateTime,
     minutesToTime,
-    
+
     getCurrentDayIndex() {
-      const today = new Date().getDay(); // 0 = Dimanche, 1 = Lundi, ..., 5 = Vendredi
-      // Convertir en index de notre tableau (0 = Lundi, ..., 4 = Vendredi)
-      if (today === 0 || today === 6) return 0; // Weekend -> Lundi
-      return today - 1; // Lundi = 0, Mardi = 1, etc.
+      const today = new Date().getDay();
+      if (today === 0 || today === 6) return 0;
+      return today - 1;
     },
 
     async initializeWeek() {
@@ -187,9 +186,7 @@ export default {
     padding: 16px;
   }
   
-  .desktop-only {
-    display: none;
-  }
+  /* desktop-only helper is centralized in src/assets/css/main.css */
   
   .week-navigation {
     padding: 10px 16px;

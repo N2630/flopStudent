@@ -23,6 +23,9 @@
     setup() {
       return {};
     },
+    mounted(){
+      console.log(this.course)
+    },
     methods: {
       formatTime(minutes) {
         const hours = Math.floor(minutes / 60);

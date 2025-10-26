@@ -2,17 +2,19 @@
   <!-- Navigation jour (mobile) -->
   <div class="day-navigation mobile-only">
     <button 
-      v-for="(d, i) in days" 
-      :key="d.key" 
+      v-for="(day, i) in days" 
+      :key="day.key" 
       class="day-tab" 
       :class="{ active: currentDayIndex === i }"
       @click="$emit('update:currentDayIndex', i)">
-      {{ d.name.substring(0,3) }}
+      {{ day.name.substring(0,3) }}
     </button>
+    
   </div>
 
   <!-- Liste des cours (mobile) -->
   <div class="courses-list mobile-only">
+    <div class="day-header">{{ getDayAndDate(currentDayKey)}}</div>
     <template v-for="(course, idx) in getCoursesForCurrentDay()" :key="course.id">
       <!-- Insérer un bloc repas si écart >= 60min et chevauche la plage déjeuner -->
       <div v-if="shouldInsertLunch(currentDayKey, idx)" class="lunch-card">Repas</div>
@@ -23,6 +25,7 @@
 </template>
 
 <script>
+import { getDate } from '../utils/dateUtils';
 import CourseCard from './CourseCard.vue';
 
 export default {
@@ -58,6 +61,11 @@ export default {
       return this.getCoursesForDay(this.currentDayKey);
     },
 
+    getDayAndDate(dayKey) {
+      const day = this.days.find(d => d.key === dayKey);
+      return `${day.name} ${getDate(day.key)}`;
+    },
+
     /**
      * Décide si on insère un bloc repas avant le cours à l'index donné.
      * Règle: il existe un cours précédent et l'écart entre la fin de ce précédent
@@ -85,10 +93,7 @@ export default {
 <style src="../assets/css/scheduleCommon.css"></style>
 
 <style scoped>
-/* Responsive - Caché par défaut sur desktop */
-.mobile-only {
-  display: none !important;
-}
+/* mobile-only display helper is centralized in src/assets/css/main.css */
 
 /* Tabs jours (mobile) */
 .day-navigation.mobile-only {
@@ -137,10 +142,5 @@ export default {
   border-left: 4px solid #ddd;
 }
 
-/* Afficher sur mobile */
-@media (max-width: 768px) {
-  .mobile-only {
-    display: flex !important;
-  }
-}
+/* mobile-only display helper is centralized in src/assets/css/main.css */
 </style>
