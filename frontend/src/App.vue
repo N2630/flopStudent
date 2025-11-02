@@ -59,6 +59,12 @@
           </span>
           Paramètres
         </button>
+            <!-- Modal de paramètres -->
+        <SettingsParams 
+          :show="showSettingsModal" 
+          @close="closeSettingsModal"
+          @settings-saved="onSettingsSaved"
+        />
       </div>
     </aside>
     
@@ -78,13 +84,6 @@
       
       <router-view></router-view>
     </main>
-    
-    <!-- Modal de paramètres -->
-    <SettingsParams 
-      :show="showSettingsModal" 
-      @close="closeSettingsModal"
-      @settings-saved="onSettingsSaved"
-    />
   </div>
 </template>
 
