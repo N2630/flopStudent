@@ -31,9 +31,9 @@ import { fetchSchedules } from '../services/api';
 import { organizeSchedules, getWeekNumber, getYearNumber } from '../services/scheduleService';
 import { getLastSchedulesUpdate, getGroupNameView, getDept, getTrainProg, getGroup } from '../utils/storageUtils';
 import { formatDateTime, minutesToTime } from '../utils/dateUtils';
-import FreeRoomsList from '../components/FreeRoomsList.vue';
-import DesktopSchedule from '../components/DesktopSchedule.vue';
-import MobileSchedule from '../components/MobileSchedule.vue';
+import FreeRoomsList from '../components/other/FreeRoomsList.vue';
+import DesktopSchedule from '../components/schedule/DesktopSchedule.vue';
+import MobileSchedule from '../components/schedule/MobileSchedule.vue';
 
 export default {
   name: 'SchedulePage',
@@ -153,30 +153,30 @@ export default {
   gap: 16px;
   margin-bottom: 20px;
   padding: 12px 20px;
-  background: white;
+  background: var(--color-primary);
   border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--default-shadow);
 }
 
 .nav-button {
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
+  background: var(--color-neutral);
+  border: 1px solid var(--default-border-color);
   border-radius: 8px;
   padding: 8px 12px;
   cursor: pointer;
   font-size: 16px;
-  color: #333;
+  color: var(--text-default);
   transition: all 0.2s;
 }
 
 .nav-button:hover {
-  background: #e9ecef;
+  background: var(--color-bg-hover);
   transform: translateY(-1px);
 }
 
 .week-text, .day-text {
   font-weight: 600;
-  color: #333;
+  color: var(--text-default);
   font-size: 16px;
 }
 

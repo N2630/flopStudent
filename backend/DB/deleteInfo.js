@@ -83,7 +83,20 @@ async function cleanOldSchedules() {
     }
 }
 
+async function cleanMissingProfs(profsUsernames) {
+    try {
+        const profCollection = db.collection("profListe");
+        await profCollection.deleteMany({
+            username: { $in: profsUsernames }
+        });
+
+        console.log(`${profsUsernames.length} profs nettoyés de la base avec succès.`);
+    } catch (error) {
+        console.error("Erreur lors du nettoyage des professeurs manquants :", error);
+    }
+}
 module.exports = {
     cleanUnSchedulesCourse,
-    cleanOldSchedules
+    cleanOldSchedules,
+    cleanMissingProfs
 };

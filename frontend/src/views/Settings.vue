@@ -11,7 +11,7 @@
 </template>
   
 <script>
-  import SettingsParams from '../components/SettingsParams.vue';
+  import SettingsParams from '../components/other/SettingsParams.vue';
   
   export default {
     name: 'SettingsPage',

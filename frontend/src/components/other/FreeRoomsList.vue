@@ -48,9 +48,9 @@
 </template>
 
 <script>
-import { getWeekNumber, getYearNumber } from '../services/scheduleService';
-import { fetchFreeRooms } from '../services/api';
-import { formatDateTime, minutesToTime, getDayLetter, getDayName } from '../utils/dateUtils';
+import { getWeekNumber, getYearNumber } from '../../services/scheduleService';
+import { fetchFreeRooms } from '../../services/api';
+import { formatDateTime, minutesToTime, getDayLetter, getDayName } from '../../utils/dateUtils';
 
 export default {
   name: 'FreeRoomsList',
@@ -158,10 +158,10 @@ export default {
 .free-rooms-container {
   margin-top: 24px;
   max-width: 100%;
-  background: rgb(255, 255, 255);
+  background: var(--color-bg-panel);
   border-radius: 12px;
   padding: 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--default-shadow);
   flex: 1 1 0;
   margin-bottom: 20px;
 }
@@ -176,7 +176,7 @@ export default {
 
 
 .muted {
-  color: #666;
+  color: var(--text-dim);
   font-size: 0.9rem;
 }
 
@@ -194,11 +194,11 @@ export default {
   flex: 1 1;
   max-width: 100%;
   flex-direction: column;
-  background: #fff;
+  background: var(--color-bg-panel);
   border-radius: 10px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--box-shadow-strong);
   padding: 12px;
-  border: 1px solid #e6e6e6;
+  border: 1px solid var(--default-border-color);
 }
 
 
@@ -222,8 +222,8 @@ export default {
 
 
 .room-badge {
-  background: #1976d2;
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--badge-text-color);
   padding: 6px 10px;
   border-radius: 999px;
   font-weight: 600;

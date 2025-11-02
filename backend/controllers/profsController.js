@@ -1,4 +1,6 @@
 const profScheduleService = require('../services/profScheduleService');
+const profsDetailsService = require('../services/profsDetailsService');
+
 
 /**
  * Contrôleur HTTP: retourne les l'emplois du temps d'un professeur pour une année/semaine et ses initiales
@@ -24,6 +26,27 @@ const getProfSchedule = async (req, res) => {
   }
 };
 
+/**
+ * Contrôleur HTTP: retourne les l'emplois du temps d'un professeur pour une année/semaine et ses initiales
+ * Lit les paramètres depuis req.query et gère les erreurs/validations.
+ *
+ * @param {import('express').Request} req - Requête Express (query: year, week, profDet)
+ * @param {import('express').Response} res - Réponse Express
+ * @returns {Promise<void>}
+ */
+const getAllProfs = async (req, res) => {
+  try {
+    const { dept } = req.query;
+
+    const profs = await profsDetailsService.fetchAllProfs(dept);
+    res.json(profs);
+  } catch (error) {
+    console.error('Erreur dans getAllProfs:', error);
+    res.status(500).json({ message: 'Erreur lors de la récupération des données', error: error.message });
+  }
+};
+
 module.exports = {
-  getProfSchedule
+  getProfSchedule,
+  getAllProfs
 };

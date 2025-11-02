@@ -126,6 +126,18 @@ export const fetchProfSchedules = async (year, week, profDet) => {
   }
 }
 
+export const fetchProfsDetails = async (dept) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/get-profs?dept=${dept}`);
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des données :', error);
+    if (error.response?.status === 400) {
+      throw new Error('Paramètres API invalides. Veuillez vérifier votre configuration ou les données.');
+    }
+    throw error;
+  }
+}
 
 /**
  * Paramètres: récupère départements, années, groupes

@@ -23,9 +23,6 @@
     setup() {
       return {};
     },
-    mounted(){
-      console.log(this.course)
-    },
     methods: {
       formatTime(minutes) {
         const hours = Math.floor(minutes / 60);
@@ -56,17 +53,17 @@
 
 <style scoped>
 .course-card {
-  background: white;
+  background: var(--color-bg-panel);
   border-radius: 8px;
   padding: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.425);
-  border-left: 4px solid #ddd;
+  box-shadow: var(--card-shadow);
+  border-left: 4px solid var(--card-border-color);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .course-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--card-shadow-hover);
 }
 
 .course-header {
@@ -78,34 +75,34 @@
 .course-title {
   font-weight: 600;
   font-size: 14px;
-  color: #333;
+  color: var(--text-default);
   margin-bottom: 4px;
 }
 
 .course-time {
   font-size: 12px;
-  color: #666;
+  color: var(--color-muted);
   margin-bottom: 2px;
 }
 
 .course-duration {
   font-size: 12px;
-  color: #666;
+  color: var(--color-muted);
   margin-bottom: 4px;
 }
 
 .course-detail {
   font-size: 12px;
-  color: #888;
+  color: var(--text-dim);
   line-height: 1.3;
 }
 
 .graded-course {
-  background-color: rgb(245, 148, 38);
+  background-color: var(--color-graded);
   border-radius: 10px;
   padding: 4px;
   font-size: 12px;
-  color: white;
+  color: var(--text-on-graded);
   text-align: center;
   align-items: center;
   width: 30px;

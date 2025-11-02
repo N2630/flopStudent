@@ -60,8 +60,8 @@
 </template>
 
 <script>
-import { getDept, getTrainProg, getGroup, setDept, setTrainProg, setGroup } from '../utils/storageUtils';
-import { fetchDepartments, fetchTrainProgs, fetchGroups } from '../services/api';
+import { getDept, getTrainProg, getGroup, setDept, setTrainProg, setGroup } from '../../utils/storageUtils';
+import { fetchDepartments, fetchTrainProgs, fetchGroups } from '../../services/api';
 
 export default {
   name: 'SettingsParams',
@@ -245,9 +245,9 @@ export default {
 }
 
 .modal {
-  background: white;
+  background: var(--color-primary);
   border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--default-shadow);
   max-width: 500px;
   width: 100%;
   max-height: 90vh;
@@ -271,13 +271,13 @@ export default {
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--default-border-color);
 }
 
 .modal-header h2 {
   font-size: 20px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-default);
   margin: 0;
 }
 
@@ -285,7 +285,7 @@ export default {
   background: none;
   border: none;
   font-size: 24px;
-  color: #666;
+  color: var(--text-dim);
   cursor: pointer;
   padding: 4px;
   border-radius: 4px;
@@ -298,7 +298,7 @@ export default {
 }
 
 .close-button:hover {
-  background-color: #f0f0f0;
+  background-color: var(--color-bg-hover);
 }
 
 .modal-content {
@@ -306,7 +306,7 @@ export default {
 }
 
 .modal-description {
-  color: #666;
+  color: var(--text-dim);
   margin-bottom: 24px;
   line-height: 1.5;
 }
@@ -325,14 +325,14 @@ export default {
 
 .form-group label {
   font-weight: 500;
-  color: #333;
+  color: var(--text-default);
   font-size: 14px;
 }
 
 
 .loading-text {
   font-size: 12px;
-  color: #666;
+  color: var(--text-dim);
   margin-top: 4px;
   font-style: italic;
 }

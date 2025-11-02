@@ -1,7 +1,7 @@
 const axios = require('axios');
-const { storeSchedule, storeLastScheduleUpdate } = require('../DB/storeInfo'); // Importation
-const { cleanUnSchedulesCourse } = require('../DB/deleteInfo');
-const { logBox } = require('./logUtils'); // Importation
+const { storeSchedule, storeLastScheduleUpdate } = require('../../DB/storeInfo'); // Importation
+const { cleanUnSchedulesCourse } = require('../../DB/deleteInfo');
+const { logBox } = require('../logUtils'); // Importation
 
 /**
  * Récupère les cours depuis l’API flop!EDT pour chaque département,

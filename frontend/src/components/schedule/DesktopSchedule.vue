@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { getDate } from '../utils/dateUtils';
+import { getDate } from '../../utils/dateUtils';
 import CourseCard from './CourseCard.vue';
 
 export default {
@@ -51,15 +51,22 @@ export default {
      */
     shouldInsertLunch(dayKey, idx) {
       const courses = this.getCoursesForDay(dayKey);
+
       if (idx === 0) return false;
+
       const prev = courses[idx - 1];
       const curr = courses[idx];
+
       if (!prev || !curr) return false;
+
       const prevEnd = prev.start_time + 90;
       const gap = curr.start_time - prevEnd;
+
       if (gap < 60) return false;
-      const lunchStart = 11 * 60 + 30; // 11:30
-      const lunchEnd = 14 * 60 + 30;   // 14:30
+
+      const lunchStart = 11 * 60 + 30;
+      const lunchEnd = 14 * 60 + 30;
+
       // Le créneau de pause [prevEnd, curr.start] chevauche la plage déjeuner ?
       const overlap = Math.max(0, Math.min(curr.start_time, lunchEnd) - Math.max(prevEnd, lunchStart));
       return overlap >= 30; // au moins 30min dans la plage déjeuner
@@ -68,7 +75,7 @@ export default {
 };
 </script>
 
-<style src="../assets/css/scheduleCommon.css"></style>
+<style src="../../assets/css/scheduleCommon.css"></style>
 
 <style scoped>
 /* desktop-only helper is centralized in src/assets/css/main.css */

@@ -22,7 +22,7 @@
 .day-header {
   font-weight: 600;
   font-size: 16px;
-  color: #333;
+  color: var(--text-default);
   margin-bottom: 16px;
   text-align: center;
   padding-bottom: 8px;
@@ -36,8 +36,8 @@
 }
 
 .lunch-card {
-  background: #f8eacc;
-  color: #8a6d3b;
+  background: var(--color-lunch);
+  color: var(--color-lunch-text);
   border-radius: 8px;
   padding: 12px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);

@@ -2,11 +2,12 @@
   "compilerOptions": {
     "target": "es5",
     "module": "esnext",
-    "baseUrl": "./",
+    "baseUrl": ".",
     "moduleResolution": "node",
+    "allowJs": true,
     "paths": {
       "@/*": [
-        "./src/views/*"
+        "src/*"
       ]
     },
     "lib": [
@@ -15,5 +16,9 @@
       "dom.iterable",
       "scripthost"
     ]
-  }
+  },
+  "include": [
+    "src/**/*",
+    "types/**/*"
+  ]
 }

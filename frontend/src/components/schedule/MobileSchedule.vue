@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { getDate } from '../utils/dateUtils';
+import { getDate } from '../../utils/dateUtils';
 import CourseCard from './CourseCard.vue';
 
 export default {
@@ -88,9 +88,10 @@ export default {
     }
   }
 };
+
 </script>
 
-<style src="../assets/css/scheduleCommon.css"></style>
+<style src="../../assets/css/scheduleCommon.css"></style>
 
 <style scoped>
 /* mobile-only display helper is centralized in src/assets/css/main.css */
@@ -102,36 +103,36 @@ export default {
   align-items: center;
   justify-content: center;
   margin-bottom: 10px;
-  background: white;
+  background: var(--color-bg-panel);
   border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--default-shadow);
   padding: 12px 20px;
 }
 
 .day-tab {
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
+  background: var(--color-primary);
+  border: 1px solid var(--default-border-color);
   border-radius: 8px;
   padding: 8px 12px;
   cursor: pointer;
   font-size: 14px;
-  color: #333;
+  color: var(--text-default);
 }
 
 .day-tab.active {
-  background: #e3f2fd;
-  color: #1976d2;
-  border-color: #bbdefb;
+  background: var(--mobile-dayBtn-bg);
+  color: var(--mobile-dayBtn-color);
+  border-color: var(--mobile-dayBtn-border);
   font-weight: 600;
 }
 
 /* Liste des cours (mobile) */
 .courses-list {
   flex-direction: column;
-  background: rgb(255, 255, 255);
+  background: var(--color-primary);
   border-radius: 12px;
   padding: 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--default-shadow);
   flex: 1 1 0;
   margin-bottom: 20px;
 }
@@ -139,7 +140,6 @@ export default {
 .courses-list .course-card {
   border-top: none;
   margin-bottom: 10px;
-  border-left: 4px solid #ddd;
 }
 
 /* mobile-only display helper is centralized in src/assets/css/main.css */

@@ -1,6 +1,6 @@
 const axios = require("axios");
-const { storeGroupsStructure } = require("../DB/storeInfo");
-const { logBox } = require("./logUtils");
+const { storeGroupsStructure } = require("../../DB/storeInfo");
+const { logBox } = require("../logUtils");
 
 async function fetchData(dept) {
   const [structRes, trainProgRes] = await Promise.all([

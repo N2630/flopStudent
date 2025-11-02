@@ -1,7 +1,8 @@
 const express = require('express');
 const { connectToDatabase } = require('./config/connectDb');
-const { fetchAndStoreSchedules } = require('./utils/fetchAndStoreSchedules');
-const { fetchAndStoreGroups } = require('./utils/fetchAndStoreGroups')
+const { fetchAndStoreSchedules } = require('./utils/fetchAndStore/fetchAndStoreSchedules');
+const { fetchAndStoreGroups } = require('./utils/fetchAndStore/fetchAndStoreGroups')
+const { fetchAndStoreProfs } = require('./utils/fetchAndStore/fetchAndStoreProfs');
 const { updateSchedulesAndClean } = require('./utils/scheduleTasks'); // Importation des fonctions groupées
 const { getWeekAndYear } = require("./utils/dateUtils")
 const cron = require('node-cron');
@@ -71,6 +72,7 @@ async function initializeServer() {
   try {
     console.log("Récupération initiale des données...");
     //await fetchAndStoreGroups();
+    //await fetchAndStoreProfs();
     //await updateSchedulesAndClean(); 
 
     console.log("Initialisation du serveur terminée avec succès.");

@@ -212,6 +212,18 @@ async function getDeptTrainGroups(dept, train_prog) {
     throw error;
   }
 }
+
+async function getAllProfs(dept) {
+  try {
+    const query = dept ? { departments: { $in: [dept] } } : {};
+    const profs = await db.collection('profListe').find(query).toArray();
+    return profs;
+  } catch (error) {
+    console.error('Erreur DB getAllProf:', error);
+    throw error;
+  }
+}
+
 module.exports = {
     getSchedule,
     getUsedRoom,
@@ -219,5 +231,6 @@ module.exports = {
     getProfSchedule,
     getAllDepartments,
     getDaptTrainProgs,
-    getDeptTrainGroups
+    getDeptTrainGroups,
+    getAllProfs
 };

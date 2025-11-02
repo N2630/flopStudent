@@ -1,5 +1,5 @@
 const { getWeekAndYear } = require('./dateUtils'); 
-const { fetchAndStoreSchedules } = require('./fetchAndStoreSchedules');
+const { fetchAndStoreSchedules } = require('./fetchAndStore/fetchAndStoreSchedules');
 const { cleanOldSchedules } = require('../DB/deleteInfo');
 const clearSchedule = process.env.CLEAR_SCHEDULE_OPTION || true;
 
