@@ -63,3 +63,38 @@ export function getDayName(dayLetter, short = false) {
     : { m: 'Lundi', tu: 'Mardi', w: 'Mercredi', th: 'Jeudi', f: 'Vendredi' };
   return days[dayLetter] || (short ? 'Jour inconnu' : 'Jour inconnu');
 }
+
+/**
+ * Retourne la date (jj/mm) du jour de la semaine correspondant à dayLetter,
+ * en se basant sur la semaine courante (référence = aujourd'hui).
+ *
+ * Réutilise getDayLetter et formatDateTime pour éviter les duplications.
+ *
+ * @param {string} dayLetter - Lettre du jour ("m", "tu", "w", "th", "f")
+ * @returns {string} - Exemple : "16/09" ou '' si non trouvé
+ */
+export function getDate(dayLetter) {
+  if (!dayLetter) return '';
+
+  const dayMap = { m: 1, tu: 2, w: 3, th: 4, f: 5 }; // 1 = lundi ...
+  const targetDayIndex = dayMap[dayLetter];
+  if (!targetDayIndex) return '';
+
+  const now = new Date();
+  const currentDay = now.getDay(); // 0 = dim, 1 = lun, ...
+  const daysSinceMonday = (currentDay + 6) % 7;
+  const monday = new Date(now);
+  monday.setHours(0, 0, 0, 0);
+  monday.setDate(now.getDate() - daysSinceMonday);
+
+  const candidate = new Date(monday);
+  candidate.setDate(monday.getDate() + (targetDayIndex - 1));
+
+  // Vérification de cohérence via getDayLetter
+  if (getDayLetter(candidate) !== dayLetter) return '';
+
+  const full = formatDateTime(candidate); // ex: "16/09/2024, 00:00:00"
+  const datePart = full.split(',')[0]; // "16/09/2024"
+  const [dd, mm] = datePart.split('/');
+  return `${dd}/${mm}`;
+}

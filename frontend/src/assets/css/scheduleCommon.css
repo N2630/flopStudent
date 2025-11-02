@@ -1,0 +1,131 @@
+/* Styles communs pour les vues schedule (desktop et mobile) */
+.schedule-page {
+  padding: 20px;
+  max-width: 95%;
+  margin: 0 auto;
+}
+
+/* Navigation */
+.week-navigation, .day-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 12px 20px;
+  background: var(--color-primary);
+  border-radius: 12px;
+  box-shadow: var(--default-shadow);
+}
+
+.nav-button {
+  background: var(--color-neutral);
+  border: 1px solid var(--default-border-color);
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--text-default);
+  transition: all 0.2s;
+}
+
+.nav-button:hover {
+  background: var(--color-bg-hover);
+  transform: translateY(-1px);
+}
+
+.week-text, .day-text {
+  font-weight: 600;
+  color: var(--text-default);
+  font-size: 16px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .schedule-page {
+    padding: 16px;
+  }
+  
+  /* desktop-only helper is centralized in src/assets/css/main.css */
+  
+  .week-navigation {
+    padding: 10px 16px;
+    margin-bottom: 16px;
+  }
+  
+  .week-text {
+    font-size: 14px;
+  }
+  
+  .nav-button {
+    padding: 6px 10px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .schedule-page {
+    padding: 12px;
+  }
+  
+  .week-navigation {
+    padding: 8px 12px;
+    gap: 12px;
+  }
+  
+  .week-text {
+    font-size: 13px;
+  }
+}
+
+/* Grille hebdomadaire */
+.schedule-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  max-width: 100%;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.day-column {
+  background: rgb(255, 255, 255);
+  border-radius: 12px;
+  padding: 16px;
+  width: 20%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1 1 0;
+}
+
+.day-header {
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text-default);
+  margin-bottom: 16px;
+  text-align: center;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.courses-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lunch-card {
+  background: var(--color-lunch);
+  color: var(--color-lunch-text);
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .lunch-card {
+    margin-bottom: 10px;
+  }
+}

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { isDateCurrent } from './utils';
 import { updateConnectionStatus } from './connectionStore';
-import { getDept, getTrainProg, getGroup, getLastSchedulesUpdate, setLastSchedulesUpdate, getSchedule, setSchedule } from '../utils/storageUtils';
+import { getDept, getTrainProg, getGroup,setLastSchedulesUpdate, getSchedule, setSchedule } from '../utils/storageUtils';
 
 /**
  * URL de base de l’API backend.
@@ -39,7 +39,6 @@ export const fetchSchedules = async (year, week) => {
   const dept = getDept();
   const train_prog = getTrainProg();
   const groupe = getGroup();
-  const localLastUpdate = getLastSchedulesUpdate();
   let backendJoinable = true;
   let remoteLastSchedulesUpdate;
 
@@ -55,12 +54,6 @@ export const fetchSchedules = async (year, week) => {
   } catch(error) {
     console.log(error);
     backendJoinable = false;
-  }
-
-  // Si la dernière MAJ distante est identique au cache local et que la date est courante → renvoyer le cache
-  if (remoteLastSchedulesUpdate && JSON.stringify(remoteLastSchedulesUpdate.data) === JSON.stringify(localLastUpdate) && await isDateCurrent(year, week)) {
-    const localSchedule = getSchedule();
-    return Array.isArray(localSchedule) ? localSchedule : (localSchedule || []);
   }
 
   try {
@@ -116,6 +109,69 @@ export const fetchFreeRooms = async (year, week) => {
     if (error.response?.status === 400) {
       throw new Error('Paramètres API invalides. Veuillez vérifier votre configuration ou les données.');
     }
+    throw error;
+  }
+}
+
+export const fetchProfSchedules = async (year, week, profDet) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/get-prof-schedule?year=${year}&week=${week}&profDet=${profDet}`);
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des données :', error);
+    if (error.response?.status === 400) {
+      throw new Error('Paramètres API invalides. Veuillez vérifier votre configuration ou les données.');
+    }
+    throw error;
+  }
+}
+
+export const fetchProfsDetails = async (dept) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/get-profs?dept=${dept}`);
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des données :', error);
+    if (error.response?.status === 400) {
+      throw new Error('Paramètres API invalides. Veuillez vérifier votre configuration ou les données.');
+    }
+    throw error;
+  }
+}
+
+/**
+ * Paramètres: récupère départements, années, groupes
+ */
+export async function fetchDepartments() {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/get-departments`);
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des départements:', error);
+    throw error;
+  }
+}
+
+export async function fetchTrainProgs(dept) {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/get-train-progs`, {
+      params: { dept }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des années:', error);
+    throw error;
+  }
+}
+
+export async function fetchGroups(dept, trainProg) {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/get-groups`, {
+      params: { dept, train_prog: trainProg }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des groupes:', error);
     throw error;
   }
 }

@@ -131,4 +131,111 @@ export default {
 };
 </script>
 
-<style src="../assets/css/infos.css"></style>
+<style scoped>
+.info-page {
+  padding: 20px;
+  max-width: 950px;
+  margin: 0 auto;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-default);
+}
+
+.main-info {
+  background: var(--color-bg-panel);
+  padding: 20px;
+  border-radius: var(--card-radius);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid var(--card-border-color);
+}
+
+.main-info h1 {
+  margin: 0 0 6px 0;
+  font-size: 1.5rem;
+  color: var(--text-default);
+}
+
+.main-info-texte {
+  background: var(--color-neutral);
+  padding: 16px;
+  border-radius: 8px;
+  color: var(--text-default);
+}
+
+.main-info-texte ul {
+    list-style-type: disc; 
+    padding-left: 28px;
+}
+
+.links {
+  color: var(--sidebar-item-selected-text);
+  font-weight: 600;
+}
+
+.separator {
+  margin-top: 28px;
+  border-top: 1px solid var(--default-border-color);
+  padding-top: 28px;
+}
+
+.faq-section {
+  background: var(--color-bg-panel);
+  padding: 18px;
+  border-radius: var(--card-radius);
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--card-border-color);
+}
+
+.faq-item { width: 100%; }
+
+.faq-question {
+  background: var(--color-bg-panel);
+  border: 1px solid var(--default-border-color);
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 10px 14px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.faq-question:hover {
+  background: var(--color-bg-hover);
+}
+
+.faq-answer {
+  padding: 12px 14px;
+  background: var(--color-neutral);
+  border-radius: 0 0 6px 6px;
+  margin-bottom: 6px;
+  border-left: 3px solid var(--sidebar-item-selected-text);
+  font-size: 0.98rem;
+  color: var(--text-default);
+}
+
+.chevron {
+  display: inline-block;
+  width: 1.4em;
+  font-size: 1.1em;
+  color: var(--sidebar-item-selected-text);
+  margin-left: 8px;
+  transition: transform 0.2s ease;
+}
+.chevron.open { transform: rotate(90deg); }
+
+@media (max-width: 720px) {
+  .info-page { padding: 12px; }
+  .main-info h1 { font-size: 1.25rem; }
+}
+</style>

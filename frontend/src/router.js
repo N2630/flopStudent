@@ -2,6 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router';
 import SettingsPage from './views/Settings.vue';
 import SchedulePage from './views/Schedule.vue';
 import InfoPage from './views/Info.vue'; // Importez le nouveau composant Info.vue
+import SesamePage from './views/Sesame.vue';
+import ProfSearcher from './views/ProfSearcher.vue';
+import ProfDetail from './views/ProfDetail.vue';
 
 const routes = [
   {
@@ -21,6 +24,24 @@ const routes = [
     name: 'InfoPage',
     component: InfoPage,
     meta: { title: 'Informations - Flop Student' }
+  },
+  {
+    path: '/sesame',
+    name: 'SesamePage',
+    component: SesamePage,
+    meta: { title: 'Sesame - Flop Student' }
+  },
+  {
+    path: '/profs',
+    name: 'ProfSearcher',
+    component: ProfSearcher,
+    meta: { title: 'Professeurs - Flop Student' }
+  },
+  {
+    path: '/profs/:username',
+    name: 'ProfDetail',
+    component: ProfDetail,
+    meta: { title: 'Professeur - Flop Student' }
   },
   {
     path: '/',

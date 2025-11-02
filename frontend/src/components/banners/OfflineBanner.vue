@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { connectionStore, hideOfflineBanner } from '../services/connectionStore';
+import { connectionStore, hideOfflineBanner } from '../../services/connectionStore';
 
 export default {
   name: 'OfflineBanner',
@@ -41,8 +41,8 @@ export default {
 .banner-content {
   display: flex;
   align-items: center;
+  background: linear-gradient(135deg, #ff4d07, #ff7707); /* Orange gradient */
   padding: 12px 20px;
-  max-width: 1200px;
   margin: 0 auto;
   gap: 15px;
 }

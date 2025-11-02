@@ -11,36 +11,76 @@ const { db } = require('../config/connectDb');
  * @param {string} tdGroup - Numéro de groupe extrait (ex: "1")
  * @returns {Promise<Array<Object>>} - Tableau des cours
  */
-async function getSchedule(year, week, dept, train_prog, groupe, tdGroup) {
-    const query = {
-      $and: [
-        {'date.week': parseInt(week)},
-        {'date.year': parseInt(year)},
-        {
-          $or: [
-            {
-              $and: [
-                { 'groupe.name': groupe },
-                { 'groupe.train_prog': train_prog }
-              ]
-            },
-            {
-              $and: [
-                { 'groupe.name': tdGroup },
-                { 'groupe.train_prog': train_prog }
-              ]
-            },
-            {
-              $and: [
-                { 'groupe.name': "CE" },
-                { 'groupe.train_prog': train_prog }
-              ]
-            }
+async function getSchedule(year, week, dept, train_prog, groupe) {
+  const query = [
+    {
+      // Trouver le groupe cible (ex: "1")
+      "$match": {
+        "dept": dept,
+        "train_prog": train_prog,
+        "$or": [
+          { "tdGroup": groupe },              // Si c'est un TD
+          { "subGroups": { "$in": [groupe] } } // Si c'est déjà un sous-groupe d'un parent
+        ]
+      }
+    },
+    {
+      // Trouver dynamiquement tous les "parents" (ici, potentiellement "12") du groupe de TD
+      "$graphLookup": {
+        "from": "groupsStructure",
+        "startWith": groupe,
+        "connectFromField": "tdGroup",
+        "connectToField": "subGroups",
+        "as": "parents",
+        "restrictSearchWithMatch": {
+          "dept": dept,
+          "train_prog": train_prog
+        }
+      }
+    },
+    {
+      // Définir dynamiquement la liste des groupes à utiliser pour la recherche des cours
+      "$addFields": {
+        "allGroups": {
+          "$concatArrays": [
+            [groupe],
+            { "$map": { "input": "$parents", "as": "p", "in": "$$p.tdGroup" } }
           ]
         }
-      ]
-    };
-    return await db.collection(dept.toLowerCase()).find(query).toArray();
+      }
+    },
+    {
+      // Lookup dans info avec tous les groupes trouvés (le TD et les parents englobants potentiels)
+      "$lookup": {
+        "from": dept.toLowerCase(),
+        "let": {
+          "groups": "$allGroups",
+          "train_prog": "$train_prog"
+        },
+        "pipeline": [
+          {
+            "$match": {
+              "$expr": {
+                "$and": [
+                  { "$eq": [ { "$getField": { "field": "week", "input": "$date" } }, parseInt(week) ] },
+                  { "$eq": [ { "$getField": { "field": "year", "input": "$date" } }, parseInt(year) ] },
+                  { "$eq": [ "$groupe.train_prog", "$$train_prog" ] },
+                  { "$or": [
+                    { "$in": [ "$groupe.name", "$$groups" ] },
+                    { "$in": [ "$groupe.name", ["CE", train_prog] ] }
+                  ]},
+                ]
+              }
+            }
+          }
+        ],
+        "as": "courses"
+      }
+    }
+  ];
+  
+  const schedule = await db.collection("groupsStructure").aggregate(query).toArray();
+  return schedule[0].courses;
 }
 
 /**
@@ -91,8 +131,106 @@ async function getLastScheduleUpdate(year, week) {
   }
 }
 
+async function getProfSchedule(year, week, profDet) {
+  const query = {
+    $and: [
+      {'date.week': parseInt(week)},
+      {'date.year': parseInt(year)},
+      {'prof':profDet}
+    ]
+  };
+  return await db.collection("all_courses").find(query).toArray();
+}
+
+async function getAllDepartments() {
+  try {
+    const docs = await db.collection('groupsStructure').aggregate([
+      { $group: { _id: "$dept" } },
+      { $sort: { _id: 1 } }
+    ]).toArray();
+    return docs.map(d => d._id).filter(Boolean);
+  } catch (error) {
+    console.error('Erreur DB getAllDepartments:', error);
+    throw error;
+  }
+}
+
+async function getDaptTrainProgs(dept) {
+  try {
+    const docs = await db.collection('groupsStructure').aggregate([
+      { $match: { dept } },
+      { $group: { _id: "$train_prog" } },
+      { $sort: { _id: 1 } }
+    ]).toArray();
+    return docs.map(d => d._id).filter(Boolean);
+  } catch (error) {
+    console.error('Erreur DB getDaptTrainProgs:', error);
+    throw error;
+  }
+}
+
+async function getDeptTrainGroups(dept, train_prog) {
+  try {
+    const result = await db.collection("groupsStructure").aggregate([
+      { $match: { dept: dept, train_prog: train_prog } },
+      {
+        $group: {
+          _id: null,
+          allParents: { $addToSet: "$tdGroup" },
+          allSubGroups: { $push: "$subGroups" }
+        }
+      },
+      {
+        $project: {
+          subGroupsFlattened: {
+            $reduce: {
+              input: "$allSubGroups",
+              initialValue: [],
+              in: { $concatArrays: ["$$value", "$$this"] }
+            }
+          },
+          allParents: 1
+        }
+      },
+      {
+        $project: {
+          finalGroups: {
+            $filter: {
+              input: "$subGroupsFlattened",
+              as: "sg",
+              cond: { $not: { $in: ["$$sg", "$allParents"] } }
+            }
+          }
+        }
+      }
+    ]).toArray();
+    
+    // Retourner directement le tableau de groupes finaux
+    return result.length > 0 ? result[0].finalGroups : [];
+  } catch (error) {
+    console.error('Erreur DB getDeptTrainGroups:', error);
+    throw error;
+  }
+}
+
+async function getAllProfs(dept) {
+  try {
+    const query = dept ? { departments: { $in: [dept] } } : {};
+    const profs = await db.collection('profListe').find(query).toArray();
+    return profs;
+  } catch (error) {
+    console.error('Erreur DB getAllProf:', error);
+    throw error;
+  }
+}
+
 module.exports = {
     getSchedule,
     getUsedRoom,
-    getLastScheduleUpdate
+    getLastScheduleUpdate,
+    getProfSchedule,
+    getAllDepartments,
+    getDaptTrainProgs,
+    getDeptTrainGroups,
+    getAllProfs
 };

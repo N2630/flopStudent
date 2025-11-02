@@ -79,7 +79,52 @@ async function storeLastScheduleUpdate(year, week) {
   }
 }
 
+async function storeGroupsStructure(groupList) {
+  try{
+    const collection = db.collection("groupsStructure");
+    
+    for(group of groupList) {
+      await collection.updateOne(
+        { _id: group._id },
+        { $set: group },
+        { upsert: true }
+      );      
+    }
+
+    console.log(`Maj des groups effectué.`);
+  }catch(error) {
+      console.error("Erreur lors de la sauvegarde des données :", error)
+      return
+  }
+}
+
+async function storeProfs(profList) {
+  try{
+    const collection = db.collection("profListe");
+
+    for (const prof of profList) {
+      await collection.updateOne(
+        { username: prof.username },
+        { $set: {
+          first_name: prof.first_name,
+          last_name: prof.last_name,
+          email: prof.email,
+          departments: prof.departments
+        }},
+        { upsert: true }
+      );
+    }
+
+    console.log(`${profList.length} mis à jour/ajouté à la base avec succès.`);
+  }catch(error) {
+      console.error("Erreur lors de la sauvegarde des données :", error)
+      return
+  }
+}
+
 module.exports = {
     storeSchedule,
-    storeLastScheduleUpdate
+    storeLastScheduleUpdate,
+    storeGroupsStructure,
+    storeProfs
 };
