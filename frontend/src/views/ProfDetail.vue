@@ -11,7 +11,10 @@
     <div v-else class="prof-panel">
         <header class="prof-header">
             <div>
-                <h1>{{ prof.username }}</h1>
+                <div class="abbrev">
+                  <h1>{{ prof.username }}</h1> 
+                </div>
+
                 <div class="name-info">
                     <p><strong>Nom de famille :</strong> {{ prof.last_name }} </p>
                     <p><strong>Prénom :</strong> {{ prof.first_name }} </p>
@@ -32,30 +35,29 @@
             </div>
         </header>
       
-        <div class="profSchedule">
-            <div class="week-navigation">
-                <button @click="goToPreviousWeek" class="nav-button">‹</button>
-                <span class="week-text">Semaine {{ currentWeek }} - {{ currentYear }} </span>
-                <button @click="goToNextWeek" class="nav-button">›</button>
-            </div>
-
-            <!-- Grille hebdomadaire (desktop) -->
-            <div class="schedule-grid desktop-only">
-            <DesktopSchedule 
-                :organizedSchedules="organizedSchedules" 
-                :days="days" />
-            </div>
-
-            <!-- Vue mobile -->
-            <MobileSchedule 
-            :organizedSchedules="organizedSchedules" 
-            :days="days"
-            :currentDayIndex="currentDayIndex"
-            @update:currentDayIndex="currentDayIndex = $event" />
-        </div>
-      
     </div>
 
+    <div class="profSchedule">
+      <div class="week-navigation">
+        <button @click="goToPreviousWeek" class="nav-button">‹</button>
+          <span class="week-text">Semaine {{ currentWeek }} - {{ currentYear }} </span>
+          <button @click="goToNextWeek" class="nav-button">›</button>
+      </div>
+
+      <!-- Grille hebdomadaire (desktop) -->
+      <div class="schedule-grid desktop-only">
+        <DesktopSchedule 
+          :organizedSchedules="organizedSchedules" 
+          :days="days" />
+      </div>
+
+      <!-- Vue mobile -->
+      <MobileSchedule 
+        :organizedSchedules="organizedSchedules" 
+        :days="days"
+        :currentDayIndex="currentDayIndex"
+        @update:currentDayIndex="currentDayIndex = $event" />
+    </div>
   </div>
 </template>
 
@@ -113,13 +115,12 @@ export default {
       if (res && res.data) {
         const data = res.data;
         if (Array.isArray(data)) {
-          // try to find matching username inside returned array; fallback to first element
           this.prof = data.find(p => String(p.username).toLowerCase() === String(username).toLowerCase()) || data[0] || null;
         } else {
           this.prof = data.prof || data;
         }
       }
-      // if we found a prof from network, initialize schedule data
+      
       if (this.prof) {
         await this.initializeWeek();
         await this.loadSchedules();
@@ -209,6 +210,7 @@ export default {
 };
 </script>
 
+<style src="../assets/css/scheduleCommon.css"></style>
 <style scoped>
 /* Layout */
 .prof-detail-page {
@@ -219,6 +221,8 @@ export default {
   background: var(--color-bg-panel);
   padding: 18px;
   border-radius: 10px;
+  margin-bottom: 10px;
+  box-shadow: var(--box-shadow-strong, none);
 }
 
 .name-info {
@@ -226,6 +230,24 @@ export default {
 }
 
 /* Email copy button */
+.abbrev { 
+  background: var(--text-default); 
+  color: var(--badge-text-color); 
+  padding: 18px;
+  width:40px; 
+  height:40px; 
+  display:flex; 
+  align-items:center; 
+  justify-content:center; 
+  border-radius:8px; 
+  font-weight:700;
+}
+
+.abbrev h1 {
+    margin: 0;
+    font-size: 1rem;
+}
+
 .email {
     gap: 10px;
     display: flex;
