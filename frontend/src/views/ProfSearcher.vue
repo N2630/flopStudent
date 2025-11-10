@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import ProfCard from '../components/ProfCard.vue';
+import ProfCard from '../components/other/ProfCard.vue';
 import { setProfs } from '../services/profStore';
 import { fetchProfsDetails } from '../services/api';
 import { getDept } from '@/utils/storageUtils';

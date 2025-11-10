@@ -28,6 +28,12 @@ export default {
       type: Array,
       required: true
     }
+    ,
+    initialDate: {
+      // optional; parent can pass the reference date (Date or ISO string)
+      type: [String, Object],
+      required: false
+    }
   },
   components: {
     CourseCard
@@ -41,7 +47,9 @@ export default {
     },
 
     getDayAndDate(day) {
-      return `${day.name} ${getDate(day.key)}`;
+      // If parent provides an initialDate prop, use it as reference (week selection)
+      const ref = this.initialDate || undefined;
+      return `${day.name} ${getDate(day.key, ref)}`;
     },
 
     /**

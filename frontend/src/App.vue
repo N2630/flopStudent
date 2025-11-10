@@ -48,7 +48,7 @@
           Sesame
         </router-link>
       </nav>
-      
+
       <div class="sidebar-footer">
         <button @click="openSettingsModal" class="settings-btn">
           <span class="nav-icon">
@@ -62,10 +62,8 @@
       </div>
     </aside>
     
-    <!-- Overlay pour mobile -->
     <div :class="{'overlay': true, 'active': isSidebarOpen}" @click="toggleSidebar"></div>
 
-    <!-- Main content -->
     <main class="main-content">
       <header class="main-header">
         <button @click="toggleSidebar" class="menu-button">☰</button>
@@ -79,7 +77,7 @@
       <router-view></router-view>
     </main>
     
-    <!-- Modal de paramètres -->
+
     <SettingsParams 
       :show="showSettingsModal" 
       @close="closeSettingsModal"
@@ -259,9 +257,8 @@ body {
   top: 0;
   left: -300px;
   width: 300px;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   background: var(--color-bg-main);
-
   transition: left 0.3s ease;
   z-index: 1000;
   display: flex;
@@ -309,7 +306,7 @@ body {
 
 .sidebar-nav {
   flex: 1;
-  padding: 20px 0;
+  padding: 20px 0 120px 0;
 }
 
 .nav-item {
@@ -345,6 +342,10 @@ body {
 .sidebar-footer {
   padding: 20px;
   border-top: 1px solid var(--sidebar-border-color);
+  position: absolute;
+  bottom: 16px;
+  left: 0;
+  right: 0;
 }
 
 .settings-btn {

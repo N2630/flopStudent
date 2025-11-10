@@ -11,7 +11,9 @@
     <div class="schedule-grid desktop-only">
       <DesktopSchedule 
         :organizedSchedules="organizedSchedules" 
-        :days="days" />
+        :days="days"
+        :initialDate="initialDate" 
+      />
     </div>
 
     <!-- Vue mobile -->
@@ -19,7 +21,9 @@
       :organizedSchedules="organizedSchedules" 
       :days="days"
       :currentDayIndex="currentDayIndex"
-      @update:currentDayIndex="currentDayIndex = $event" />
+      @update:currentDayIndex="currentDayIndex = $event"
+      :initialDate="initialDate" 
+    />
 
     <!-- Salles libres -->
     <FreeRoomsList />

@@ -212,24 +212,34 @@ export default {
 
 .card-body {
   min-height: 56px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(60px, max-content));
-  justify-content: start;
+  /* Use a simple flex layout for badges to avoid unexpected grid gaps
+     on small widths and to make alignment consistent across devices. */
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  justify-content: flex-start;
   gap: 8px;
   overflow: hidden;
 }
 
 
 .room-badge {
-  background: var(--color-primary);
-  color: var(--badge-text-color);
-  padding: 6px 10px;
-  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--text-default);
+  color: var(--color-primary);
+  width: 60px;
+  height: 44px;
+  padding: 12px;
+  border-radius: 60px;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
+  line-height: 1;
+  text-align: center;
+  overflow: hidden;
   white-space: nowrap;
-  flex-shrink: 0;
+  text-overflow: ellipsis;
 }
 
 

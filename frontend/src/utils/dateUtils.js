@@ -66,21 +66,20 @@ export function getDayName(dayLetter, short = false) {
 
 /**
  * Retourne la date (jj/mm) du jour de la semaine correspondant à dayLetter,
- * en se basant sur la semaine courante (référence = aujourd'hui).
- *
- * Réutilise getDayLetter et formatDateTime pour éviter les duplications.
+ * en se basant sur une date de référence (par défaut : aujourd'hui).
  *
  * @param {string} dayLetter - Lettre du jour ("m", "tu", "w", "th", "f")
+ * @param {Date|string} [referenceDate] - Date ou chaîne convertible en Date à utiliser comme référence
  * @returns {string} - Exemple : "16/09" ou '' si non trouvé
  */
-export function getDate(dayLetter) {
+export function getDate(dayLetter, referenceDate) {
   if (!dayLetter) return '';
 
   const dayMap = { m: 1, tu: 2, w: 3, th: 4, f: 5 }; // 1 = lundi ...
   const targetDayIndex = dayMap[dayLetter];
   if (!targetDayIndex) return '';
 
-  const now = new Date();
+  const now = referenceDate ? new Date(referenceDate) : new Date();
   const currentDay = now.getDay(); // 0 = dim, 1 = lun, ...
   const daysSinceMonday = (currentDay + 6) % 7;
   const monday = new Date(now);

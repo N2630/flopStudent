@@ -46,6 +46,11 @@ export default {
       type: Number,
       required: true
     }
+    ,
+    initialDate: {
+      type: [String, Object],
+      required: false
+    }
   },
   computed: {
     currentDayKey() {
@@ -63,7 +68,9 @@ export default {
 
     getDayAndDate(dayKey) {
       const day = this.days.find(d => d.key === dayKey);
-      return `${day.name} ${getDate(day.key)}`;
+      if (!day) return '';
+      const ref = this.initialDate || undefined;
+      return `${day.name} ${getDate(day.key, ref)}`;
     },
 
     /**
