@@ -53,7 +53,7 @@
 
 <style scoped>
 .course-card {
-  background: var(--color-bg-panel);
+  background: var(--color-course-card-bg);
   border-radius: 8px;
   padding: 12px;
   box-shadow: var(--card-shadow);

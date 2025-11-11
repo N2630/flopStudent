@@ -197,6 +197,7 @@ export default {
 .faq-question {
   background: var(--color-bg-panel);
   border: 1px solid var(--default-border-color);
+  color: var(--text-default);
   font-weight: 600;
   font-size: 1rem;
   padding: 10px 14px;

@@ -261,6 +261,7 @@ export default {
 .email-copy {
   background-color: var(--color-bg-panel);
   border:2px solid var(--default-border-color);
+  color: var(--text-default);
   border-radius: 8px;
   padding: 6px;
   cursor: pointer;

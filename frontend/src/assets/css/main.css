@@ -1,60 +1,3 @@
-:root {
-  /* Semantic colors */
-  --color-primary: #ffffff;
-  --color-bg-main: #f5f5f5;
-  --color-bg-panel: #ffffff;
-  --color-bg-hover: #f0f0f0;
-  --color-neutral: #f8f9fa;
-
-  /* Text colors */
-  --text-default: #333333;
-  --text-subtitle-default: #666666;
-  --text-dim: #888888;
-  --color-muted: #6c757d;
-  --text-on-primary: #ffffff;
-  --text-on-graded: #ffffff;
-
-  /* Semantic accents */
-  --color-lunch: #f8eacc;
-  --color-lunch-text: #8a6d3b;
-  --color-graded: rgb(245,148,38);
-  --color-danger: #fc3939;
-
-  /* Borders / shadows */
-  --default-border-color: #e9ecef;
-  --card-border-color: #e6e6e6;
-  --form-border-color: #dddddd;
-  --box-shadow-strong: 0 6px 18px rgba(0, 0, 0, 0.08);
-  --default-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
-  /* Cards */
-  --card-radius: 10px;
-  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.425);
-  --card-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.15);
-
-  /* Sidebar */
-  --sidebar-border-color: #eeeeee;
-  --sidebar-item-hover-bg: #cedde7;
-  --sidebar-item-selected-bg: #e3f2fd;
-  --sidebar-item-selected-text: #1976d2;
-  --sidebar-param-border-color: #d2d3d4;
-  --sidebar-param-border-hover-color: #e9ecef;
-
-  /* Mobile day button */
-  --mobile-dayBtn-bg: #e3f2fd;
-  --mobile-dayBtn-color: #1976d2;
-  --mobile-dayBtn-border: #bbdefb;
-
-  /* Buttons / badges */
-  --btn-primary-bg: #1976d2;
-  --btn-disabled-bg: #cccccc;
-  --btn-secondary-bg: #fd9797;
-  --form-select-bg: #ffffff;
-  --form-select-disabled-bg: #f8f9fa;
-  --form-select-disabled-color: #6c757d;
-  --badge-text-color: #ffffff;
-}
-
 /* Buttons */
 .btn { display: inline-flex; align-items: center; justify-content:center; gap:8px; padding:8px 12px; border-radius:8px; cursor:pointer; border:none; font-weight:600 }
 .btn-primary { background: var(--btn-primary-bg); color: var(--text-on-primary); }
@@ -99,3 +42,32 @@
   opacity: 1;
   visibility: visible;
 }
+
+/* WebKit browsers */
+*::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+  height: var(--scrollbar-width);
+}
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover);
+}
+*::-webkit-scrollbar-corner {
+  background: var(--scrollbar-corner);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+

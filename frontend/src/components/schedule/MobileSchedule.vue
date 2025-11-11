@@ -110,7 +110,7 @@ export default {
   align-items: center;
   justify-content: center;
   margin-bottom: 10px;
-  background: var(--color-bg-panel);
+  background: var(--color-primary);
   border-radius: 12px;
   box-shadow: var(--default-shadow);
   padding: 12px 20px;
@@ -136,7 +136,7 @@ export default {
 /* Liste des cours (mobile) */
 .courses-list {
   flex-direction: column;
-  background: var(--color-primary);
+  background: var(--color-bg-panel);
   border-radius: 12px;
   padding: 16px;
   box-shadow: var(--default-shadow);

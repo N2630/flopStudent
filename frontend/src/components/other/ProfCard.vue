@@ -52,12 +52,49 @@ export default {
   box-shadow: var(--box-shadow-strong, none);
   transition: transform 120ms ease, box-shadow 150ms ease;
 }
-.prof-card:hover { transform: translateY(-4px); }
-.prof-head { display:flex; align-items:center; gap:12px; }
-.abbrev { background: var(--text-default); color: var(--badge-text-color); width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-weight:700; }
-.name { font-weight:600; color:var(--text-default); }
-.prof-details { margin-top:10px; color:var(--text-default); font-size:0.95rem; }
-.prof-card.expanded { box-shadow: var(--box-shadow-strong); }
-.fade-enter-active, .fade-leave-active { transition: opacity .18s; }
-.fade-enter-from, .fade-leave-to { opacity: 0; }
+
+.prof-card:hover { 
+  transform: translateY(-4px); 
+}
+
+.prof-head { 
+  display:flex; 
+  align-items:center; 
+  gap:12px; 
+}
+
+.abbrev { 
+  background: var(--card-prof-abrrev-bg); 
+  color: var(--badge-text-color); 
+  width:40px; 
+  height:40px; 
+  display:flex; 
+  align-items:center; 
+  justify-content:center; 
+  border-radius:8px; 
+  font-weight:700; 
+}
+
+.name { 
+  font-weight:600; 
+  color:var(--text-default); 
+}
+
+.prof-details { 
+  margin-top:10px; 
+  color:var(--text-default); 
+  font-size:0.95rem; 
+}
+
+.prof-card.expanded { 
+  box-shadow: var(--box-shadow-strong); 
+}
+
+.fade-enter-active, .fade-leave-active { 
+  transition: opacity .18s; 
+}
+
+.fade-enter-from, .fade-leave-to { 
+  opacity: 0; 
+}
 </style>

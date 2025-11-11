@@ -89,11 +89,11 @@
 }
 
 .day-column {
-  background: rgb(255, 255, 255);
+  background: var(--color-bg-panel);
   border-radius: 12px;
   padding: 16px;
   width: 20%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--card-shadow);
   flex: 1 1 0;
 }
 
@@ -104,7 +104,7 @@
   margin-bottom: 16px;
   text-align: center;
   padding-bottom: 8px;
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 2px solid var(--default-border-color);
 }
 
 .courses-container {
