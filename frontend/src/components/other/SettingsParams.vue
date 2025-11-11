@@ -44,6 +44,17 @@
             </select>
             <div v-if="loading.groups" class="loading-text">Chargement...</div>
           </div>
+
+          <div class="form-group">
+            <label for="theme">Thème</label>
+            <select id="theme" v-model="formData.theme" class="form-select">
+              <option value="">Sélectionner un thème</option>
+              <option v-for="theme in mappedThemes" :key="theme.cssName" :value="theme.cssName">
+                {{ theme.name }}
+              </option>
+            </select>
+            <div v-if="loading.groups" class="loading-text">Chargement...</div>
+          </div>
           
           <div class="form-actions">
             <button type="button" @click="closeModal" class="btn btn-secondary">
@@ -62,6 +73,7 @@
 <script>
 import { getDept, getTrainProg, getGroup, setDept, setTrainProg, setGroup } from '../../utils/storageUtils';
 import { fetchDepartments, fetchTrainProgs, fetchGroups } from '../../services/api';
+import themesManifest from '../../assets/themes-manifest.json';
 
 export default {
   name: 'SettingsParams',
@@ -69,6 +81,10 @@ export default {
     show: {
       type: Boolean,
       default: false
+    },
+    themes: {
+      type: Array,
+      default: () => themesManifest.themes || []
     }
   },
   data() {
@@ -76,7 +92,8 @@ export default {
       formData: {
         department: getDept() || '',
         year: getTrainProg() || '',
-        group: getGroup() || ''
+        group: getGroup() || '',
+        theme: ''
       },
       departments: [],
       trainProgs: [],
@@ -95,6 +112,11 @@ export default {
     isFormValid() {
       return this.formData.department && this.formData.year && this.formData.group;
     }
+    ,
+    mappedThemes() {
+      return this.themes || [];
+    }
+
   },
   watch: {
     show(newVal) {
@@ -145,6 +167,13 @@ export default {
       this.formData.department = getDept() || '';
       this.formData.year = getTrainProg() || '';
       this.formData.group = getGroup() || '';
+      // Load selected theme (if any) from localStorage
+      try {
+        const savedTheme = localStorage.getItem('fs_theme');
+        this.formData.theme = savedTheme || '';
+      } catch (e) {
+        this.formData.theme = '';
+      }
       
       // Charger les données en cascade si nécessaire
       if (this.formData.department) {
@@ -210,12 +239,21 @@ export default {
       setDept(this.formData.department);
       setTrainProg(this.formData.year);
       setGroup(this.formData.group);
+      // Sauvegarder le thème (optionnel)
+      try {
+        if (this.formData.theme) localStorage.setItem('fs_theme', this.formData.theme);
+        else localStorage.removeItem('fs_theme');
+      } catch (e) {
+        // ignore storage errors
+      }
       
       // Émettre un événement pour notifier le parent
       this.$emit('settings-saved', {
         department: this.formData.department,
         year: this.formData.year,
         group: this.formData.group
+        ,
+        theme: this.formData.theme || null
       });
       
       // Fermer le modal

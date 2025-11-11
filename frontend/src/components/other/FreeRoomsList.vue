@@ -228,7 +228,7 @@ export default {
   align-items: center;
   justify-content: center;
   background: var(--text-default);
-  color: var(--color-primary);
+  color: var(--text-subtitle-default);
   width: 60px;
   height: 44px;
   padding: 12px;

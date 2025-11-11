@@ -1,0 +1,8 @@
+{
+  "themes": [ 
+    {"name":"Sombre","cssName":"dark"},
+    {"name":"Clair","cssName":"root"},
+    {"name":"IUT","cssName":"blagnac"},
+    {"name":"FlopStudent OG","cssName":"ogFlopStudent"}
+  ]
+}

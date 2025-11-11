@@ -249,6 +249,8 @@ body {
   width: 80px;
   margin-left: auto;
   display: block;
+  border-radius: 12px;
+  background-color: var(--color-logo-bg);
 }
 
 /* Sidebar */
