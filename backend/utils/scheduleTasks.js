@@ -1,7 +1,7 @@
 const { getWeekAndYear } = require('./dateUtils'); 
 const { fetchAndStoreSchedules } = require('./fetchAndStore/fetchAndStoreSchedules');
 const { cleanOldSchedules } = require('../DB/deleteInfo');
-const clearSchedule = process.env.CLEAR_SCHEDULE_OPTION || true;
+const clearSchedule = process.env.CLEAR_SCHEDULE_OPTION !== 'false';
 
 /**
  * Met à jour les emplois du temps pour les 4 prochaines semaines (à partir d’aujourd’hui),
