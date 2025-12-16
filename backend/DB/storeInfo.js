@@ -11,7 +11,7 @@ const { db} = require('../config/connectDb');
 async function storeSchedule(schedulList, collectionName) {
     try{
       for(const schedule of schedulList) {
-  
+        const durationMinutes = extractDuration(schedule.course.type);
         const formatedData = {
           id: schedule.id,
           room: schedule.room.name,
@@ -21,6 +21,7 @@ async function storeSchedule(schedulList, collectionName) {
             year: schedule.course.year,
           },
           start_time: schedule.start_time,
+          duration: durationMinutes,
           course:{
             type: schedule.course.type,
             name: schedule.course.module.name,

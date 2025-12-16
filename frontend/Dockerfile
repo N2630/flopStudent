@@ -1,5 +1,5 @@
 # Stage 1: Build the Vue.js application
-FROM node:18 as build-stage
+FROM node:25-slim
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --legacy-peer-deps
