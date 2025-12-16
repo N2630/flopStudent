@@ -1,4 +1,5 @@
 const { db} = require('../config/connectDb');
+const { extractDuration } = require('../utils/extracter');
 
 /**
  * Insère ou met à jour les cours d'une collection à partir d'une liste récupérée à distance.
