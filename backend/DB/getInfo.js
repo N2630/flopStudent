@@ -155,7 +155,7 @@ async function getAllDepartments() {
   }
 }
 
-async function getDaptTrainProgs(dept) {
+async function getDeptTrainProgs(dept) {
   try {
     const docs = await db.collection('groupsStructure').aggregate([
       { $match: { dept } },
@@ -164,7 +164,7 @@ async function getDaptTrainProgs(dept) {
     ]).toArray();
     return docs.map(d => d._id).filter(Boolean);
   } catch (error) {
-    console.error('Erreur DB getDaptTrainProgs:', error);
+    console.error('Erreur DB getDeptTrainProgs:', error);
     throw error;
   }
 }
@@ -230,7 +230,7 @@ module.exports = {
     getLastScheduleUpdate,
     getProfSchedule,
     getAllDepartments,
-    getDaptTrainProgs,
+    getDeptTrainProgs,
     getDeptTrainGroups,
     getAllProfs
 };
