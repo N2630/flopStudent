@@ -13,6 +13,10 @@ WORKDIR /usr/share/nginx/html
 # Copie des fichiers compilés
 COPY --from=build-stage /app/dist .
 
+# Remplacement de la configuration Nginx
+RUN rm /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 # Script pour générer config.js au démarrage
 COPY <<EOF /docker-entrypoint.d/40-generate-config.sh
 #!/bin/sh
