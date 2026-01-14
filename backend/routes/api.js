@@ -13,7 +13,7 @@ router.get('/get-free-rooms', freeRoomsController.getFreeRoomsByWeek);
 
 // Routes pour les info professeurs
 router.get('/get-prof-schedule', profsController.getProfSchedule);
-router.get('/get-profs', profsController.getAllProfs);
+router.get('/get-all-profs', profsController.getAllProfs);
 
 // Routes pour les info salles
 router.get('/get-room-schedule', roomsController.getRoomSchedule);

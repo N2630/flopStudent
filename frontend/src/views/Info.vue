@@ -6,7 +6,7 @@
       <div class="main-info-texte">
         <p>
           <strong>FlopStudent</strong> est une application alternative à <a class="links" href="https://www.flopedt.org/">flop!EDT</a> qui vous permet de consulter votre emploi du temps en toute simplicité.<br>
-          Comme flop!EDT, FlopStudent offre un accès gratuit et sans création de compte à votre planning, et sera prochainement open source.
+          Comme flop!EDT, FlopStudent offre un accès gratuit et sans création de compte à votre planning et open source.
         </p>
 
 
@@ -33,7 +33,7 @@
     <div class="faq-section">
       <h1>FAQ</h1>
 
-      <div>
+      <div id="faq-liste">
         <div class="faq-item">
 
           <button class="faq-question" @click="showFaq1 = !showFaq1">
@@ -42,11 +42,11 @@
           </button>
 
           <div v-if="showFaq1" class="faq-answer">
-            Les données proviennent directement du site officiel flop!EDT de l'<a class="links" href="https://iut-blagnac.fr">iut</a>, via des requêtes automatisées. 
+            Les données proviennent directement du site officiel <a class="links" href="https://flopedt.iut-blagnac.fr/">flop!EDT</a> de l'<a class="links" href="https://www.iut-blagnac.fr/fr/">IUT</a>, via des requêtes automatisées. 
             Aucune donnée personnelle n'est stockée ou collectée par FlopStudent.
-            Nous utilisons l'api officiel de flop!EDT pour récupérer les cours.
+            Nous utilisons l'api officiel de <a class="links" href="https://flopedt.iut-blagnac.fr/fr/api/doc/">flop!EDT</a> pour récupérer les cours.
           </div>
-          </div>
+        </div>
 
         <div class="faq-item">
 
@@ -105,7 +105,35 @@
             Ainsi, dès qu'une modification est détectée sur flop!EDT, elle est rapidement prise en compte sur FlopStudent, pour vous garantir un planning toujours à jour.
           </div>
 
+        </div>
+
+        <div class="faq-item">
+
+          <button class="faq-question" @click="showFaq6 = !showFaq6">
+            Est-il possible de contribuer au projet ?
+            <span class="chevron" :class="{ open: showFaq6 }">▶</span>
+          </button>
+
+          <div v-if="showFaq6" class="faq-answer">
+            Oui, FlopStudent est un projet open source et toute contribution est la bienvenue. Vous pouvez consulter le <a class="links" href="https://github.com/N2630/flopStudent">dépôt GitHub</a> du projet pour proposer des améliorations, signaler des bugs ou participer au développement.
           </div>
+
+        </div>
+
+        <div class="faq-item">
+
+          <button class="faq-question" @click="showFaq7 = !showFaq7">
+            Puis-je utiliser l'API de FlopStudent pour créer ma propre interface ?
+            <span class="chevron" :class="{ open: showFaq7 }">▶</span>
+          </button>
+
+          <div v-if="showFaq7" class="faq-answer">
+            Oui, l'API de FlopStudent est publique et peut être utilisée librement pour développer des applications tierces. Veuillez toutefois respecter les conditions d'utilisation et éviter de surcharger le service avec des requêtes excessives. <br>
+            La documentation de l'API est disponible sur <a class="links" href="https://github.com/N2630/flopStudent">dépôt GitHub</a>.
+            Vous pouvez même mettre en place la partie Backend du projet en auto-hébergement en suivant les instructions fournies dans le dépôt et construire votre propre interface autour de ce dernier.
+          </div>
+
+        </div>
       </div>
       
 
@@ -126,6 +154,9 @@ export default {
       showFaq3: false,
       showFaq4: false,
       showFaq5: false,
+      showFaq6: false,
+      showFaq7: false
+
     };
   }
 };
@@ -190,6 +221,12 @@ export default {
   flex-direction: column;
   gap: 8px;
   border: 1px solid var(--card-border-color);
+}
+
+#faq-liste {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .faq-item { width: 100%; }

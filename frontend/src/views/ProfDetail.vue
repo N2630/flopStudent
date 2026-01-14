@@ -115,7 +115,7 @@ export default {
     }
 
     try {
-      const res = await axios.get(`/api/get-profs?username=${encodeURIComponent(username)}`);
+      const res = await axios.get(`/api/get-all-profs?username=${encodeURIComponent(username)}`);
       if (res && res.data) {
         const data = res.data;
         if (Array.isArray(data)) {
@@ -178,15 +178,7 @@ export default {
     },
 
     goBack() {
-      try {
-        if (window.history && window.history.length > 1) {
-          this.$router.back();
-        } else {
-          this.$router.push({ name: 'ProfSearcher' });
-        }
-      } catch (e) {
-        this.$router.push({ name: 'ProfSearcher' });
-      }
+      this.$router.push({ name: 'ProfSearcher' });
     }
     ,
     async copyEmail(email) {
@@ -230,7 +222,7 @@ export default {
 }
 
 .name-info {
-    color: var(--text-defaut);
+    color: var(--text-default);
 }
 
 /* Email copy button */

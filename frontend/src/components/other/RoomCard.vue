@@ -24,7 +24,7 @@ export default {
       const roomName = this.room.room;
       if (roomName) {
         // Redirige vers la page de détail de la salle
-        //this.$router.push({ name: 'RoomDetail', params: { room: roomName } });
+        this.$router.push({ name: 'RoomDetail', params: { room: roomName } });
       }
     }
   }
@@ -54,9 +54,11 @@ export default {
 }
 
 .abbrev { 
-  background: var(--card-prof-abrrev-bg, #f0f0f0); 
-  color: var(--badge-text-color, #333); 
-  width: 60px; /* Un peu plus large pour les noms de salle */
+  background: var(--card-prof-abbrev-bg, #f0f0f0); 
+  color: var(--badge-text-color, #333);
+  padding: 10px;
+  width: fit-content; 
+  min-width: 60px; 
   height: 40px; 
   display: flex; 
   align-items: center; 

@@ -52,7 +52,7 @@ export default {
         try { setProfs(this.profs); } catch(e) { console.warn('setProfs failed', e); }
       } catch (err) {
         // fallback : mock minimal dataset
-        console.warn('get-profs API not available, using fallback mock data', err);
+        console.warn('get-all-profs API not available, using fallback mock data', err);
         this.profs = [
           { username: 'JDOE', firstname: 'John', lastname: 'Doe', email: 'john.doe@example.com', departments: ['INFO'] },
           { username: 'ASMITH', firstname: 'Alice', lastname: 'Smith', email: 'alice.smith@example.com', departments: ['CS','GIM'] }

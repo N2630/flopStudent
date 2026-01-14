@@ -69,10 +69,27 @@ export default {
 </script>
 
 <style scoped>
-.room-searcher { padding: 18px; }
-.search-controls { margin-bottom: 12px; }
-.search-controls input { width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--default-border-color); }
-.room-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .room-searcher { 
+    padding: 18px; 
+  }
+
+  .search-controls { 
+    margin-bottom: 12px; 
+  }
+
+  .search-controls input { 
+    width: 100%;
+    padding: 8px 10px; 
+    border-radius: 8px; 
+    border: 1px solid var(--default-border-color); 
+  }
+
+  .room-list { 
+    display: grid; 
+    grid-template-columns: 
+    repeat(auto-fill, minmax(260px, 1fr)); 
+    gap: 12px; 
+  }
 
 @media (max-width: 720px) {
   .room-list { grid-template-columns: 1fr; }
