@@ -4,6 +4,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --legacy-peer-deps
 COPY . .
-ARG VUE_APP_API_BASE_URL
-ENV VUE_APP_API_BASE_URL=$VUE_APP_API_BASE_URL
 RUN npm run build
+
+RUN npm install -g serve
+CMD ["serve", "-s", "dist", "-l", "80"]

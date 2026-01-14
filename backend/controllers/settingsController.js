@@ -1,4 +1,4 @@
-const { getAllDepartments, getDaptTrainProgs, getDeptTrainGroups } = require('../DB/getInfo');
+const { getAllDepartments, getDeptTrainProgs, getDeptTrainGroups } = require('../DB/getInfo');
 
 /**
  * Contrôleur HTTP: retourne tous les départements disponibles.
@@ -32,7 +32,7 @@ const getTrainProgs = async (req, res) => {
       return res.status(400).json({ message: 'Département requis' });
     }
     
-    const trainProgs = await getDaptTrainProgs(dept);
+    const trainProgs = await getDeptTrainProgs(dept);
     res.json(trainProgs);
   } catch (error) {
     console.error('Erreur dans getTrainProgs:', error);

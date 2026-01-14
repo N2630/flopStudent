@@ -64,9 +64,11 @@ export default {
 }
 
 .abbrev { 
-  background: var(--card-prof-abrrev-bg); 
+  background: var(--card-prof-abbrev-bg); 
   color: var(--badge-text-color); 
-  width:40px; 
+  padding: 18px;
+  width: fit-content; 
+  min-width: 40px; 
   height:40px; 
   display:flex; 
   align-items:center; 

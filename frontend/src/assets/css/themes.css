@@ -33,7 +33,7 @@
     --card-radius: 10px;
     --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.425);
     --card-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.15);
-    --card-prof-abrrev-bg: #2c2c2c;
+    --card-prof-abbrev-bg: #2c2c2c;
 
     /* Sidebar */
     --sidebar-border-color: #eeeeee;
@@ -100,7 +100,7 @@
     --card-radius: 10px;
     --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255,255,255,0.02);
     --card-shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.55);
-    --card-prof-abrrev-bg: #aaaaaa;
+    --card-prof-abbrev-bg: #aaaaaa;
 
     /* Sidebar */
     --sidebar-border-color: #222222;
@@ -167,7 +167,7 @@
   --card-radius: 10px;
   --card-shadow: 0 1px 3px rgba(3,36,85,0.06);
   --card-shadow-hover: 0 6px 14px rgba(3,36,85,0.09);
-  --card-prof-abrrev-bg: #003f87;
+  --card-prof-abbrev-bg: #003f87;
 
   /* Sidebar */
   --sidebar-border-color: #bac3cc;
@@ -240,7 +240,7 @@
   --card-radius: 10px;
   --card-shadow: 0 1px 3px rgba(18,40,50,0.04);
   --card-shadow-hover: 0 6px 14px rgba(18,40,50,0.06);
-  --card-prof-abrrev-bg: #2b5168;
+  --card-prof-abbrev-bg: #2b5168;
 
   /* Sidebar */
   --sidebar-border-color: #dfeef0;

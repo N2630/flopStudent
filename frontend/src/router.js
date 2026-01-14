@@ -5,6 +5,8 @@ import InfoPage from './views/Info.vue'; // Importez le nouveau composant Info.v
 import SesamePage from './views/Sesame.vue';
 import ProfSearcher from './views/ProfSearcher.vue';
 import ProfDetail from './views/ProfDetail.vue';
+import RoomSearcher from './views/RoomSearcher.vue';
+import RoomDetail from './views/RoomDetail.vue';
 
 const routes = [
   {
@@ -38,10 +40,22 @@ const routes = [
     meta: { title: 'Professeurs - Flop Student' }
   },
   {
+    path: '/rooms',
+    name: 'RoomSearcher',
+    component: RoomSearcher,
+    meta: { title: 'Salles - Flop Student' }
+  },
+  {
     path: '/profs/:username',
     name: 'ProfDetail',
     component: ProfDetail,
     meta: { title: 'Professeur - Flop Student' }
+  },
+  {
+    path: '/rooms/:room',
+    name: 'RoomDetail',
+    component: RoomDetail,
+    meta: { title: 'Salle - Flop Student' }
   },
   {
     path: '/',
