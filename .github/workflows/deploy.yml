@@ -6,118 +6,62 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
-    # Nettoyer le répertoire de travail avant le checkout pour éviter les problèmes de cache résiduel
-    - name: Clean workspace
-      run: |-
-        echo "Nettoyage du répertoire de travail..."
-        rm -rf ${{ github.workspace }}/*
-        rm -rf ${{ github.workspace }}/.git
+      # 1. Checkout 
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    # 1. Récupérer le code
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # 2. Login Docker Hub 
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-    # 2. Login Docker Hub
-    - name: Login to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+      # 3. Setup Buildx 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-    # 3. Build & Push Frontend
-    - name: Build and push Frontend Docker image
-      uses: docker/build-push-action@v3
-      with:
-        context: ./frontend
-        file: ./frontend/Dockerfile
-        push: true
-        tags: |
-          ${{ secrets.DOCKER_USERNAME }}/flopstudent-frontend:latest
-          ${{ secrets.DOCKER_USERNAME }}/flopstudent-frontend:${{ github.sha }}
-        no-cache: true # Ajouté pour forcer une reconstruction complète
-        build-args: |
-          VUE_APP_API_BASE_URL=${{ secrets.FRONTEND_API_BASE_URL }}
+      # 4. Build & Push Frontend (Multi-stage recommandé)
+      - name: Build and push Frontend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/flopstudent-frontend:latest
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/flopstudent-frontend:latest
+          cache-to: type=inline
 
-    # 4. Build & Push Backend
-    - name: Build and push Backend Docker image
-      uses: docker/build-push-action@v3
-      with:
-        context: ./backend
-        file: ./backend/Dockerfile
-        push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/flopstudent-backend:latest
-        no-cache: true 
+      # 5. Build & Push Backend
+      - name: Build and push Backend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/flopstudent-backend:latest
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/flopstudent-backend:latest
+          cache-to: type=inline
 
-    # 5. Déployer sur le VPS
-    - name: Deploy to Server
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          APP_DIR="/home/${{ secrets.SSH_USERNAME }}/flopStudent"
-
-          # Créer le dossier si besoin
-          mkdir -p $APP_DIR
-          cd $APP_DIR
-
-          # --- Cloner/Puller le dépôt GitHub sur le serveur (pour docker-compose.yml et Dockerfiles) ---
-          if [ -d "$APP_DIR/.git" ]; then
-            echo "Mise à jour du dépôt existant..."
-            git pull origin main
-          else
-            echo "Clonage du dépôt..."
-            git clone git@github.com:${{ github.repository }}.git "$APP_DIR"
-          fi
-
-          # --- Créer le fichier .env pour Docker Compose (sur le serveur) si absent ---
-          # Ce fichier .env doit être à la racine du projet sur le serveur, à côté de docker-compose.yml
-          # Il contient les variables d'environnement sensibles ou spécifiques au déploiement.
-          if [ ! -f ./.env ]; then
-              echo ".env file not found. Creating it with default values from GitHub Secrets."
-              touch .env
-              echo "PORT_MAPPING=${{ secrets.PORT_MAPPING}}" > .env # Valeur par défaut, peut être modifiée manuellement
-              echo "MONGODB_URI=${{ secrets.BACKEND_MONGODB_URI }}" >> .env
-              echo "FRONTEND_API_BASE_URL=${{ secrets.FRONTEND_API_BASE_URL }}" >> .env
-          else
-              echo ".env file already exists. Not overwriting it."
-          fi
-
-          # --- Nettoyer le cache Docker pour éviter les anciennes images ---
-          echo "Nettoyage des anciennes images..."
-          docker container prune -f || true
-          docker image prune -af || true
-          docker builder prune -af || true
-
-          # --- Déploiement du Backend (avec docker-compose) ---
-          echo "Déploiement du backend..."
-          docker compose pull backend
-          docker compose up -d --force-recreate --no-deps backend
-
-          # --- Déploiement du Frontend ---
-          echo "Déploiement du frontend..."
-
-          # Supprimer les anciens fichiers frontend servis par Nginx
-          sudo rm -rf /var/www/flopstudent/frontend_dist/* || true
-
-          # Extraire les fichiers dist depuis l'image frontend la plus fraîche
-          docker create --name temp_frontend_extract ${{ secrets.DOCKER_USERNAME }}/flopstudent-frontend:latest
-          docker cp temp_frontend_extract:/app/dist $APP_DIR/frontend_dist
-          docker rm temp_frontend_extract
-
-          # Copier les nouveaux fichiers dans le répertoire de Nginx
-          sudo mkdir -p /var/www/flopstudent/frontend_dist
-          sudo rsync -av --delete $APP_DIR/frontend_dist/ /var/www/flopstudent/frontend_dist/
-          rm -rf $APP_DIR/frontend_dist
-          rm -rf $APP_DIR/frontend
-
-          # Recharger Nginx
-          echo "Rechargement de Nginx..."
-          sudo systemctl reload nginx
-
-          echo "✅ Déploiement terminé avec succès."
+      # 6. Déploiement SSH (Zero Downtime)
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script_stop: true # Arrête si une commande échoue
+          script: |
+            cd /home/${{ secrets.SSH_USERNAME }}/flopStudent
+            
+            echo "Récupération des nouvelles images..."
+            docker compose pull
+            
+            echo "Mise à jour des conteneurs (Rolling Update)..."
+            # --no-deps : ne redémarre pas les dépendances (ex: DB) si elles n'ont pas changé
+            # up -d : recrée uniquement les conteneurs dont l'image a changé
+            docker compose up -d --no-deps frontend backend
+            
+            echo "Nettoyage des vieilles images..."
+            docker image prune -f
