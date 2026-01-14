@@ -224,6 +224,49 @@ async function getAllProfs(dept) {
   }
 }
 
+async function getRoomSchedule(year, week, room) {
+  const query = {
+    $and: [
+      {'date.week': parseInt(week)},
+      {'date.year': parseInt(year)},
+      {'room':room}
+    ]
+  };
+  return await db.collection("all_courses").find(query).toArray();
+}
+
+async function getAllRooms() {
+  const rooms = await db.collection("all_courses").aggregate([
+      { 
+        // 1. Filtrage des salles
+        $match: { 
+          room: { 
+            $ne: null, 
+            $not: { $regex: "^1er|[\\+\\-]" } 
+          } 
+        } 
+      },
+      { 
+        // 2. Groupement pour l'unicité
+        $group: { _id: "$room" } 
+      },
+      { 
+        // 3. Formatage pour avoir { room: 'Nom' } au lieu de { _id: 'Nom' }
+        $project: {
+          _id: 0,
+          room: "$_id"
+        }
+      },
+      { 
+        // 4. Tri par nom de salle (plus propre)
+        $sort: { room: 1 } 
+      }
+    ]).toArray();
+  
+  return rooms;
+
+}
+
 module.exports = {
     getSchedule,
     getUsedRoom,
@@ -232,5 +275,7 @@ module.exports = {
     getAllDepartments,
     getDeptTrainProgs,
     getDeptTrainGroups,
-    getAllProfs
+    getAllProfs,
+    getRoomSchedule,
+    getAllRooms
 };

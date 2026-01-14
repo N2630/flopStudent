@@ -64,7 +64,7 @@ app.listen(PORT, "0.0.0.0", async () => {
   await console.log(`Serveur démarré sur le port ${PORT}`);
 });
 
-initializeServer();
+//initializeServer();
 
 // Fonction d'initialisation
 async function initializeServer() {

@@ -139,6 +139,32 @@ export const fetchProfsDetails = async (dept) => {
   }
 }
 
+export const fetchAllRooms = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/get-all-rooms`);
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des données :', error);
+    if (error.response?.status === 400) {
+      throw new Error('Paramètres API invalides. Veuillez vérifier votre configuration ou les données.');
+    }
+    throw error;
+  }
+}
+
+export const fetchRoomSchedules = async (year, week, room) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/get-room-schedule?year=${year}&week=${week}&room=${room}`);
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des données :', error);
+    if (error.response?.status === 400) {
+      throw new Error('Paramètres API invalides. Veuillez vérifier votre configuration ou les données.');
+    }
+    throw error;
+  }
+}
+
 /**
  * Paramètres: récupère départements, années, groupes
  */

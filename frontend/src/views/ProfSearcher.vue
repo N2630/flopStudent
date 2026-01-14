@@ -14,7 +14,7 @@
 import ProfCard from '../components/other/ProfCard.vue';
 import { setProfs } from '../services/profStore';
 import { fetchProfsDetails } from '../services/api';
-import { getDept } from '@/utils/storageUtils';
+import { getDept } from '../utils/storageUtils';
 
 export default {
   name: 'ProfSearcher',
