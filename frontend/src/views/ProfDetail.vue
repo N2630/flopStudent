@@ -227,7 +227,7 @@ export default {
 
 /* Email copy button */
 .abbrev { 
-  background: var(--text-default); 
+  background: var(--card-prof-abbrev-bg);
   color: var(--badge-text-color); 
   padding: 18px;
   width:40px; 

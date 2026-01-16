@@ -8,7 +8,9 @@ import { getDept, getTrainProg, getGroup,setLastSchedulesUpdate, getSchedule, se
  * @constant
  * @type {string}
  */
-const API_BASE_URL = /*process.env.VUE_APP_API_BASE_URL ||*/ 'http://localhost:3000';
+const API_BASE_URL = window.config?.VUE_APP_API_BASE_URL 
+                  || process.env.VUE_APP_API_BASE_URL 
+                  || 'http://localhost:3000';
 
 /**
  * Récupère la date de dernière mise à jour des emplois du temps pour une année/semaine.

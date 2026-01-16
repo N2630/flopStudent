@@ -31,6 +31,7 @@ jobs:
           context: ./frontend
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/flopstudent-frontend:latest
+          no-cache: true
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/flopstudent-frontend:latest
           cache-to: type=inline
 
