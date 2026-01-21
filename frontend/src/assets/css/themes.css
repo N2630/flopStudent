@@ -50,8 +50,10 @@
 
     /* Buttons / badges */
     --btn-primary-bg: #1976d2;
+    --btn-primary-bg-hover: #1565c0;
     --btn-disabled-bg: #cccccc;
     --btn-secondary-bg: #fd9797;
+    --btn-secondary-bg-hover: #f84343;
     --form-select-bg: #ffffff;
     --form-select-disabled-bg: #f8f9fa;
     --form-select-disabled-color: #6c757d;
@@ -118,8 +120,10 @@
 
     /* Buttons / badges */
     --btn-primary-bg: #2563eb;
+    --btn-primary-bg-hover: #1d4ed8;
     --btn-disabled-bg: #cccccc;
     --btn-secondary-bg: #ff4545d7;
+    --btn-secondary-bg-hover: #e63939c4;
     --form-select-bg: #ffffff;
     --form-select-disabled-bg: #f8f9fa;
     --form-select-disabled-color: #6c757d;
@@ -184,8 +188,10 @@
 
   /* Buttons / badges */
   --btn-primary-bg: #4390e9;
+  --btn-primary-bg-hover: #3479c6;
   --btn-disabled-bg: #b9bdc5;
   --btn-secondary-bg: #ff4040;
+  --btn-secondary-bg-hover: #e63939;
   --form-select-bg: #ffffff;
   --form-select-disabled-bg: #f3f6fb;
   --form-select-disabled-color: #7b8a97;
@@ -261,6 +267,7 @@
   --btn-primary-bg-active: #2a5fa3;
   --btn-disabled-bg: #b9bdc5;
   --btn-secondary-bg: #ff4040;
+  --btn-secondary-bg-hover: #e63939;
   --form-select-bg: #ffffff;
   --form-select-disabled-bg: #f6f9f8;
   --form-select-disabled-color: #93a3a2;

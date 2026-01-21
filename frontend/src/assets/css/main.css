@@ -1,8 +1,30 @@
 /* Buttons */
 .btn { display: inline-flex; align-items: center; justify-content:center; gap:8px; padding:8px 12px; border-radius:8px; cursor:pointer; border:none; font-weight:600 }
-.btn-primary { background: var(--btn-primary-bg); color: var(--text-on-primary); }
-.btn-primary:disabled { background: var(--btn-disabled-bg); cursor: not-allowed }
-.btn-secondary { background: var(--btn-secondary-bg); border:2px solid var(--color-danger); color: var(--text-default) }
+
+.btn-primary { 
+  background: var(--btn-primary-bg); 
+  color: var(--text-on-primary); 
+}
+
+.btn-primary:hover { 
+  background: var(--btn-primary-bg-hover); 
+}
+
+.btn-primary:disabled { 
+  background: var(--btn-disabled-bg); 
+  cursor: not-allowed ;
+}
+
+.btn-secondary { 
+  background: 
+  var(--btn-secondary-bg); 
+  border:2px solid var(--color-danger); 
+  color: var(--text-default) 
+}
+
+.btn-secondary:hover { 
+  background: var(--btn-secondary-bg-hover); 
+}
 
 /* Forms */
 .form-group { display:flex; flex-direction:column; gap:8px }

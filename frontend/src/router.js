@@ -7,6 +7,7 @@ import ProfSearcher from './views/ProfSearcher.vue';
 import ProfDetail from './views/ProfDetail.vue';
 import RoomSearcher from './views/RoomSearcher.vue';
 import RoomDetail from './views/RoomDetail.vue';
+import FollowSchedule from './views/FollowSchedule.vue';
 
 const routes = [
   {
@@ -44,6 +45,12 @@ const routes = [
     name: 'RoomSearcher',
     component: RoomSearcher,
     meta: { title: 'Salles - Flop Student' }
+  },
+  {
+    path: '/follow-schedule',
+    name: 'FollowSchedule',
+    component: FollowSchedule,
+    meta: { title: 'Suivi de l\'emploi du temps - Flop Student' }
   },
   {
     path: '/profs/:username',

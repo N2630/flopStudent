@@ -1,5 +1,5 @@
 <template>
-  <div class="course-card" :style="{ borderLeftColor: course.display.color_bg }">
+  <div class="course-card" :style="{ borderLeftColor: course.display.color_bg, '--duree': getMinutesDuration(course.course.type) }">
     <div class="course-header">
       <div class="course-title" :style="{ fontWeight: course.course.is_graded ? 'bold' : 'normal' }">
         {{ course.course.name }}
@@ -53,12 +53,15 @@
 
 <style scoped>
 .course-card {
+  min-height: calc(var(--duree) * 1px);
+  max-height: fit-content;
   background: var(--color-course-card-bg);
   border-radius: 8px;
   padding: 12px;
   box-shadow: var(--card-shadow);
   border-left: 4px solid var(--card-border-color);
   transition: transform 0.2s, box-shadow 0.2s;
+  margin-bottom: 12px;
 }
 
 .course-card:hover {
