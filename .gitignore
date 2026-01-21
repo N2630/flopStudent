@@ -9,5 +9,5 @@ backend/index.js
 backend/groups.json
 backend/profDispo.json
 backend/schedules_all_depts.json
-frontend/.env.local
+frontend/.env
 frontend/.env.development
