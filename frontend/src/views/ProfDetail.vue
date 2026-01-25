@@ -178,7 +178,12 @@ export default {
     },
 
     goBack() {
-      this.$router.push({ name: 'ProfSearcher' });
+      const from = this.$route.query.from;
+      if (from === 'schedule') {
+        this.$router.push({ name: 'SchedulePage' });
+      } else {
+        this.$router.push({ name: 'ProfSearcher' });
+      }
     }
     ,
     async copyEmail(email) {

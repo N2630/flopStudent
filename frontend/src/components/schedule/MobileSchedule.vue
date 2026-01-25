@@ -15,7 +15,11 @@
   <!-- Liste des cours (mobile) -->
   <div class="courses-list mobile-only">
     <div class="day-header">{{ getDayAndDate(currentDayKey)}}</div>
-    <DayCourseDisplay :courseInDay="getCoursesForDay(currentDayKey)" :dayKey="currentDayKey"/>
+    <DayCourseDisplay 
+      :courseInDay="getCoursesForDay(currentDayKey)" 
+      :dayKey="currentDayKey"
+      @open-course-info="$emit('open-course-info', $event)"
+    />
   </div>
 </template>
 

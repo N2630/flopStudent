@@ -1,9 +1,12 @@
 <template>
     <div v-for="(course, courseIndex) in courseInDay" :key="course.id">
         <div v-if="course.start_time < 755" class="morning-schedule">
-            <div v-if="shouldInsertBlank(dayKey, courseIndex)" class="blank-card" :style="{'--duree': getBlankDuration(courseIndex) }"></div>
+            <div v-if="shouldInsertBlank(courseIndex)" class="blank-card" :style="{'--duree': getBlankDuration(courseIndex) }"></div>
 
-            <CourseCard :course="course" />
+            <CourseCard 
+              :course="course"
+              @open-course-info="$emit('open-course-info', $event)"
+            />
         </div>
 
         <!-- Insérer un bloc repas si écart >= 60min avec le précédent et si créneau chevauche midi -->
@@ -12,7 +15,10 @@
         <div v-if="course.start_time >= 755" class="afternoon-schedule">
             <div v-if="shouldInsertBlank(dayKey, courseIndex)" class="blank-card" :style="{'--duree': getBlankDuration(courseIndex) }"></div>
 
-            <CourseCard :course="course" />
+            <CourseCard 
+              :course="course"
+              @open-course-info="$emit('open-course-info', $event)"
+            />
         </div>
     </div>
 </template>
@@ -70,47 +76,46 @@ export default {
             return overlap >= 30; // au moins 30min dans la plage déjeuner
         },
 
-        shouldInsertBlank(dayKey, courseIndex) {
-        const courses = this.courseInDay;
+        shouldInsertBlank(courseIndex) {
+            const courses = this.courseInDay;
 
-        if (courseIndex === 0 ) {
-            return courses[courseIndex].start_time > 480;
+            // Premier cours : vide si ne commence pas à 8h00
+            if (courseIndex === 0) {
+                return courses[courseIndex].start_time > 480;
+            }
 
-        }
-        
-        if (courses[courseIndex+1] === undefined ) {
-            return false
+            // Calculer le gap avec le cours précédent
+            const prev = courses[courseIndex - 1];
+            const curr = courses[courseIndex];
 
-        } else if (this.getGapBetweenCourses(courses[courseIndex+1], courses[courseIndex]) >= 15 && this.shouldInsertLunch(dayKey,courseIndex)) {
-            return true
+            if(prev === undefined || curr === undefined) {
+                return false;
+            }
 
-        }
+            const prevEnd = prev.start_time + (prev.duration || 90);
+            const gap = curr.start_time - prevEnd;
 
-        return false;
-        },
-
-        getGapBetweenCourses(course1, course2) {
-        return course1.start_time - (course2.start_time + course2.duration)
+            return gap >= 15 && !this.shouldInsertLunch(courseIndex);
         },
 
         getBlankDuration(courseIndex) {
-        const courses = this.courseInDay;
-        const curr = courses[courseIndex];
+            const courses = this.courseInDay;
+            const curr = courses[courseIndex];
 
-        // Cas 1 : Vide avant le premier cours de la journée
-        if (courseIndex === 0) {
-            const startOfDay = 480; // 08:00 en minutes
-            return curr.start_time - startOfDay;
-        }
+            // Cas 1 : Vide avant le premier cours de la journée
+            if (courseIndex === 0) {
+                const startOfDay = 480; // 08:00 en minutes
+                return curr.start_time - startOfDay;
+            }
 
-        // Cas 2 : Vide entre le cours précédent et l'actuel
-        const prev = courses[courseIndex - 1];
-        if (prev) {
-            const prevEnd = prev.start_time + (prev.duration || 90);
-            return curr.start_time - prevEnd;
-        }
+            // Cas 2 : Vide entre le cours précédent et l'actuel
+            const prev = courses[courseIndex - 1];
+            if (prev) {
+                const prevEnd = prev.start_time + (prev.duration || 90);
+                return curr.start_time - prevEnd;
+            }
 
-        return 0;
+            return 0;
         }
     }
 };
@@ -121,11 +126,13 @@ export default {
 <style scoped>
 .blank-card {
   height: calc(var(--duree) * 1px);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  padding: 12px;
 }
 
 .morning-schedule{
-    max-height: 275px;
+    max-height: 300px;
+    margin-bottom: 12px;
 }
 
 .afternoon-schedule {

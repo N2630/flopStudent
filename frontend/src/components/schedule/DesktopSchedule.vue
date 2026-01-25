@@ -3,7 +3,11 @@
     <div v-for="day in days" :key="day.key" class="day-column">
         <div class="day-header">{{ getDayAndDate(day)}}</div>
         <div class="courses-container">
-          <DayCourseDisplay :courseInDay="getCoursesForDay(day.key)" :day="day"/>
+          <DayCourseDisplay 
+            :courseInDay="getCoursesForDay(day.key)" 
+            :day="day"
+            @open-course-info="$emit('open-course-info', $event)"
+          />
         </div>
     </div>
 </template>

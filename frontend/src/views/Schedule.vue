@@ -12,7 +12,8 @@
       <DesktopSchedule 
         :organizedSchedules="organizedSchedules" 
         :days="days"
-        :initialDate="initialDate" 
+        :initialDate="initialDate"
+        @open-course-info="selectedCourse = $event"
       />
     </div>
 
@@ -22,11 +23,18 @@
       :days="days"
       :currentDayIndex="currentDayIndex"
       @update:currentDayIndex="currentDayIndex = $event"
-      :initialDate="initialDate" 
+      :initialDate="initialDate"
+      @open-course-info="selectedCourse = $event"
     />
 
     <!-- Salles libres -->
     <FreeRoomsList />
+
+    <CourseInfo 
+      v-if="selectedCourse"
+      :course="selectedCourse" 
+      @close="selectedCourse = null"
+    />
   </div>
 </template>
 
@@ -38,13 +46,15 @@ import { formatDateTime, minutesToTime } from '../utils/dateUtils';
 import FreeRoomsList from '../components/other/FreeRoomsList.vue';
 import DesktopSchedule from '../components/schedule/DesktopSchedule.vue';
 import MobileSchedule from '../components/schedule/MobileSchedule.vue';
+import CourseInfo from '../components/schedule/CourseInfo.vue';
 
 export default {
   name: 'SchedulePage',
   components: {
     FreeRoomsList,
     DesktopSchedule,
-    MobileSchedule
+    MobileSchedule,
+    CourseInfo
   },
   data() {
     return {
@@ -66,6 +76,7 @@ export default {
       dept: getDept() || '',
       train_prog: getTrainProg() || '',
       group: getGroup() || '',
+      selectedCourse: null,
     };
   },
   computed: {

@@ -405,6 +405,7 @@ body {
 }
 
 .menu-button {
+  color: var(--text-default);
   background: none;
   border: none;
   font-size: 20px;

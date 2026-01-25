@@ -1,5 +1,4 @@
 <template>
-
     <div class="follow-schedule-page">
         <h2>Groupes suivis :</h2>
         <button @click="addGrpToFollow">
@@ -9,31 +8,23 @@
             Ajouter un groupe à suivre
         </button>
     </div>
-    
 
     <div v-if="followedSchedules.length === 0" class="no-followed-schedules">
         Aucun groupe suivi pour le moment.
-
     </div>
-
 
     <div v-else class="followed-schedules-list">
         <GroupSchedule  v-for="schedule in followedSchedules" 
             :key="schedule.id" 
             :schedule-grp="schedule" 
         />
-        
-
     </div>
-
-
 
     <SetupFollowScheduleModal 
         :show="showSetupModal" 
         @close="closeSetupModal"
         @setup-saved="onSettingsSaved"
     />
-
 </template>
 
 <script>
