@@ -67,7 +67,6 @@
   box-shadow: var(--card-shadow);
   border-left: 4px solid var(--card-border-color);
   transition: transform 0.2s, box-shadow 0.2s;
-  margin-bottom: 12px;
 }
 
 .course-card:hover {
