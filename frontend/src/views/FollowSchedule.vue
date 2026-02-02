@@ -16,7 +16,8 @@
     <div v-else class="followed-schedules-list">
         <GroupSchedule  v-for="schedule in followedSchedules" 
             :key="schedule.id" 
-            :schedule-grp="schedule" 
+            :schedule-grp="schedule"
+            @modify-schedule="onModifySchedule"
         />
     </div>
 
@@ -24,6 +25,7 @@
         :show="showSetupModal" 
         @close="closeSetupModal"
         @setup-saved="onSettingsSaved"
+        @modify-schedule="onModifySchedule"
     />
 </template>
 
@@ -52,11 +54,15 @@ export default {
             // Handle any actions needed after settings are saved
             this.showSetupModal = false;
             this.followedSchedules = getFollowedSchedules();
-            window.location.reload();
+            //window.location.reload();
         },
         closeSetupModal() {
             this.showSetupModal = false;
         },
+
+        onModifySchedule() {
+            this.followedSchedules = getFollowedSchedules();
+        }
     }
 };
 </script>

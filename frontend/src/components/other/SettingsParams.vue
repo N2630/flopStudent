@@ -15,7 +15,7 @@
           <div class="form-group">
             <label for="department">Département</label>
             <select id="department" v-model="formData.department" class="form-select" :disabled="loading.departments">
-              <option value="">Sélectionner un département</option>
+              <option value="" disabled selected>Sélectionner un département</option>
               <option v-for="dept in departments" :key="dept" :value="dept">
                 {{ dept }}
               </option>
@@ -26,7 +26,7 @@
           <div class="form-group">
             <label for="year">Année</label>
             <select id="year" v-model="formData.year" class="form-select" :disabled="!formData.department || loading.trainProgs">
-              <option value="">Sélectionner une année</option>
+              <option value="" disabled selected>Sélectionner une année</option>
               <option v-for="trainProg in trainProgs" :key="trainProg" :value="trainProg">
                 {{ trainProg }}
               </option>
@@ -37,7 +37,7 @@
           <div class="form-group">
             <label for="group">Groupe</label>
             <select id="group" v-model="formData.group" class="form-select" :disabled="!formData.year || loading.groups">
-              <option value="">Sélectionner un groupe</option>
+              <option value="" disabled selected>Sélectionner un groupe</option>
               <option v-for="group in groups" :key="group" :value="group">
                 Groupe {{ group }}
               </option>
@@ -48,7 +48,8 @@
           <div class="form-group">
             <label for="theme">Thème</label>
             <select id="theme" v-model="formData.theme" class="form-select">
-              <option value="">Sélectionner un thème</option>
+              <option value="" disabled selected>Sélectionner un thème</option>
+              <option value="sys">Système</option>
               <option v-for="theme in mappedThemes" :key="theme.cssName" :value="theme.cssName">
                 {{ theme.name }}
               </option>
@@ -170,9 +171,9 @@ export default {
       // Load selected theme (if any) from localStorage
       try {
         const savedTheme = localStorage.getItem('fs_theme');
-        this.formData.theme = savedTheme || '';
+        this.formData.theme = savedTheme || 'sys';
       } catch (e) {
-        this.formData.theme = '';
+        this.formData.theme = 'sys';
       }
       
       // Charger les données en cascade si nécessaire
@@ -239,7 +240,7 @@ export default {
       setDept(this.formData.department);
       setTrainProg(this.formData.year);
       setGroup(this.formData.group);
-      // Sauvegarder le thème (optionnel)
+      // Sauvegarder le thème
       try {
         if (this.formData.theme) localStorage.setItem('fs_theme', this.formData.theme);
         else localStorage.removeItem('fs_theme');
@@ -251,8 +252,7 @@ export default {
       this.$emit('settings-saved', {
         department: this.formData.department,
         year: this.formData.year,
-        group: this.formData.group
-        ,
+        group: this.formData.group,
         theme: this.formData.theme || null
       });
       

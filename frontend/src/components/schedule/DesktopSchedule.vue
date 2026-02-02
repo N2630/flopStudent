@@ -1,15 +1,22 @@
 <template>
-    <!-- Grille hebdomadaire (desktop) -->
-    <div v-for="day in days" :key="day.key" class="day-column">
-        <div class="day-header">{{ getDayAndDate(day)}}</div>
-        <div class="courses-container">
-          <DayCourseDisplay 
-            :courseInDay="getCoursesForDay(day.key)" 
-            :day="day"
-            @open-course-info="$emit('open-course-info', $event)"
-          />
-        </div>
-    </div>
+  <div v-if="isLoading" class="loader-container">
+    <div class="loader"></div>
+      <p>
+      Chargement ...
+    </p>
+  </div>
+
+  <!-- Grille hebdomadaire (desktop) -->
+  <div v-else v-for="day in days" :key="day.key" class="day-column">
+      <div class="day-header">{{ getDayAndDate(day)}}</div>
+      <div class="courses-container">
+        <DayCourseDisplay 
+          :courseInDay="getCoursesForDay(day.key)" 
+          :day="day"
+          @open-course-info="$emit('open-course-info', $event)"
+        />
+      </div>
+  </div>
 </template>
 
 <script>

@@ -164,6 +164,7 @@ export default {
 .day-schedule {
     display: flex;
     flex-direction: column;
+    height: fit-content;
     gap: 10px;
 }
 
@@ -171,7 +172,8 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    max-height: 300px;
+    min-height: 300px;
+    max-height: 350px;
 }
 
 .afternoon-schedule {

@@ -16,15 +16,19 @@ function applyTheme(themeName) {
 	const el = document.documentElement;
 	el.classList.remove('theme--light', 'theme--dark', 'theme--high-contrast');
 	if (themeName && themeName !== 'light') el.classList.add(`theme--${themeName}`);
-	localStorage.setItem('fs_theme', themeName);
 }
 
 const saved = localStorage.getItem('fs_theme');
-if (saved) {
-	applyTheme(saved);
-} else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+
+if (window.matchMedia && saved === 'sys' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
 	applyTheme('dark');
-} else {
+} else if (window.matchMedia && saved === 'sys' && window.matchMedia('(prefers-color-scheme: light)').matches) {
 	applyTheme('light');
+} else if (saved) {
+	applyTheme(saved);
+} else {
+	applyTheme('dark');
 }
+
+
 createApp(App).use(router).mount('#app');

@@ -127,8 +127,7 @@ export default {
 
     async removeSchedule(scheduleId) {
         await removeFollowedSchedule(scheduleId);
-        this.$emit('remove-schedule', this.scheduleGrp);
-        window.location.reload();
+        this.$emit('modify-schedule', this.scheduleGrp);
     },
     
     async goToPreviousWeek() {
