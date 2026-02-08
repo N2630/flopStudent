@@ -54,7 +54,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script_stop: true # Arrête si une commande échoue
           script: |
-            cd /home/${{ secrets.SSH_USERNAME }}/flopStudent
+            cd /home/flopStudent
             
             echo "Récupération des nouvelles images..."
             docker compose pull

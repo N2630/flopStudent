@@ -93,6 +93,59 @@ export const fetchSchedules = async (year, week) => {
   }
 };
 
+export const fetchGroupSchedules = async (year, week, dept, train_prog, groupe) => {
+  let backendJoinable = true;
+  let remoteLastSchedulesUpdate;
+
+  // Vérification des paramètres requis
+  if (!dept || !train_prog || !groupe) {
+    console.warn('Paramètres manquants. Retourne un tableau vide.');
+    return [];
+  }
+
+  try {
+    remoteLastSchedulesUpdate = await fetchLastSchedulesUpdate(year, week);
+    backendJoinable = true;
+  } catch(error) {
+    console.log(error);
+    backendJoinable = false;
+  }
+
+  try {
+    // 1. Tenter de récupérer les données complètes directement depuis le backend
+    const remoteResponse = await axios.get(`${API_BASE_URL}/api/get-schedules?year=${year}&week=${week}&dept=${dept}&train_prog=${train_prog}&groupe=${groupe}`);
+    updateConnectionStatus(); // Connexion réussie, masque le bandeau
+
+    // Si on a des données distantes et qu'on est bien sur la semaine courante, les stocker localement
+    if (await isDateCurrent(year, week)) {
+      setLastSchedulesUpdate(remoteLastSchedulesUpdate ? remoteLastSchedulesUpdate.data : null);
+      setSchedule(remoteResponse.data);
+    }
+
+    if (backendJoinable) {
+      return remoteResponse.data;
+    } else {
+      return []
+    }
+
+  } catch (error) {
+    console.error(`Erreur lors de la récupération des données de l'emploi du temps pour la semaine ${week}-${year} depuis le backend :`, error);
+    updateConnectionStatus(error);
+
+    const localSchedule = getSchedule();
+    if (localSchedule) {
+      if (await isDateCurrent(year, week)) {
+        return localSchedule;
+      } else {
+        return [];
+      }
+    }
+
+    console.log(`Aucune donnée d'emploi du temps disponible pour la semaine ${week}-${year} (ni backend, ni cache valide).`);
+    return [];
+  }
+};
+
 /**
  * Récupère les salles libres pour une année/semaine et le département courant.
  *

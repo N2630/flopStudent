@@ -1,6 +1,12 @@
 <template>
+  <div>
+    <div v-if="isDataEmpty" class="loader-container">
+      <div class="loader"></div>
+      <p>Chargement ...</p>
+    </div>
+
   <!-- Navigation jour (mobile) -->
-  <div class="day-navigation mobile-only">
+  <div v-if="!isDataEmpty" class="day-navigation mobile-only">
     <button 
       v-for="(day, i) in days" 
       :key="day.key" 
@@ -13,25 +19,25 @@
   </div>
 
   <!-- Liste des cours (mobile) -->
-  <div class="courses-list mobile-only">
+  <div v-if="!isDataEmpty" class="courses-list mobile-only">
     <div class="day-header">{{ getDayAndDate(currentDayKey)}}</div>
-    <template v-for="(course, idx) in getCoursesForCurrentDay()" :key="course.id">
-      <!-- Insérer un bloc repas si écart >= 60min et chevauche la plage déjeuner -->
-      <div v-if="shouldInsertLunch(currentDayKey, idx)" class="lunch-card">Repas</div>
-
-      <CourseCard :course="course" />
-    </template>
+    <DayCourseDisplay 
+      :courseInDay="getCoursesForDay(currentDayKey)" 
+      :dayKey="currentDayKey"
+      @open-course-info="$emit('open-course-info', $event)"
+    />
+  </div>
   </div>
 </template>
 
 <script>
 import { getDate } from '../../utils/dateUtils';
-import CourseCard from './CourseCard.vue';
+import DayCourseDisplay from './DayCourseDisplay.vue';
 
 export default {
   name: 'MobileSchedule',
   components: {
-    CourseCard
+    DayCourseDisplay
   },
   props: {
     organizedSchedules: {
@@ -53,9 +59,12 @@ export default {
     }
   },
   computed: {
+    isDataEmpty() {
+      return !this.organizedSchedules || Object.keys(this.organizedSchedules).length === 0;
+    },
     currentDayKey() {
       return this.days[this.currentDayIndex]?.key || 'm';
-    }
+    },
   },
   methods: {
     getCoursesForDay(dayKey) {
@@ -78,11 +87,11 @@ export default {
      * Règle: il existe un cours précédent et l'écart entre la fin de ce précédent
      * et le début du cours courant est >= 60 min et recouvre la tranche 11:30-14:30.
      */
-    shouldInsertLunch(dayKey, idx) {
+    shouldInsertLunch(dayKey, courseIndex) {
       const courses = this.getCoursesForDay(dayKey);
-      if (idx === 0) return false;
-      const prev = courses[idx - 1];
-      const curr = courses[idx];
+      if (courseIndex === 0) return false;
+      const prev = courses[courseIndex - 1];
+      const curr = courses[courseIndex];
       if (!prev || !curr) return false;
       const prevEnd = prev.start_time + 90;
       const gap = curr.start_time - prevEnd;
@@ -92,6 +101,49 @@ export default {
       // Le créneau de pause [prevEnd, curr.start] chevauche la plage déjeuner ?
       const overlap = Math.max(0, Math.min(curr.start_time, lunchEnd) - Math.max(prevEnd, lunchStart));
       return overlap >= 30; // au moins 30min dans la plage déjeuner
+    },
+
+    shouldInsertBlank(dayKey, courseIndex) {
+      const courses = this.getCoursesForDay(dayKey);
+
+      if (courseIndex === 0 ) {
+        return courses[courseIndex].start_time > 480;
+
+      }
+      
+      if (courses[courseIndex+1] === undefined ) {
+         return false
+
+      } else if (this.getGapBetweenCourses(courses[courseIndex+1], courses[courseIndex]) >= 15 && this.shouldInsertLunch(dayKey,courseIndex)) {
+        return true
+
+      }
+
+      return false;
+    },
+
+    getGapBetweenCourses(course1, course2) {
+      return course1.start_time - (course2.start_time + course2.duration)
+    },
+
+    getBlankDuration(dayKey, courseIndex) {
+      const courses = this.getCoursesForDay(dayKey);
+      const curr = courses[courseIndex];
+
+      // Cas 1 : Vide avant le premier cours de la journée
+      if (courseIndex === 0) {
+        const startOfDay = 480; // 08:00 en minutes
+        return curr.start_time - startOfDay;
+      }
+
+      // Cas 2 : Vide entre le cours précédent et l'actuel
+      const prev = courses[courseIndex - 1];
+      if (prev) {
+        const prevEnd = prev.start_time + (prev.duration || 90);
+        return curr.start_time - prevEnd;
+      }
+
+      return 0;
     }
   }
 };
@@ -149,5 +201,8 @@ export default {
   margin-bottom: 10px;
 }
 
+.blank-card {
+  height: calc(var(--duree) * 1.2px);
+}
 /* mobile-only display helper is centralized in src/assets/css/main.css */
 </style>

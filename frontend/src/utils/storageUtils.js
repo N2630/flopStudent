@@ -57,3 +57,36 @@ export function getSchedule() {
 export function setSchedule(value) {
   localStorage.setItem('schedule', JSON.stringify(value));
 }
+
+export function addFollowedSchedule(grpFollowSchedule) {
+  const followedSchedules = getFollowedSchedules() || [];
+  const lastInsertedId = followedSchedules.length > 0 
+    ? followedSchedules[followedSchedules.length - 1].id 
+    : 0;
+  grpFollowSchedule.id = lastInsertedId + 1;
+  followedSchedules.push(grpFollowSchedule);
+  localStorage.setItem('followedSchedules', JSON.stringify(followedSchedules));
+}
+
+export function getFollowedSchedules() {
+  const val = localStorage.getItem('followedSchedules');
+  try {
+    return val ? JSON.parse(val) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function removeFollowedSchedule(id) {
+  let followedSchedules = getFollowedSchedules() || [];
+  followedSchedules = followedSchedules.filter(schedule => schedule.id !== id);
+  
+  // Réindexer les IDs après suppression
+  followedSchedules.forEach(grp => {
+    if (grp.id > id) {
+      grp.id = grp.id - 1;
+    }
+  });
+  
+  localStorage.setItem('followedSchedules', JSON.stringify(followedSchedules));
+}

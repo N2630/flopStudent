@@ -1,17 +1,24 @@
 <template>
-  <div class="course-card" :style="{ borderLeftColor: course.display.color_bg }">
+  <div class="course-card" :style="{ borderLeftColor: course.display.color_bg, '--duree': getMinutesDuration(course.course.type) }">
     <div class="course-header">
       <div class="course-title" :style="{ fontWeight: course.course.is_graded ? 'bold' : 'normal' }">
         {{ course.course.name }}
       </div>
       <div v-if="course.course.is_graded" class="graded-course">DS</div>
     </div>
-    <div class="course-time">{{ formatTime(course.start_time) }} - {{ formatTime(course.start_time +getMinutesDuration(course.course.type)) }}</div>
-    <div class="course-duration">Durée: {{ getDuration(course.start_time, course.start_time + getMinutesDuration(course.course.type)) }}</div>
-    <div class="course-detail">{{ course.course.type }} - {{ course.room }}{{ course.prof ? ' - ' + course.prof : '' }}</div>
+    <div class="course-card-content">
+      <div>
+        <div class="course-time">{{ minutesToTime(course.start_time) }} - {{ minutesToTime(course.start_time +getMinutesDuration(course.course.type)) }}</div>
+        <div class="course-duration">Durée: {{ getDuration(course.start_time, course.start_time + getMinutesDuration(course.course.type)) }}</div>
+        <div class="course-detail">{{ course.course.type }} - {{ course.room }}{{ course.prof ? ' - ' + course.prof : '' }}</div>
+      </div>
+      <button class="open-info-button" @click="openCourseInfo">+</button>
+    </div>
   </div>
 </template>
+
 <script>
+  import { minutesToTime } from '../../utils/dateUtils';
   export default {
     name: 'CourseCard',
     props: {
@@ -24,12 +31,7 @@
       return {};
     },
     methods: {
-      formatTime(minutes) {
-        const hours = Math.floor(minutes / 60);
-        const mins = minutes % 60;
-        return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
-      },
-
+      minutesToTime,
       getDuration(startMinutes, endMinutes) {
         const duration = endMinutes - startMinutes;
         const hours = Math.floor(duration / 60);
@@ -46,6 +48,10 @@
       getMinutesDuration(courseType) {
         const duration = parseInt(courseType.split(/[A-Za-z]{2,}/)[1]) || 90;
         return duration;
+      },
+
+      openCourseInfo() {
+        this.$emit('open-course-info', this.course);
       }
     }
   }
@@ -53,6 +59,8 @@
 
 <style scoped>
 .course-card {
+  min-height: calc(var(--duree) * 1px);
+  max-height: fit-content;
   background: var(--color-course-card-bg);
   border-radius: 8px;
   padding: 12px;
@@ -109,5 +117,24 @@
   height: 25px;
   right: 0;
   top: 0;
+}
+
+.course-card-content {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.open-info-button {
+  background: var(--color-primary);
+  border: 1px solid var(--color-muted);
+  border-radius: 8px;
+  width: 20px;
+  height: 24px;
+  font-size: 16px;
+  color: var(--text-default);
+  cursor: pointer;
+  align-self: center;
+  justify-content: center;
 }
 </style>

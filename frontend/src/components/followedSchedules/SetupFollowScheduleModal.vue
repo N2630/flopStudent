@@ -2,20 +2,20 @@
   <div v-if="show" class="modal-overlay" @click="closeModal">
     <div class="modal" @click.stop>
       <div class="modal-header">
-        <h2>Paramètres</h2>
+        <h2>Ajouter un groupe à suivre</h2>
         <button @click="closeModal" class="close-button">×</button>
       </div>
       
       <div class="modal-content">
         <p class="modal-description">
-          Configurez votre département, année et groupe pour afficher votre emploi du temps personnalisé.
+          Choisissez le département, année et groupe pour suivre son emploi du temps.
         </p>
         
         <form @submit.prevent="saveSettings" class="settings-form">
           <div class="form-group">
             <label for="department">Département</label>
             <select id="department" v-model="formData.department" class="form-select" :disabled="loading.departments">
-              <option value="" disabled selected>Sélectionner un département</option>
+              <option value="">Sélectionner un département</option>
               <option v-for="dept in departments" :key="dept" :value="dept">
                 {{ dept }}
               </option>
@@ -26,7 +26,7 @@
           <div class="form-group">
             <label for="year">Année</label>
             <select id="year" v-model="formData.year" class="form-select" :disabled="!formData.department || loading.trainProgs">
-              <option value="" disabled selected>Sélectionner une année</option>
+              <option value="">Sélectionner une année</option>
               <option v-for="trainProg in trainProgs" :key="trainProg" :value="trainProg">
                 {{ trainProg }}
               </option>
@@ -37,21 +37,9 @@
           <div class="form-group">
             <label for="group">Groupe</label>
             <select id="group" v-model="formData.group" class="form-select" :disabled="!formData.year || loading.groups">
-              <option value="" disabled selected>Sélectionner un groupe</option>
+              <option value="">Sélectionner un groupe</option>
               <option v-for="group in groups" :key="group" :value="group">
                 Groupe {{ group }}
-              </option>
-            </select>
-            <div v-if="loading.groups" class="loading-text">Chargement...</div>
-          </div>
-
-          <div class="form-group">
-            <label for="theme">Thème</label>
-            <select id="theme" v-model="formData.theme" class="form-select">
-              <option value="" disabled selected>Sélectionner un thème</option>
-              <option value="sys">Système</option>
-              <option v-for="theme in mappedThemes" :key="theme.cssName" :value="theme.cssName">
-                {{ theme.name }}
               </option>
             </select>
             <div v-if="loading.groups" class="loading-text">Chargement...</div>
@@ -72,9 +60,9 @@
 </template>
 
 <script>
-import { getDept, getTrainProg, getGroup, setDept, setTrainProg, setGroup } from '../../utils/storageUtils';
+import { addFollowedSchedule } from '../../utils/storageUtils';
 import { fetchDepartments, fetchTrainProgs, fetchGroups } from '../../services/api';
-import themesManifest from '../../assets/themes-manifest.json';
+import { GrpFollowSchedule } from '../../utils/followSchedule';
 
 export default {
   name: 'SettingsParams',
@@ -83,18 +71,13 @@ export default {
       type: Boolean,
       default: false
     },
-    themes: {
-      type: Array,
-      default: () => themesManifest.themes || []
-    }
   },
   data() {
     return {
       formData: {
-        department: getDept() || '',
-        year: getTrainProg() || '',
-        group: getGroup() || '',
-        theme: ''
+        department: '',
+        year: '',
+        group: ''
       },
       departments: [],
       trainProgs: [],
@@ -113,21 +96,14 @@ export default {
     isFormValid() {
       return this.formData.department && this.formData.year && this.formData.group;
     }
-    ,
-    mappedThemes() {
-      return this.themes || [];
-    }
-
   },
   watch: {
     show(newVal) {
       if (newVal) {
-        // initialisation propre : charger d'abord les listes, puis pré-remplir
         this.initSettingsModal();
       }
     },
     'formData.department'(newDept) {
-      // Ne pas réagir si on est en phase d'initialisation (pré-remplissage)
       if (this.isInitializing) return;
       if (newDept) {
         this.loadTrainProgs(newDept);
@@ -142,40 +118,26 @@ export default {
       if (this.isInitializing) return;
       if (newYear && this.formData.department) {
         this.loadGroups(this.formData.department, newYear);
-        // Reset le groupe quand l'utilisateur change l'année
         this.formData.group = '';
         this.groups = [];
       }
     }
   },
-  mounted() {
-    if (this.show) {
-      this.initSettingsModal();
-    }
-  },
   methods: {
-    // Initialise proprement le modal : charger d'abord les listes, puis pré-remplir
     async initSettingsModal() {
       this.isInitializing = true;
       try {
         await this.loadDepartments();
-        await this.loadCurrentSettings();
       } finally {
         this.isInitializing = false;
       }
     },
+
     async loadCurrentSettings() {
-      this.formData.department = getDept() || '';
-      this.formData.year = getTrainProg() || '';
-      this.formData.group = getGroup() || '';
-      // Load selected theme (if any) from localStorage
-      try {
-        const savedTheme = localStorage.getItem('fs_theme');
-        this.formData.theme = savedTheme || 'sys';
-      } catch (e) {
-        this.formData.theme = 'sys';
-      }
-      
+      this.formData.department = '';
+      this.formData.year = '';
+      this.formData.group = '';
+
       // Charger les données en cascade si nécessaire
       if (this.formData.department) {
         await this.loadTrainProgs(this.formData.department);
@@ -236,25 +198,13 @@ export default {
     saveSettings() {
       if (!this.isFormValid) return;
       
-      // Sauvegarder les paramètres
-      setDept(this.formData.department);
-      setTrainProg(this.formData.year);
-      setGroup(this.formData.group);
-      // Sauvegarder le thème
-      try {
-        if (this.formData.theme) localStorage.setItem('fs_theme', this.formData.theme);
-        else localStorage.removeItem('fs_theme');
-      } catch (e) {
-        // ignore storage errors
-      }
-      
-      // Émettre un événement pour notifier le parent
-      this.$emit('settings-saved', {
-        department: this.formData.department,
-        year: this.formData.year,
-        group: this.formData.group,
-        theme: this.formData.theme || null
-      });
+        const grpFollowSchedule = new GrpFollowSchedule(
+            null,
+            this.formData.department,
+            this.formData.year,
+            this.formData.group
+        )
+      this.$emit('setup-saved', addFollowedSchedule(grpFollowSchedule));
       
       // Fermer le modal
       this.closeModal();

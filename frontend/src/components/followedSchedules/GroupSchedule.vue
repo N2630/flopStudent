@@ -1,61 +1,68 @@
 <template>
-  <div class="schedule-page">
-    <!-- Navigation semaine -->
+  <div class="grp-schedule-div">
     <div class="week-navigation">
       <button @click="goToPreviousWeek" class="nav-button">‹</button>
       <span class="week-text">Semaine {{ currentWeek }} - {{ currentYear }} </span>
       <button @click="goToNextWeek" class="nav-button">›</button>
     </div>
+    <div class="schedule-page schedule-group-container">
+      
+      <div class="schedule-group-header">
+          <h3>{{ scheduleGrp.dept }} - {{ scheduleGrp.trainProg }} - Groupe {{ scheduleGrp.group }} - {{ scheduleGrp.id }}</h3>
+          <button class="btn-secondary btn-del" @click="removeSchedule(scheduleGrp.id)">
+              Retirer ce groupe
+          </button>
+      </div>
 
-    <!-- Grille hebdomadaire (desktop) -->
+      <DesktopSchedule 
+        :organizedSchedules="organizedSchedules" 
+        :days="days"
+        :initialDate="initialDate" 
+        @open-course-info="selectedCourse = $event"
+        class="desktop-schedule-vue"
+      />
 
-    <DesktopSchedule 
-      :organizedSchedules="organizedSchedules" 
-      :days="days"
-      :initialDate="initialDate"
-      @open-course-info="selectedCourse = $event"
-      class="desktop-schedule-vue"
-    />
+      <!-- Vue mobile -->
+      <MobileSchedule 
+        :organizedSchedules="organizedSchedules" 
+        :days="days"
+        :currentDayIndex="currentDayIndex"
+        @update:currentDayIndex="currentDayIndex = $event"
+        :initialDate="initialDate" 
+        @open-course-info="selectedCourse = $event"
+        class="mobile-schedule-vue"
+      />
 
-    <!-- Vue mobile -->
-    <MobileSchedule 
-      :organizedSchedules="organizedSchedules" 
-      :days="days"
-      :currentDayIndex="currentDayIndex"
-      @update:currentDayIndex="currentDayIndex = $event"
-      :initialDate="initialDate"
-      @open-course-info="selectedCourse = $event"
-      class="mobile-schedule-vue"
-    />
-
-    <!-- Salles libres -->
-    <FreeRoomsList />
-
-    <CourseInfo 
-      v-if="selectedCourse"
-      :course="selectedCourse" 
-      @close="selectedCourse = null"
-    />
+      <CourseInfo 
+        v-if="selectedCourse"
+        :course="selectedCourse" 
+        @close="selectedCourse = null"
+      />
+    </div>
   </div>
+  
 </template>
 
 <script>
-import { fetchSchedules } from '../services/api';
-import { organizeSchedules, getWeekNumber, getYearNumber } from '../services/scheduleService';
-import { getLastSchedulesUpdate, getGroupNameView, getDept, getTrainProg, getGroup } from '../utils/storageUtils';
-import { formatDateTime, minutesToTime } from '../utils/dateUtils';
-import FreeRoomsList from '../components/other/FreeRoomsList.vue';
-import DesktopSchedule from '../components/schedule/DesktopSchedule.vue';
-import MobileSchedule from '../components/schedule/MobileSchedule.vue';
-import CourseInfo from '../components/schedule/CourseInfo.vue';
-
+import { fetchGroupSchedules } from '../../services/api';
+import { organizeSchedules, getWeekNumber, getYearNumber } from '../../services/scheduleService';
+import { getLastSchedulesUpdate, getGroupNameView, removeFollowedSchedule } from '../../utils/storageUtils';
+import { formatDateTime, minutesToTime } from '../../utils/dateUtils';
+import DesktopSchedule from '../schedule/DesktopSchedule.vue';
+import MobileSchedule from '../schedule/MobileSchedule.vue';
+import CourseInfo from '../schedule/CourseInfo.vue';
 export default {
-  name: 'SchedulePage',
+  name: 'GroupSchedule',
   components: {
-    FreeRoomsList,
     DesktopSchedule,
     MobileSchedule,
     CourseInfo
+  },
+  props: {
+    scheduleGrp: {
+      type: Object,
+      required: true
+    }
   },
   data() {
     return {
@@ -74,10 +81,7 @@ export default {
       ],
       schedulesLastUpdated: getLastSchedulesUpdate() || null,
       group_name_view: getGroupNameView() ? 'true' : 'false',
-      dept: getDept() || '',
-      train_prog: getTrainProg() || '',
-      group: getGroup() || '',
-      selectedCourse: null,
+      selectedCourse: null
     };
   },
   computed: {
@@ -120,7 +124,7 @@ export default {
 
     async loadSchedules() {
       try {
-        const response = await fetchSchedules(this.currentYear, this.currentWeek);
+        const response = await fetchGroupSchedules(this.currentYear, this.currentWeek, this.scheduleGrp.dept, this.scheduleGrp.trainProg, this.scheduleGrp.group);
         this.schedules = response;
         this.organizedSchedules = organizeSchedules(this.schedules);
       } catch (error) {
@@ -131,11 +135,16 @@ export default {
       }
     },
 
+    async removeSchedule(scheduleId) {
+        await removeFollowedSchedule(scheduleId);
+        this.$emit('modify-schedule', this.scheduleGrp);
+    },
+    
     async goToPreviousWeek() {
       let date = new Date(this.initialDate);
       date.setDate(date.getDate() - 7);
       this.initialDate = date;
-      await this.initializeWeek();
+      //await this.initializeWeek();
       await this.loadSchedules();
     },
 
@@ -152,4 +161,37 @@ export default {
 };
 </script>
 
-<style src="../assets/css/scheduleCommon.css"></style>
+<style scoped>
+  .schedule-group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    gap: 20%;
+  }
+
+  .schedule-group-container {
+    background-color: var(--color-bg-panel) !important;
+    width: 100% !important;
+    border-radius: 12px;
+  }
+
+  .week-navigation {
+    width: 95% !important;
+    align-self: center;
+  }
+
+  .grp-schedule-div {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 50px;
+
+  }
+
+  @media (max-width: 768px) {
+    .btn-del {
+      padding: 1px !important;
+    }
+  }
+  
+</style>
