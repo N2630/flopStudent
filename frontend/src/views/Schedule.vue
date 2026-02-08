@@ -9,12 +9,13 @@
 
     <!-- Grille hebdomadaire (desktop) -->
 
-      <DesktopSchedule 
-        :organizedSchedules="organizedSchedules" 
-        :days="days"
-        :initialDate="initialDate"
-        @open-course-info="selectedCourse = $event"
-      />
+    <DesktopSchedule 
+      :organizedSchedules="organizedSchedules" 
+      :days="days"
+      :initialDate="initialDate"
+      @open-course-info="selectedCourse = $event"
+      class="desktop-schedule-vue"
+    />
 
     <!-- Vue mobile -->
     <MobileSchedule 
@@ -24,6 +25,7 @@
       @update:currentDayIndex="currentDayIndex = $event"
       :initialDate="initialDate"
       @open-course-info="selectedCourse = $event"
+      class="mobile-schedule-vue"
     />
 
     <!-- Salles libres -->

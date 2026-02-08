@@ -1,6 +1,12 @@
 <template>
+  <div>
+    <div v-if="isDataEmpty" class="loader-container">
+      <div class="loader"></div>
+      <p>Chargement ...</p>
+    </div>
+
   <!-- Navigation jour (mobile) -->
-  <div class="day-navigation mobile-only">
+  <div v-if="!isDataEmpty" class="day-navigation mobile-only">
     <button 
       v-for="(day, i) in days" 
       :key="day.key" 
@@ -13,13 +19,14 @@
   </div>
 
   <!-- Liste des cours (mobile) -->
-  <div class="courses-list mobile-only">
+  <div v-if="!isDataEmpty" class="courses-list mobile-only">
     <div class="day-header">{{ getDayAndDate(currentDayKey)}}</div>
     <DayCourseDisplay 
       :courseInDay="getCoursesForDay(currentDayKey)" 
       :dayKey="currentDayKey"
       @open-course-info="$emit('open-course-info', $event)"
     />
+  </div>
   </div>
 </template>
 
@@ -52,6 +59,9 @@ export default {
     }
   },
   computed: {
+    isDataEmpty() {
+      return !this.organizedSchedules || Object.keys(this.organizedSchedules).length === 0;
+    },
     currentDayKey() {
       return this.days[this.currentDayIndex]?.key || 'm';
     },

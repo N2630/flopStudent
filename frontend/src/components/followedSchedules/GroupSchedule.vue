@@ -13,14 +13,14 @@
               Retirer ce groupe
           </button>
       </div>
-      <!-- Grille hebdomadaire (desktop) -->
-      <div class="schedule-grid desktop-only">
-        <DesktopSchedule 
-          :organizedSchedules="organizedSchedules" 
-          :days="days"
-          :initialDate="initialDate" 
-        />
-      </div>
+
+      <DesktopSchedule 
+        :organizedSchedules="organizedSchedules" 
+        :days="days"
+        :initialDate="initialDate" 
+        @open-course-info="selectedCourse = $event"
+        class="desktop-schedule-vue"
+      />
 
       <!-- Vue mobile -->
       <MobileSchedule 
@@ -29,6 +29,14 @@
         :currentDayIndex="currentDayIndex"
         @update:currentDayIndex="currentDayIndex = $event"
         :initialDate="initialDate" 
+        @open-course-info="selectedCourse = $event"
+        class="mobile-schedule-vue"
+      />
+
+      <CourseInfo 
+        v-if="selectedCourse"
+        :course="selectedCourse" 
+        @close="selectedCourse = null"
       />
     </div>
   </div>
@@ -42,12 +50,13 @@ import { getLastSchedulesUpdate, getGroupNameView, removeFollowedSchedule } from
 import { formatDateTime, minutesToTime } from '../../utils/dateUtils';
 import DesktopSchedule from '../schedule/DesktopSchedule.vue';
 import MobileSchedule from '../schedule/MobileSchedule.vue';
-
+import CourseInfo from '../schedule/CourseInfo.vue';
 export default {
   name: 'GroupSchedule',
   components: {
     DesktopSchedule,
-    MobileSchedule
+    MobileSchedule,
+    CourseInfo
   },
   props: {
     scheduleGrp: {
@@ -72,6 +81,7 @@ export default {
       ],
       schedulesLastUpdated: getLastSchedulesUpdate() || null,
       group_name_view: getGroupNameView() ? 'true' : 'false',
+      selectedCourse: null
     };
   },
   computed: {

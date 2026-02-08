@@ -41,8 +41,18 @@
   font-size: 16px;
 }
 
+@media (min-width: 769px) {
+  .mobile-schedule-vue {
+    display: none;
+  }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
+  .desktop-schedule-vue {
+    display: none;
+  }
+
   .schedule-page {
     padding: 16px;
   }
