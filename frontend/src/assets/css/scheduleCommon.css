@@ -47,8 +47,6 @@
     padding: 16px;
   }
   
-  /* desktop-only helper is centralized in src/assets/css/main.css */
-  
   .week-navigation {
     padding: 10px 16px;
     margin-bottom: 16px;
@@ -128,4 +126,30 @@
   .lunch-card {
     margin-bottom: 10px;
   }
+}
+
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--color-primary);
+  padding: 30px 60px;
+  border-radius: 16px;
+}
+
+.loader {
+  border: 8px solid #f3f3f3; /* Couleur de fond (gris clair) */
+  border-top: 8px solid #3498db; /* Couleur animée (bleu) */
+  border-radius: 50%; /* Rend le div circulaire */
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite; /* Applique l'animation */
+  z-index: 999;
+}
+
+/* Définition de l'animation de rotation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

@@ -1,22 +1,28 @@
 <template>
-  <div v-if="isLoading" class="loader-container">
-    <div class="loader"></div>
-      <p>
-      Chargement ...
-    </p>
-  </div>
+  <div>
+    <div v-if="isDataEmpty" class="loader-container">
+      <div class="loader"></div>
+        <p>
+        Chargement ...
+      </p>
+    </div>
 
-  <!-- Grille hebdomadaire (desktop) -->
-  <div v-else v-for="day in days" :key="day.key" class="day-column">
-      <div class="day-header">{{ getDayAndDate(day)}}</div>
-      <div class="courses-container">
-        <DayCourseDisplay 
-          :courseInDay="getCoursesForDay(day.key)" 
-          :day="day"
-          @open-course-info="$emit('open-course-info', $event)"
-        />
+    <!-- Grille hebdomadaire (desktop) -->
+    <div v-if="!isDataEmpty" class="schedule-grid desktop-only">
+      <div v-for="day in days" :key="day.key" class="day-column">
+          <div class="day-header">{{ getDayAndDate(day)}}</div>
+          <div class="courses-container">
+            <DayCourseDisplay 
+              :courseInDay="getCoursesForDay(day.key)" 
+              :day="day"
+              @open-course-info="$emit('open-course-info', $event)"
+              @course-loaded="changeLoadingstatus()"
+            />
+          </div>
       </div>
+    </div>
   </div>
+  
 </template>
 
 <script>
@@ -38,13 +44,20 @@ export default {
       // optional; parent can pass the reference date (Date or ISO string)
       type: [String, Object],
       required: false
-    }
+    },
   },
   components: {
     DayCourseDisplay
   },
   data() {
-    return {};
+    return {
+      isLoading: true
+    };
+  },
+  computed: {
+    isDataEmpty() {
+      return !this.organizedSchedules || Object.keys(this.organizedSchedules).length === 0;
+    }
   },
   methods: {
     getDayAndDate(day) {
@@ -52,10 +65,15 @@ export default {
       const ref = this.initialDate || undefined;
       return `${day.name} ${getDate(day.key, ref)}`;
     },
+
     getCoursesForDay(dayKey) {
       console.log(this.organizedSchedules[dayKey])
       return this.organizedSchedules[dayKey];
     },
+
+    changeLoadingstatus() {
+      this.isLoading = false
+    }
 
   }
 };

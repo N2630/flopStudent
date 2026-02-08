@@ -1,12 +1,5 @@
 <template>
-    <div v-if="!courseInDay" class="loader-container">
-        <div class="loader"></div>
-        <p>
-            Chargement ...
-        </p>
-    </div>
-    
-    <div v-else class="day-schedule">
+    <div v-if="courseInDay" class="day-schedule">
         <!-- Cours du matin -->
         <div class="morning-schedule">
             <template v-for="(course, courseIndex) in morningCourses" :key="'morning-' + course.id">
@@ -147,6 +140,17 @@ export default {
             }
 
             return 0;
+        }
+    },
+    watch: {
+        courseInDay: {
+            immediate: true, // Vérifie dès le montage du composant
+            handler(newVal) {
+                if (newVal && newVal.length >= 0) {
+                    // On attend un petit tick pour s'assurer que le DOM est prêt si besoin
+                    this.$emit('course-loaded');
+                }
+            }
         }
     }
 };

@@ -8,14 +8,13 @@
     </div>
 
     <!-- Grille hebdomadaire (desktop) -->
-    <div class="schedule-grid desktop-only">
+
       <DesktopSchedule 
         :organizedSchedules="organizedSchedules" 
         :days="days"
         :initialDate="initialDate"
         @open-course-info="selectedCourse = $event"
       />
-    </div>
 
     <!-- Vue mobile -->
     <MobileSchedule 
