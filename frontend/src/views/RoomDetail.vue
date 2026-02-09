@@ -60,9 +60,8 @@
 </template>
 
 <script>
-import axios from 'axios';
 import { findRoomByName } from '../services/roomStore';
-import { fetchRoomSchedules } from '@/services/api';
+import { fetchRoomSchedules, fetchAllRooms } from '@/services/api';
 import DesktopSchedule from '../components/schedule/DesktopSchedule.vue';
 import MobileSchedule from '../components/schedule/MobileSchedule.vue';
 import { organizeSchedules, getWeekNumber, getYearNumber } from '../services/scheduleService';
@@ -112,8 +111,8 @@ export default {
 
     try {
       const res = await fetchAllRooms();
-      if (res && res.data) {
-        const data = res.data;
+      if (res) {
+        const data = res;
         if (Array.isArray(data)) {
           this.room = data.find(r => String(r.room).toLowerCase() === String(roomName).toLowerCase()) || data[0] || null;
         } else {

@@ -73,9 +73,9 @@
 </template>
 
 <script>
-import axios from 'axios';
 import { findProfByUsername } from '../services/profStore';
-import { fetchProfSchedules } from '@/services/api';
+import { fetchProfSchedules, fetchProfsDetails } from '@/services/api';
+import { getDept } from '@/utils/storageUtils';
 import DesktopSchedule from '../components/schedule/DesktopSchedule.vue';
 import MobileSchedule from '../components/schedule/MobileSchedule.vue';
 import { organizeSchedules, getWeekNumber, getYearNumber } from '../services/scheduleService';
@@ -125,9 +125,10 @@ export default {
     }
 
     try {
-      const res = await fetchProfsDetails(encodeURIComponent(username));
-      if (res && res.data) {
-        const data = res.data;
+      const dept = getDept();
+      const res = await fetchProfsDetails(encodeURIComponent(dept));
+      if (res) {
+        const data = res;
         if (Array.isArray(data)) {
           this.prof = data.find(p => String(p.username).toLowerCase() === String(username).toLowerCase()) || data[0] || null;
         } else {
