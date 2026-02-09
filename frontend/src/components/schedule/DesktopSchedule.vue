@@ -67,7 +67,6 @@ export default {
     },
 
     getCoursesForDay(dayKey) {
-      console.log(this.organizedSchedules[dayKey])
       return this.organizedSchedules[dayKey];
     },
 

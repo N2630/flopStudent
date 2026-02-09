@@ -60,9 +60,6 @@ export default {
     data() {
         return {};
     },
-    async created() {
-        console.log(this.courseInDay)
-    },
     methods: {
         /**
          * Décide si on insère un bloc repas entre matin et après-midi.

@@ -111,7 +111,7 @@ export default {
     }
 
     try {
-      const res = await axios.get(`/api/get-all-rooms`);
+      const res = await fetchAllRooms();
       if (res && res.data) {
         const data = res.data;
         if (Array.isArray(data)) {

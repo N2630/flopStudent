@@ -44,7 +44,6 @@ export default {
       this.error = null;
       try {
         this.rooms = await fetchAllRooms();
-        console.log(this.rooms);
         try { 
             setRooms(this.rooms); 
         } catch(e) { 

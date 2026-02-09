@@ -125,7 +125,7 @@ export default {
     }
 
     try {
-      const res = await axios.get(`/api/get-all-profs?username=${encodeURIComponent(username)}`);
+      const res = await fetchProfsDetails(encodeURIComponent(username));
       if (res && res.data) {
         const data = res.data;
         if (Array.isArray(data)) {
