@@ -174,7 +174,7 @@ export default {
     flex-direction: column;
     gap: 10px;
     min-height: 300px;
-    max-height: 350px;
+    max-height: 400px;
 }
 
 .afternoon-schedule {
