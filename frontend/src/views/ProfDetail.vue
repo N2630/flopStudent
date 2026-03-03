@@ -44,14 +44,13 @@
           <button @click="goToNextWeek" class="nav-button">›</button>
       </div>
 
-      <!-- Grille hebdomadaire (desktop) -->
-      <div class="schedule-grid desktop-only">
-        <DesktopSchedule 
-          :organizedSchedules="organizedSchedules" 
-          :days="days"
-          :initialDate="initialDate" 
-        />
-      </div>
+      <DesktopSchedule 
+        :organizedSchedules="organizedSchedules" 
+        :days="days"
+        :initialDate="initialDate" 
+        @open-course-info="selectedCourse = $event"
+        class="desktop-schedule-vue"
+      />
 
       <!-- Vue mobile -->
       <MobileSchedule 
@@ -60,24 +59,34 @@
         :currentDayIndex="currentDayIndex"
         @update:currentDayIndex="currentDayIndex = $event"
         :initialDate="initialDate" 
+        @open-course-info="selectedCourse = $event"
+        class="mobile-schedule-vue"
+      />
+
+      <CourseInfo 
+        v-if="selectedCourse"
+        :course="selectedCourse" 
+        @close="selectedCourse = null"
       />
     </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
 import { findProfByUsername } from '../services/profStore';
-import { fetchProfSchedules } from '@/services/api';
+import { fetchProfSchedules, fetchProfsDetails } from '@/services/api';
+import { getDept } from '@/utils/storageUtils';
 import DesktopSchedule from '../components/schedule/DesktopSchedule.vue';
 import MobileSchedule from '../components/schedule/MobileSchedule.vue';
 import { organizeSchedules, getWeekNumber, getYearNumber } from '../services/scheduleService';
+import CourseInfo from '../components/schedule/CourseInfo.vue';
 
 export default {
   name: 'ProfDetail',
   components: {
     DesktopSchedule,
-    MobileSchedule
+    MobileSchedule,
+    CourseInfo
   },
   data() {
     return { 
@@ -98,6 +107,7 @@ export default {
           { key: 'th', name: 'Jeudi' },
           { key: 'f', name: 'Vendredi' }
         ],
+        selectedCourse: null
     };
   },
   async created() {
@@ -115,9 +125,10 @@ export default {
     }
 
     try {
-      const res = await axios.get(`/api/get-all-profs?username=${encodeURIComponent(username)}`);
-      if (res && res.data) {
-        const data = res.data;
+      const dept = getDept();
+      const res = await fetchProfsDetails(encodeURIComponent(dept));
+      if (res) {
+        const data = res;
         if (Array.isArray(data)) {
           this.prof = data.find(p => String(p.username).toLowerCase() === String(username).toLowerCase()) || data[0] || null;
         } else {

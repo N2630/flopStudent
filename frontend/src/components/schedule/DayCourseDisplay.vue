@@ -60,9 +60,6 @@ export default {
     data() {
         return {};
     },
-    async created() {
-        console.log(this.courseInDay)
-    },
     methods: {
         /**
          * Décide si on insère un bloc repas entre matin et après-midi.
@@ -177,7 +174,7 @@ export default {
     flex-direction: column;
     gap: 10px;
     min-height: 300px;
-    max-height: 350px;
+    max-height: 400px;
 }
 
 .afternoon-schedule {
