@@ -10,7 +10,7 @@
       </div>
     </header>
 
-    <div v-if="!hasCurrent">
+    <div v-if="this.loading">
       <Loader :isRequired="true"/>
     </div>
 
@@ -124,10 +124,12 @@ export default {
         const year = await getYearNumber(this.date);
         const week = await getWeekNumber(this.date);
         const response = await fetchFreeRooms(year, week);
+
         // réponse attendue : { salles: { 'L': {480: ['A1', ...], ... }}, lastUpdated }
         this.freeRoomsData = response?.salles || {};
         this.lastUpdated = response?.lastUpdated || null;
         this.updateCurrentSlotsAndDay(this.date);
+
         // option : mettre un intervalle de refresh toutes les 2 minutes
         if (!this.updateInterval) {
           this.updateInterval = setInterval(() => this.loadFreeRooms(), 2 * 60 * 1000);
