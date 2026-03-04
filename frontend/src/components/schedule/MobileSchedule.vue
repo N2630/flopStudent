@@ -1,43 +1,44 @@
 <template>
   <div>
-    <div v-if="isDataEmpty" class="loader-container">
-      <div class="loader"></div>
-      <p>Chargement ...</p>
+    <Loader 
+      :isRequired="isDataEmpty"
+      />
+
+    <!-- Navigation jour (mobile) -->
+    <div v-if="!isDataEmpty" class="day-navigation mobile-only">
+      <button 
+        v-for="(day, i) in days" 
+        :key="day.key" 
+        class="day-tab" 
+        :class="{ active: currentDayIndex === i }"
+        @click="$emit('update:currentDayIndex', i)">
+        {{ day.name.substring(0,3) }}
+      </button>
+      
     </div>
 
-  <!-- Navigation jour (mobile) -->
-  <div v-if="!isDataEmpty" class="day-navigation mobile-only">
-    <button 
-      v-for="(day, i) in days" 
-      :key="day.key" 
-      class="day-tab" 
-      :class="{ active: currentDayIndex === i }"
-      @click="$emit('update:currentDayIndex', i)">
-      {{ day.name.substring(0,3) }}
-    </button>
-    
-  </div>
-
-  <!-- Liste des cours (mobile) -->
-  <div v-if="!isDataEmpty" class="courses-list mobile-only">
-    <div class="day-header">{{ getDayAndDate(currentDayKey)}}</div>
-    <DayCourseDisplay 
-      :courseInDay="getCoursesForDay(currentDayKey)" 
-      :dayKey="currentDayKey"
-      @open-course-info="$emit('open-course-info', $event)"
-    />
-  </div>
+    <!-- Liste des cours (mobile) -->
+    <div v-if="!isDataEmpty" class="courses-list mobile-only">
+      <div class="day-header">{{ getDayAndDate(currentDayKey)}}</div>
+      <DayCourseDisplay 
+        :courseInDay="getCoursesForDay(currentDayKey)" 
+        :dayKey="currentDayKey"
+        @open-course-info="$emit('open-course-info', $event)"
+      />
+    </div>
   </div>
 </template>
 
 <script>
 import { getDate } from '../../utils/dateUtils';
+import Loader from '../other/Loader.vue';
 import DayCourseDisplay from './DayCourseDisplay.vue';
 
 export default {
   name: 'MobileSchedule',
   components: {
-    DayCourseDisplay
+    DayCourseDisplay,
+    Loader
   },
   props: {
     organizedSchedules: {

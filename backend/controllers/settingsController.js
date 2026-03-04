@@ -56,7 +56,7 @@ const getGroups = async (req, res) => {
     }
     
     const groups = await getDeptTrainGroups(dept, train_prog);
-    res.json(groups);
+    res.json(groups.reverse());
   } catch (error) {
     console.error('Erreur dans getGroups:', error);
     res.status(500).json({ message: 'Erreur lors de la récupération des groupes', error: error.message });

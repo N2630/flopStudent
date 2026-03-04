@@ -10,13 +10,13 @@ const freeRoomsService = require('../services/freeRoomsService');
  */
 const getFreeRoomsByWeek = async (req, res) => {
   try {
-    const { year, week, dept } = req.query;
+    const { year, week, dept, day, slot } = req.query;
 
     if (!year || !week || !dept) {
       return res.status(400).json({ message: 'Année, semaine et département sont requis.' });
     }
     
-    const freeRooms = await freeRoomsService.fetchFreeRooms(year, week, dept);
+    const freeRooms = await freeRoomsService.fetchFreeRooms(year, week, dept, day, slot);
     res.json(freeRooms);
   } catch (error) {
     console.error('Erreur dans getFreeRoomsByWeek:', error);
