@@ -11,11 +11,12 @@ const fs = require('fs/promises'); // Importation du module fs
  * @param {string} targetDept - Département (clé de config/freeRooms.json)
  * @returns {Promise<Record<string, Record<string, string[]>>>} Objet: { [dayLetter]: { [slotMinutes]: string[] } }
  */
-async function calculateFreeRooms(year, week, targetDept) {
+async function calculateFreeRooms(year, week, targetDept, day, slot) {
 
 
-    const timeSlots = [480, 570, 665, 755, 855, 945];
-    const days = ['m', 'tu', 'w', 'th', 'f'];
+    const timeSlots =  slot ? [slot] : [480, 570, 665, 755, 855, 945];
+
+    const days = day ? [day.toLowerCase()] : ['m', 'tu', 'w', 'th', 'f'];
 
     const result = {};
 

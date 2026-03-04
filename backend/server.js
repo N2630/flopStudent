@@ -27,7 +27,7 @@ app.use('/api', apiRoutes)
 connectToDatabase();
 
 // Tâche planifiée pour récupérer, valider et stocker les 4 prochaines semaines de l'EDT
-// Tous les vendredis à 17h00
+// Du Dimanche au Lundi de 10h à 17h00
 cron.schedule('*/60 10-17 * * 0-5', async () => {
     console.log('Exécution de la tâche planifiée de récupération et nettoyage des emplois du temps.');
     try {
@@ -42,8 +42,8 @@ cron.schedule('*/60 10-17 * * 0-5', async () => {
 });
 
 // Tâche planifiée pour récupérer et vérifier la validiter de l'EDT de la semaine actuel
-// Toutes les 10min entre 8h et 18h59 du lundi au vendredi
-cron.schedule('*/10 8-18 * * 1-5', async () => {
+// Toutes les 10min entre 7h et 18h59 du lundi au vendredi
+cron.schedule('*/10 7-21 * * 1-5', async () => {
   console.log('Exécution de la tâche planifiée de récupération et nettoyage des emplois du temps.');
   try {
     const now = new Date();

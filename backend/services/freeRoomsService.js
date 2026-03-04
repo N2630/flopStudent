@@ -9,9 +9,9 @@ const { calculateFreeRooms } = require('../utils/calculateFreeRooms');
  * @param {string} dept - Département (clé dans config/freeRooms.json)
  * @returns {Promise<{salles: Record<string, Record<string, string[]>>, lastUpdated: Date}>}
  */
-const fetchFreeRooms = async (year, week, dept) => {
+const fetchFreeRooms = async (year, week, dept, day, slot) => {
     try {
-        const result = await calculateFreeRooms(year, week, dept);
+        const result = await calculateFreeRooms(year, week, dept, day, slot);
         return { salles: result, lastUpdated: new Date() };
     } catch (error) {
         console.error("Erreur lors de la récupération des salles :", error);

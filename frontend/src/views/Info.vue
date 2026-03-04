@@ -99,8 +99,8 @@
           </button>
 
           <div v-if="showFaq5" class="faq-answer">
-            Les emplois du temps sont mis à jour automatiquement toutes les 10 minutes, du lundi au vendredi, entre 8h et 18h59, afin de garantir l'exactitude des informations pour la semaine en cours.<br>
-            De plus, les 4 prochaines semaines sont actualisées et nettoyées toutes les heures entre 10h et 17h.<br>
+            Les emplois du temps sont mis à jour automatiquement toutes les 10 minutes, du lundi au vendredi, entre 7h et 22h59, afin de garantir l'exactitude des informations pour la semaine en cours.<br>
+            De plus, les 4 prochaines semaines sont actualisées et nettoyées toutes les heures du Dimanche au Vendredi entre 10h et 17h.<br>
             Enfin, une synchronisation complète est effectuée à chaque redémarrage du serveur.<br>
             Ainsi, dès qu'une modification est détectée sur flop!EDT, elle est rapidement prise en compte sur FlopStudent, pour vous garantir un planning toujours à jour.
           </div>

@@ -1,11 +1,8 @@
 <template>
   <div>
-    <div v-if="isDataEmpty" class="loader-container">
-      <div class="loader"></div>
-        <p>
-        Chargement ...
-      </p>
-    </div>
+    <Loader 
+      :isRequired="isDataEmpty"
+      />
 
     <!-- Grille hebdomadaire (desktop) -->
     <div v-if="!isDataEmpty" class="schedule-grid desktop-only">
@@ -27,6 +24,7 @@
 
 <script>
 import { getDate } from '../../utils/dateUtils';
+import Loader from '../other/Loader.vue';
 import DayCourseDisplay from './DayCourseDisplay.vue';
 
 export default {
@@ -47,7 +45,8 @@ export default {
     },
   },
   components: {
-    DayCourseDisplay
+    DayCourseDisplay,
+    Loader
   },
   data() {
     return {

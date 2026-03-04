@@ -1,223 +1,643 @@
-## FlopStudent
-
-FlopStudent est une application web open source alternative à [flop!EDT]("https://www.flopedt.org/"). Elle permet aux étudiants de consulter leur emplois du temps (EDT) et les salles libres de l’IUT avec une interface plus intuitive et facile d'utilisation (notamment sur mobile). Le projet s’inspire ainsi de flop!EDT en ajoutant une expérience optimisée (mobile-friendly, mode hors-ligne, salles libres, et d'autres fonctionnalitées à l'avenir).
+# FlopStudent
 
 ![Logo FlopStudent](./frontend/src/assets/logo.png "Logo FlopStudent")
 
-### Architecture
-- **frontend/**: SPA Vue.js (Vue 3 + vue-router)
-- **backend/**: Node.js + Express, MongoDB pour le stockage
-- **docker-compose.yml**: orchestration frontend + backend + base de données (facultatif selon votre infra)
+FlopStudent est une application web open source alternative à [flop!EDT](https://www.flopedt.org/). Elle permet aux étudiants de consulter leur emploi du temps (EDT) et les salles libres de l'IUT avec une interface plus intuitive et facile d'utilisation (notamment sur mobile). Le projet s'inspire de flop!EDT en ajoutant une expérience optimisée : mobile-friendly, mode hors-ligne, salles libres, et d'autres fonctionnalités à venir.
+
+---
+
+## Sommaire
+
+- [Fonctionnalités](#fonctionnalités)
+- [Aperçu](#aperçu)
+- [Architecture](#architecture)
+- [Prérequis](#prérequis)
+- [Installation (développement)](#installation-développement)
+  - [Cloner le dépôt](#1-cloner-le-dépôt)
+  - [Installer les dépendances](#2-installer-les-dépendances)
+  - [Variables d'environnement](#3-variables-denvironnement)
+  - [Lancer en local](#4-lancer-en-local)
+- [Déploiement (production)](#déploiement-production)
+  - [Avec Docker Compose](#avec-docker-compose)
+  - [Build manuel (sans Docker)](#build-manuel-sans-docker)
+- [Variables d'environnement (récapitulatif)](#variables-denvironnement-récapitulatif)
+- [API Backend](#api-backend)
+  - [Emplois du temps](#emplois-du-temps)
+  - [Salles libres](#salles-libres)
+  - [Professeurs](#professeurs)
+  - [Salles](#salles)
+  - [Paramètres / Configuration](#paramètres--configuration)
+  - [Codes d'erreur](#codes-derreur)
+- [Flux de données & tâches programmées](#flux-de-données--tâches-programmées)
+- [Contribuer](#contribuer)
+- [Licence](#licence)
+
+---
+
+## Fonctionnalités
+
+| Fonctionnalité | Description |
+|----------------|-------------|
+| **Emploi du temps** | Consultation de l'EDT par groupe, avec une interface épurée et lisible |
+| **Salles libres** | Visualisation des salles disponibles en temps réel |
+| **Recherche profs** | Trouver un professeur et consulter son emploi du temps |
+| **Recherche salles** | Consulter l'occupation d'une salle spécifique |
+| **Mobile-friendly** | Interface responsive optimisée pour smartphone |
+| **Thèmes** | Mode clair/sombre selon vos préférences |
+| **Mode "hors-ligne"** | Accès aux données même si Flop!EDT est injoignable |
+| **Suivi d'EDT** | Suivez l'emploi du temps de plusieurs groupes en favoris |
+
+---
+
+## Aperçu
+
+### Version mobile
+
+<p align="center">
+  <img src="./docs/screenshots/EdtMobile.webp" alt="EDT Mobile" width="250"/>
+  <img src="./docs/screenshots/SallesLibresMobile.webp" alt="Salles libres Mobile" width="250"/>
+  <img src="./docs/screenshots/MenuMobile.webp" alt="Menu Mobile" width="250"/>
+</p>
+
+### Version desktop
+
+![Vue desktop - Emploi du temps](./docs/screenshots/EdtDesktop.webp "Emploi du temps sur desktop")
+
+![Vue desktop - Salles libres](./docs/screenshots/SallesLibresDesktop.webp "Salles libres sur desktop")
+
+![Vue desktop - Recherche professeur](./docs/screenshots/MenuDesktop.webp "Recherche de professeur")
+
+
+
+---
+
+## Architecture
+
+```
+flopStudent/
+├── frontend/          # SPA Vue.js (Vue 3 + vue-router)
+├── backend/           # API Node.js + Express, MongoDB
+└── docker-compose.yml # Orchestration des services
+```
+
+| Composant | Technologies |
+|-----------|-------------|
+| Frontend  | Vue 3, Vue Router, Axios |
+| Backend   | Node.js, Express, MongoDB |
+| Base de données | MongoDB 6+ |
 
 ---
 
 ## Prérequis
-- Node.js 18+
-- npm 9+ ou pnpm/yarn équivalent
-- MongoDB 6+ (local ou managé) 
-- (Optionnel) Docker + Docker Compose pour un déploiement conteneurisé
+
+| Outil | Version minimale | Obligatoire |
+|-------|-----------------|-------------|
+| Node.js | 18+ | Oui |
+| npm | 9+ | Oui (ou pnpm/yarn) |
+| MongoDB | 6+ | Oui |
+| Docker | 20+ | Non (optionnel) |
+| Docker Compose | 2+ | Non (optionnel) |
 
 ---
 
 ## Installation (développement)
 
-### 1) Cloner le dépôt
+### 1. Cloner le dépôt
+
 ```bash
-git clone <url-du-repo>
+git clone https://github.com/N2630/flopStudent.git
 cd flopStudent
 ```
 
-### 2) Installer les dépendances
-- Frontend
+### 2. Installer les dépendances
+
 ```bash
-cd frontend
+# Backend
+cd backend
 npm install
-```
-- Backend
-```bash
-cd ../backend
+
+# Frontend
+cd ../frontend
 npm install
 ```
 
-### 3) Variables d’environnement (backend)
-Créer un fichier `.env` dans `backend/` avec les clés suivantes:
+### 3. Variables d'environnement
+
+**Backend** — Créer `backend/.env` :
+
 ```env
-# URL de connexion MongoDB (obligatoire)
+# Connexion MongoDB (obligatoire)
 MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>/<dbname>?retryWrites=true&w=majority
 
-# Port du serveur backend (optionnel, 3000 par défaut via server.js si géré)
+# Port du serveur (optionnel, défaut: 3000)
 PORT=3000
 ```
-La base utilisée par défaut est `flopStudent` (configurée dans `backend/config/connectDb.js`).
 
-### 4) Lancer en local
-- Backend
-```bash
-cd backend
-npm start
-```
-Par défaut, l’API écoute sur `http://localhost:3000` (selon votre configuration/`server.js`).
+**Frontend** — Créer `frontend/.env` :
 
-- Frontend
-```bash
-cd ../frontend
-npm run serve
-```
-L’application est accessible sur `http://localhost:8080` (par défaut Vue CLI).
-
-Astuce: Dans le frontend, configurez la variable `VUE_APP_API_BASE_URL` (fichier `.env` à la racine `frontend/`) pour pointer vers votre backend si nécessaire:
 ```env
+# URL de l'API backend (optionnel en dev, le proxy s'en charge)
 VUE_APP_API_BASE_URL=http://localhost:3000
 ```
 
----
+### 4. Lancer en local
 
-## Déploiement
-
-### Backend seul (Docker Compose)
-Un `docker-compose.yml` minimal est fourni pour le backend.
-
-Prérequis: définir `MONGODB_URI` dans votre shell (ou fichier `.env` au même niveau que `docker-compose.yml`).
+Ouvrir deux terminaux :
 
 ```bash
-# Exemple (PowerShell / Bash)
-$env:MONGODB_URI="mongodb+srv://user:pass@cluster/db?retryWrites=true&w=majority"
-# Mapping de port optionnel (HOST:CONTAINER), défaut 3000:3000
-$env:PORT_MAPPING="8081:3000"
+# Terminal 1 - Backend
+cd backend
+npm start
+# → API disponible sur http://localhost:3000
+```
 
+```bash
+# Terminal 2 - Frontend
+cd frontend
+npm run serve
+# → App disponible sur http://localhost:8080
+```
+
+> **Note** : En développement, le proxy Vue (`vue.config.js`) redirige automatiquement les appels `/api` vers le backend.
+
+---
+
+## Déploiement (production)
+
+### Avec Docker Compose
+
+C'est la méthode recommandée pour déployer l'application complète.
+
+**1. Configurer les variables d'environnement**
+
+Créer un fichier `.env` à la racine du projet :
+
+```env
+MONGODB_URI=mongodb://admin:secret_root_password@database:27017/flopStudent?authSource=admin ou MongoDB URI (trouvable dans l'interface mongo mongodb+srv://user:pass@cluster/db?retryWrites=true&w=majority )
+PORT_MAPPING=3000:3000
+VUE_APP_API_BASE_URL=https://api.votre-domaine.fr
+DB_ROOT_USERNAME=admin
+DB_ROOT_PASS=changezMoi
+```
+
+Créer en suite le fichier docker-compose en y mettant l'[exemple](./docker-compose.yml) présent dans le dépôt
+
+> **Note** : Le backend et le frontend étant "indépendant" il tout à fait possible de ne dépolyé que le frontend à condition de le relier à un backend existant
+
+> **Note** : Pensez à copier le fichier [init-db.js](./init-db.js) afin de créer la BD au moins lors de la première initialisation
+
+**2. Lancer les conteneurs**
+
+```bash
 docker compose up -d --build
 ```
 
-- Accès API: `http://localhost:8081` (ou `http://localhost:3000` si vous gardez la valeur par défaut)
-- Variables utilisées par le compose:
-  - `MONGODB_URI` (obligatoire)
-  - `PORT_MAPPING` (optionnelle, défaut `3000:3000`)
+**3. Vérifier les services**
 
-### Frontend seul (build et hébergement statique)
-Le `frontend/Dockerfile` construit l’app (stage de build). Il ne sert pas les fichiers; vous devez les héberger (Nginx, Apache, S3, Netlify, etc.).
+```bash
+docker compose ps
+docker compose logs -f
+```
 
-1) Construire l’image de build et produire le dossier `dist`:
+| Service | URL |
+|---------|-----|
+| Backend API | `http://localhost:3000` |
+| Frontend | `http://localhost:8080` |
+
+### Build manuel (sans Docker)
+
+**Backend :**
+
+```bash
+cd backend
+npm install --production
+NODE_ENV=production npm start
+```
+
+**Frontend :**
+
 ```bash
 cd frontend
-# Définir l’URL du backend utilisée par le frontend en production
-docker build --build-arg VUE_APP_API_BASE_URL=https://api.mondomaine.tld -t flopstudent-frontend:build .
-
-# Récupérer le dossier dist/ depuis l’image
-CONTAINER_ID=$(docker create flopstudent-frontend:build)
-docker cp $CONTAINER_ID:/app/dist ./dist
-docker rm $CONTAINER_ID
+npm install
+npm run build
+# Les fichiers statiques sont générés dans dist/
 ```
 
-2) Servir `dist/` avec Nginx (exemple Docker rapide):
-```bash
-# Docker Nginx servant ./dist sur le port 8080
-docker run --name flopstudent-nginx -p 8080:80 -v ${PWD}/dist:/usr/share/nginx/html:ro -d nginx:alpine
+Servir le dossier `dist/` avec un serveur web (Nginx, Apache, etc.).
+
+**Exemple avec Nginx :**
+
+```nginx
+server {
+    listen 80;
+    server_name votre-domaine.fr;
+    root /var/www/flopstudent/dist;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /api {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
 ```
-
-- Accès Front: `http://localhost:8080`
-- Assurez-vous que `VUE_APP_API_BASE_URL` pointe vers votre backend public (ex: `https://api.mondomaine.tld`).
-
-### Backend + Frontend
-Vous pouvez déployer chaque partie indépendamment, puis:
-- Backend (Docker Compose ci-dessus) exposé publiquement derrière un reverse-proxy (HTTPS recommandé).
-- Frontend (build + hébergement statique) pointant vers `VUE_APP_API_BASE_URL` du backend.
-
-Exemple de workflow minimal:
-```bash
-# 1) Backend
-# (voir section Backend seul) -> API disponible (ex: https://api.mondomaine.tld)
-
-# 2) Frontend
-cd frontend
-docker build --build-arg VUE_APP_API_BASE_URL=https://api.mondomaine.tld -t flopstudent-frontend:build .
-CONTAINER_ID=$(docker create flopstudent-frontend:build)
-docker cp $CONTAINER_ID:/app/dist ./dist
-docker rm $CONTAINER_ID
-# Servir dist/ (Nginx, Netlify, S3+CloudFront, etc.)
-```
-
-Remarques:
-- Pour un hébergement tout-Docker, vous pouvez ajouter un service Nginx dans `docker-compose.yml` qui monte `./frontend/dist` (après build) et proxifie l’API.
-- En dev, `frontend/vue.config.js` proxifie `/api` vers `http://localhost:3000`. En prod, le frontend utilise exclusivement `VUE_APP_API_BASE_URL` avant build.
 
 ---
 
-## Variables d’environnement (récap)
-- Backend (`backend/.env`)
-  - `MONGODB_URI` (obligatoire): chaîne de connexion MongoDB
-  - `PORT` (optionnel): port d’écoute du backend
-- Frontend (`frontend/.env`)
-  - `VUE_APP_API_BASE_URL` (recommandé): URL publique du backend (ex: `https://api.mondomaine.tld` ou `http://localhost:3000`)
+## Variables d'environnement (récapitulatif)
+
+| Variable | Fichier | Obligatoire | Description |
+|----------|---------|-------------|-------------|
+| `MONGODB_URI` | `backend/.env` | Oui | Chaîne de connexion MongoDB |
+| `PORT` | `backend/.env` | Non | Port du serveur backend (défaut: 3000) |
+| `VUE_APP_API_BASE_URL` | `frontend/.env` | En prod | URL publique de l'API backend |
 
 ---
 
-## API Backend (documentation rapide)
-Base URL: `http://<host>:<port>/` ou `http://mondomaine.fr/`.
-Par exemeple : `http://flopstudent-api.belucraft.fr/`
+## API Backend
+
+Base URL : `http://<host>:<port>/api`
+
+Ex : `https://flopstudent-api.belucraft.fr/api`
 
 ### Emplois du temps
-- GET `/api/get-schedules`
-  - **Query params (tous requis)**:
-    - `year` (string|number): année (ex: 2025)
-    - `week` (string|number): semaine ISO (ex: 17)
-    - `dept` (string): département (ex: `info`)
-    - `train_prog` (string): année de formation (ex: `BUT1`)
-    - `groupe` (string): groupe complet (ex: `1A`)
-  - **Réponse**: `Array<Object>` (liste de cours), formaté pour l’affichage (heure début, type, nom, salle, prof, groupe, couleurs, etc.)
-  - **Erreurs**:
-    - `400` si paramètres manquants
-    - `500` en cas d’erreur interne
 
-- GET `/api/get-last-schedules-update`
-  - **Query params (tous requis)**:
-    - `year` (string|number)
-    - `week` (string|number)
-  - **Réponse**: `Date|null` (timestamp de dernière mise à jour stocké côté backend)
-  - **Erreurs**:
-    - `400` si paramètres manquants
-    - `500` en cas d’erreur interne
+#### Récupérer l'emplois du temps d'un groupe
+
+**Endpoint :** `GET /get-schedules`
+
+Récupère l'emploi du temps d'un groupe.
+
+| Paramètre | Type | Obligatoire | Description |
+|-----------|------|-------------|-------------|
+| `year` | number | Oui | Année (ex: 2025) |
+| `week` | number | Oui | Semaine ISO (ex: 17) |
+| `dept` | string | Oui | Département (ex: `info`) |
+| `train_prog` | string | Oui | Programme (ex: `BUT1`) |
+| `groupe` | string | Oui | Groupe (ex: `1A`) |
+
+**Requête :**
+```bash
+curl "https://flopstudent-api.belucraft.fr/api/get-schedules?year=2025&week=37&dept=INFO&train_prog=BUT1&groupe=1A"
+```
+
+**Réponse :**
+```json
+[
+    {
+        "_id":"69711df05db833d373312f9f",
+        "id":515402,
+        "room":"B106",
+        "date":{
+            "day":"tu",
+            "week":37,
+            "year":2025
+        },
+        "start_time":570,
+        "duration":90,
+        "course":{
+            "type":"TP",
+            "name":"Initiation au développement",
+            "abbrev":"DevS1",
+            "is_graded":false
+        },
+        "groupe":{
+            "name":"1A",
+            "train_prog":"BUT1"
+        },
+        "prof":"BC",
+        "display":{
+            "color_bg":"#20d8fd",
+            "color_txt":"#000000"
+        }
+    },
+    ...
+]
+```
+
+#### `GET /get-last-schedules-update`
+
+Récupère la date de dernière mise à jour des emplois du temps.
+
+| Paramètre | Type | Obligatoire |
+|-----------|------|-------------|
+| `year` | number | Oui |
+| `week` | number | Oui |
+
+**Requête :**
+```bash
+curl "https://flopstudent-api.belucraft.fr/api/get-last-schedules-update?year=2025&week=37"
+```
+
+**Réponse :**
+```
+"2026-01-21T18:42:11.396Z"
+```
 
 ### Salles libres
-- GET `/api/get-free-rooms`
-  - **Query params (tous requis)**:
-    - `year` (string|number)
-    - `week` (string|number)
-    - `dept` (string): département (clé utilisée pour trouver la liste des salles du département)
-  - **Réponse**: `{ salles: Record<string, Record<string, string[]>>, lastUpdated: Date }`
-    - `salles[dayLetter][slotMinutes] = string[]` (ex: salles libres pour `m` (lundi) à `480` (08:00))
-  - **Erreurs**:
-    - `400` si paramètres manquants
-    - `500` en cas d’erreur interne
+
+#### `GET /get-free-rooms`
+
+Récupère les salles libres pour une semaine donnée, avec possibilité de filtrer par jour et créneau.
+
+| Paramètre | Type | Obligatoire | Description |
+|-----------|------|-------------|-------------|
+| `year` | number | Oui | Année (ex: 2025) |
+| `week` | number | Oui | Semaine ISO (ex: 37) |
+| `dept` | string | Oui | Département (ex: `INFO`) |
+| `day` | string | Non | Jour (ex: `L`, `Ma`, `Me`, `J`, `V`) |
+| `slot` | number | Non | Créneau horaire en minutes depuis minuit (ex: 480 pour 8h) |
+
+**Requête (semaine complète) :**
+```bash
+curl "https://flopstudent-api.belucraft.fr/api/get-free-rooms?year=2025&week=37&dept=INFO"
+```
+
+**Requête (jour et créneau spécifique) :**
+```bash
+curl "https://flopstudent-api.belucraft.fr/api/get-free-rooms?year=2025&week=37&dept=INFO&day=L&slot=480"
+```
+
+**Réponse :**
+
+```json
+{
+    "salles": {
+        "l":{
+            "480":[
+                "B101","B102","B103","B104","B105","B106","B004","B005","B007","B008","B009","B010","B115","B219","B113","B006"
+            ]
+        }
+    },
+    "lastUpdated":"2026-03-04T17:19:15.339Z"
+}
+```
+
+### Professeurs
+
+#### `GET /get-all-profs`
+
+Récupère la liste de tous les professeurs.
+
+| Paramètre | Type | Obligatoire | Description |
+|-----------|------|-------------|-------------|
+| `dept` | string | Non | Département pour filtrer (ex: `INFO`) |
+
+**Requête :**
+```bash
+curl "https://flopstudent-api.belucraft.fr/api/get-all-profs?dept=INFO"
+```
+
+**Réponse :**
+```json
+[
+    {
+        "_id":"697111a0151a06b9cad4fe38",
+        "username":"BC",
+        "departments":["INFO"],
+        "email":"belucraft.carre@cubemail.com",
+        "first_name":"Belucraft",
+        "last_name":"Carré"
+    },
+    ...
+]
+```
+
+#### `GET /get-prof-schedule`
+
+Récupère l'emploi du temps d'un professeur.
+
+| Paramètre | Type | Obligatoire | Description |
+|-----------|------|-------------|-------------|
+| `year` | number | Oui | Année (ex: 2025) |
+| `week` | number | Oui | Semaine ISO (ex: 37) |
+| `profDet` | string | Oui | Initiales du professeur (ex: `MDM`) |
+
+**Requête :**
+```bash
+curl "https://flopstudent-api.belucraft.fr/api/get-prof-schedule?year=2025&week=37&profDet=MDM"
+```
+
+**Réponse :**
+```json
+[
+    {
+        "_id":"69711df05db833d373312f9f",
+        "id":515402,
+        "room":"B106",
+        "date":{
+            "day":"tu",
+            "week":37,
+            "year":2025
+        },
+        "start_time":570,
+        "duration":90,
+        "course":{
+            "type":"TP",
+            "name":"Initiation au développement",
+            "abbrev":"DevS1",
+            "is_graded":false
+        },
+        "groupe":{
+            "name":"1A",
+            "train_prog":"BUT1"
+        },
+        "prof":"BC",
+        "display":{
+            "color_bg":"#20d8fd",
+            "color_txt":"#000000"
+        }
+    },
+    ...
+]
+```
+
+> **Note** : Le format de réponse de cet endpoint est identique à celui permettant de récupérer l'EDT d'un groupe 
+
+### Salles
+
+#### `GET /get-all-rooms`
+
+Récupère la liste de toutes les salles.
+
+**Requête :**
+```bash
+curl "https://flopstudent-api.belucraft.fr/api/get-all-rooms"
+```
+
+**Réponse :**
+```json
+[
+  {"room":"A011"},
+  {"room":"ATCI"},
+  {"room":"AUTRE"},
+  {"room":"Amphi1"},
+  {"room":"Amphi2"},
+  ...
+]
+```
+
+#### `GET /get-room-schedule`
+
+Récupère l'emploi du temps d'une salle.
+
+| Paramètre | Type | Obligatoire | Description |
+|-----------|------|-------------|-------------|
+| `year` | number | Oui | Année (ex: 2025) |
+| `week` | number | Oui | Semaine ISO (ex: 37) |
+| `room` | string | Oui | Nom de la salle (ex: `B106`) |
+
+**Requête :**
+```bash
+curl "https://flopstudent-api.belucraft.fr/api/get-room-schedule?year=2025&week=37&room=B106"
+```
+
+**Réponse :**
+```json
+[
+    {
+        "_id":"69711df05db833d373312f9f",
+        "id":515402,
+        "room":"B106",
+        "date":{
+            "day":"tu",
+            "week":37,
+            "year":2025
+        },
+        "start_time":570,
+        "duration":90,
+        "course":{
+            "type":"TP",
+            "name":"Initiation au développement",
+            "abbrev":"DevS1",
+            "is_graded":false
+        },
+        "groupe":{
+            "name":"1A",
+            "train_prog":"BUT1"
+        },
+        "prof":"BC",
+        "display":{
+            "color_bg":"#20d8fd",
+            "color_txt":"#000000"
+        }
+    },
+    ...
+]
+```
+
+> **Note** : Le format de réponse de cet endpoint est identique à celui permettant de récupérer l'EDT d'un groupe 
+
+### Paramètres / Configuration
+
+#### `GET /get-departments`
+
+Récupère la liste des départements disponibles.
+
+**Requête :**
+```bash
+curl "https://flopstudent-api.belucraft.fr/api/get-departments"
+```
+
+**Réponse :**
+```json
+["CS","GIM","INFO","RT"]
+```
+
+#### `GET /get-train-progs`
+
+Récupère les années de formation disponibles pour un département.
+
+| Paramètre | Type | Obligatoire | Description |
+|-----------|------|-------------|-------------|
+| `dept` | string | Oui | Département (ex: `INFO`) |
+
+**Requête :**
+```bash
+curl "https://flopstudent-api.belucraft.fr/api/get-train-progs?dept=INFO"
+```
+
+**Réponse :**
+```json
+["BUT1", "BUT2", "BUT3"]
+```
+
+#### `GET /get-groups`
+
+Récupère les groupes disponibles pour un département et une année.
+
+| Paramètre | Type | Obligatoire | Description |
+|-----------|------|-------------|-------------|
+| `dept` | string | Oui | Département (ex: `INFO`) |
+| `train_prog` | string | Oui | Programme/année (ex: `BUT1`) |
+
+**Requête :**
+```bash
+curl "https://flopstudent-api.belucraft.fr/api/get-groups?dept=INFO&train_prog=BUT1"
+```
+
+**Réponse :**
+```json
+["1A","1B","2A","2B","3A","3B","4B","4A"]
+```
+
+### Codes d'erreur
+
+| Code | Description |
+|------|-------------|
+| `200` | Succès |
+| `400` | Paramètres manquants ou invalides |
+| `404` | Ressource non trouvée |
+| `500` | Erreur serveur interne |
+
+**Exemple d'erreur :**
+```json
+{
+  "message": "Année, semaine et département sont requis."
+}
+```
 
 ---
 
 ## Flux de données & tâches programmées
-- Le backend dispose d’utilitaires (`backend/utils/`) pour:
-  - récupérer et stocker les cours depuis flop!EDT (`fetchAndStoreSchedules`)
-  - nettoyer les semaines obsolètes (`cleanOldSchedules`)
-  - calculer les salles libres (`calculateFreeRooms`)
-  - orchestrer les tâches (`scheduleTasks`)
-- Les données sont persistées dans MongoDB (collections par département, `lastUpdates`, etc.).
+
+Le backend gère automatiquement :
+
+| Tâche | Description | Fichier |
+|-------|-------------|---------|
+| Récupération EDT | Synchronise les cours depuis flop!EDT | `fetchAndStoreSchedules.js` |
+| Nettoyage | Supprime les semaines obsolètes | `scheduleTasks.js` |
+| Calcul salles libres | Détermine les salles disponibles | `calculateFreeRooms.js` |
+
+Les données sont persistées dans MongoDB (collections par département).
 
 ---
 
-## Développement frontend
-- Lancer le serveur de dev: `npm run serve`
-- Endpoints front principaux:
-  - `src/components/ScheduleList.vue`: affichage EDT, navigation par semaine
-  - `src/components/FreeRoomsList.vue`: affichage des salles libres
-  - `src/components/SettingsParams.vue`: configuration locale (dept, année, groupe)
-- Les utilitaires front sont centralisés dans `src/utils/` et `src/services/` (accès API, formatage dates, stockage local)
+## Contribuer
 
----
+1. Forker le projet
+2. Créer une branche (`git checkout -b feature/ma-fonctionnalite`)
+3. Commiter les changements (`git commit -m 'Ajout de ma fonctionnalité'`)
+4. Pousser la branche (`git push origin feature/ma-fonctionnalite`)
+5. Ouvrir une Pull Request
 
-## Conseils pour contribuer
-- Respecter la structure actuelle (services/utils, séparation front/back)
-- Mutualiser la logique réutilisable dans `utils/`
-- Ajouter la JSDoc pour les fonctions publiques et les services
-- Proposer des PR atomiques (petites, testables)
+**Bonnes pratiques :**
+
+- Respecter la structure existante (`services/`, `utils/`)
+- Ajouter la JSDoc pour les fonctions publiques
+- Proposer des PR atomiques et testables
 
 ---
 
 ## Licence
-Projet open source. La licence sera précisée dans un prochain commit si elle n’est pas déjà fournie.
+
+Ce projet est sous licence **GNU Affero General Public License v3.0 (AGPLv3)**.
+
+Voir le fichier [LICENSE](./LICENSE) pour plus de détails.
+
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)

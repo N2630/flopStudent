@@ -10,7 +10,11 @@
       </div>
     </header>
 
-    <div class="cards">
+    <div v-if="!hasCurrent">
+      <Loader :isRequired="true"/>
+    </div>
+
+    <div v-else class="cards">
       <article class="card" v-if="hasCurrent">
         <div class="card-header">
           <h3>Créneau actuel</h3>
@@ -51,9 +55,13 @@
 import { getWeekNumber, getYearNumber } from '../../services/scheduleService';
 import { fetchFreeRooms } from '../../services/api';
 import { formatDateTime, minutesToTime, getDayLetter, getDayName } from '../../utils/dateUtils';
+import Loader from './Loader.vue';
 
 export default {
   name: 'FreeRoomsList',
+  components: {
+    Loader
+  },
   data() {
     return {
       freeRoomsData: null,
@@ -133,6 +141,11 @@ export default {
     },
 
     refresh() {
+      // Réinitialiser les données et recharger avec la date actuelle
+      this.date = new Date();
+      this.freeRoomsData = null;
+      this.currentSlot = null;
+      this.nextSlot = null;
       this.loadFreeRooms();
     },
 

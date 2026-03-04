@@ -51,10 +51,8 @@ export default {
             this.showSetupModal = true;
         },
         onSettingsSaved() {
-            // Handle any actions needed after settings are saved
             this.showSetupModal = false;
             this.followedSchedules = getFollowedSchedules();
-            //window.location.reload();
         },
         closeSetupModal() {
             this.showSetupModal = false;

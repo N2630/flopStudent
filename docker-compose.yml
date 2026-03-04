@@ -1,12 +1,40 @@
-version: '3.8'
-
 services:
+  # Service Backend (Node.js/Express)
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - "${PORT_MAPPING:-3000:3000}" # Utilisez une variable d'environnement pour le mapping de port
+    image: belucraft/flopstudent-backend:latest
+    container_name: flopstudent-backend
+    restart: unless-stopped
     environment:
-      - PORT=3000 # Le port interne du conteneur reste 3000
-      - MONGODB_URI=${MONGODB_URI} # Référence la variable d'environnement MONGODB_URI
+      - MONGODB_URI=${MONGODB_URI}
+      - PORT=${BACKEND_PORT:-3000}
+      - CLEAR_SCHEDULE_OPTION=false
+    ports:
+      - "${BACKEND_PORT:-3000}:${BACKEND_PORT:-3000}"
+    networks:
+      - backend
+  
+  # BD backend
+  database:
+    image: mongo:latest
+    container_name: flop-db
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: flopStudent
+      MONGO_INITDB_ROOT_USERNAME: ${DB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_ROOT_PASS}
+    volumes:
+      - ./init-db.js:/docker-entrypoint-initdb.d/init-db.js:ro
+      - mongodb_data:/data/db
+    networks:
+      - backend
+
+  # Service Frontend (Vue.js)
+  frontend:
+    image: belucraft/flopstudent-frontend:latest
+    container_name: flopstudent-frontend
+    restart: unless-stopped
+    environment:
+      VUE_APP_API_BASE_URL: ${VUE_APP_API_BASE_URL}
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+
