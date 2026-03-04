@@ -57,8 +57,10 @@ export default {
           { username: 'JDOE', firstname: 'John', lastname: 'Doe', email: 'john.doe@example.com', departments: ['INFO'] },
           { username: 'ASMITH', firstname: 'Alice', lastname: 'Smith', email: 'alice.smith@example.com', departments: ['CS','GIM'] }
         ];
-          try { setProfs(this.profs); } catch(e) {
-              console.log(e);
+          try { 
+            setProfs(this.profs); 
+          } catch(e) {
+            console.log(e);
           }
       } finally {
         this.loading = false;
