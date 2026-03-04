@@ -182,7 +182,7 @@ DB_ROOT_PASS=changezMoi
 
 Créer en suite le fichier docker-compose en y mettant l'[exemple](./docker-compose.yml) présent dans le dépôt
 
-> **Note** : Le backend et le frontend étant "indépendant" il tout à fait possible de ne dépolyé que le frontend à condition de le relier à un backend d'une autre personne 
+> **Note** : Le backend et le frontend étant "indépendant" il tout à fait possible de ne dépolyé que le frontend à condition de le relier à un backend existant
 
 > **Note** : Pensez à copier le fichier [init-db.js](./init-db.js) afin de créer la BD au moins lors de la première initialisation
 
