@@ -36,7 +36,7 @@ export default {
     name: 'DayCourseDisplay',
     props: {
         dayKey: {
-            type: Object,
+            type: String,
             required: true
         },
         courseInDay: {

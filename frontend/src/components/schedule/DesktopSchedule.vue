@@ -11,7 +11,7 @@
           <div class="courses-container">
             <DayCourseDisplay 
               :courseInDay="getCoursesForDay(day.key)" 
-              :day="day"
+              :dayKey="day.key"
               @open-course-info="$emit('open-course-info', $event)"
               @course-loaded="changeLoadingstatus()"
             />

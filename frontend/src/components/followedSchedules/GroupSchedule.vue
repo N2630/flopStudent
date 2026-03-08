@@ -144,7 +144,7 @@ export default {
       let date = new Date(this.initialDate);
       date.setDate(date.getDate() - 7);
       this.initialDate = date;
-      //await this.initializeWeek();
+      await this.initializeWeek();
       await this.loadSchedules();
     },
 
