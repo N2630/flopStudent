@@ -1,4 +1,4 @@
-FROM node:25-slim AS build-stage
+FROM node:24-slim AS build-stage
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --legacy-peer-deps
